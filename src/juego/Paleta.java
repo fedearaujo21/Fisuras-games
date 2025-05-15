@@ -52,4 +52,6 @@ public class Paleta {
     public Rectangle getRect() {
         return new Rectangle(x, y, ancho, alto);
     }
+    public boolean getSubiendo(){return subiendo;}
+    public boolean getBajando(){return bajando;}
 }

@@ -7,6 +7,7 @@ public class Pelota {
     private int x, y;
     private int tamaño = 12;
     private int velocidadX = 4, velocidadY = 4;
+    private final int factor = 5; // margen de desvío
 
     public Pelota(int x, int y) {
         this.x = x;
@@ -17,6 +18,7 @@ public class Pelota {
     public void actualizar(Paleta j1, Paleta j2) {
         x += velocidadX;
         y += velocidadY;
+        Random entropia = new Random();
 
         // Rebote contra los bordes superior/inferior
         if (y <= 0 || y + tamaño >= 600) {
@@ -24,8 +26,23 @@ public class Pelota {
         }
 
         // Rebote con las paletas
-        if (getRect().intersects(j1.getRect()) || getRect().intersects(j2.getRect())) {
+        if (getRect().intersects(j1.getRect())){
             velocidadX *= -1;
+            if (j1.getBajando() && velocidadY > -25){
+                velocidadY += entropia.nextInt(factor) + 1;
+            }
+            if (j1.getSubiendo() && velocidadY < 25){
+                velocidadY -= entropia.nextInt(factor) + 1;
+            } // si se quiere subir la dificultad se puede aumentar el factor
+        }
+        if (getRect().intersects(j2.getRect())){
+            velocidadX *= -1;
+            if (j2.getBajando() && velocidadY > -25){
+                velocidadY += entropia.nextInt(factor) + 1;
+            }
+            if (j2.getSubiendo() && velocidadY < 25){
+                velocidadY -= entropia.nextInt(factor) + 1;
+            }
         }
     }
 
