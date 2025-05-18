@@ -1,18 +1,36 @@
 package juego;
 
 import java.awt.*;
+import java.io.IOException;
 import java.util.Random;
+import javax.sound.sampled.*;
+import java.io.File;
+import java.io.IOException;
 
 public class Pelota {
     private int x, y;
     private int tamaño = 12;
     private int velocidadX = 4, velocidadY = 4;
     private final int factor = 5; // margen de desvío
+    private Clip clip;
 
     public Pelota(int x, int y) {
         this.x = x;
         this.y = y;
         direccionAleatoria();
+
+        try {
+            File archivoSonido = new File("src/Sonidos/Boing1.wav");
+            System.out.println("¿Existe archivo? " + archivoSonido.exists());
+            //File archivoSonido = new File("../Sonidos/Boing1.wav");
+            AudioInputStream audioStream = AudioSystem.getAudioInputStream(archivoSonido);
+
+            clip = AudioSystem.getClip();
+            clip.open(audioStream);
+        } catch(UnsupportedAudioFileException | LineUnavailableException |IOException e){
+            e.printStackTrace();
+        }
+        //clip.start();
     }
 
     public void actualizar(Paleta j1, Paleta j2) {
@@ -23,11 +41,20 @@ public class Pelota {
         // Rebote contra los bordes superior/inferior
         if (y <= 0 || y + tamaño >= 600) {
             velocidadY *= -1;
+
+            System.out.println("Clip cargado: " + (clip != null));
+            clip.setFramePosition(0); // reinicia el audio al comienzo
+            clip.start();
         }
 
         // Rebote con las paletas
         if (getRect().intersects(j1.getRect())){
             velocidadX *= -1;
+
+            System.out.println("Clip cargado: " + (clip != null));
+            clip.setFramePosition(0); // reinicia el audio al comienzo
+            clip.start();
+
             if (j1.getBajando() && velocidadY > -25){
                 velocidadY += entropia.nextInt(factor) + 1;
             }
@@ -37,6 +64,10 @@ public class Pelota {
         }
         if (getRect().intersects(j2.getRect())){
             velocidadX *= -1;
+
+            clip.setFramePosition(0); // reinicia el audio al comienzo
+            clip.start();
+
             if (j2.getBajando() && velocidadY > -25){
                 velocidadY += entropia.nextInt(factor) + 1;
             }
