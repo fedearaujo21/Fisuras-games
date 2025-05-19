@@ -6,31 +6,61 @@ import java.util.Random;
 import javax.sound.sampled.*;
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 
 public class Pelota {
     private int x, y;
     private int tamaño = 12;
     private int velocidadX = 4, velocidadY = 4;
     private final int factor = 5; // margen de desvío
-    private Clip clip;
+    private final Map<String, String> sonidoParedes = Map.of(
+            "original","src/Sonidos/Boing1.wav",
+            "techno","src/Sonidos/Boing2.wav",
+            "8bit","src/Sonidos/Boing3.wav"
+    );
+    // Map es como un HasMap pero inmutable, pero como lo uso para guardar nombres no voy a necesitar mutabilidad
+    private final Map<String, String> sonidoPaletas = Map.of(
+            "original","src/Sonidos/Pared1.wav",
+            "techno","src/Sonidos/Pared2.wav",
+            "8bit","src/Sonidos/Pared3.wav"
+    );
+    private Clip pared;
+    private Clip paleta;
+
 
     public Pelota(int x, int y) {
         this.x = x;
         this.y = y;
         direccionAleatoria();
 
+
+
+        //cargo sonido de las paredes
         try {
-            File archivoSonido = new File("src/Sonidos/Boing1.wav");
-            System.out.println("¿Existe archivo? " + archivoSonido.exists());
+            File archivoSonido = new File(sonidoParedes.get(Config.pistaMusical));
+            System.out.println("¿Existe archivo? " + archivoSonido.exists()+ Config.pistaMusical);
             //File archivoSonido = new File("../Sonidos/Boing1.wav");
             AudioInputStream audioStream = AudioSystem.getAudioInputStream(archivoSonido);
 
-            clip = AudioSystem.getClip();
-            clip.open(audioStream);
+            pared = AudioSystem.getClip();
+            pared.open(audioStream);
         } catch(UnsupportedAudioFileException | LineUnavailableException |IOException e){
             e.printStackTrace();
         }
-        //clip.start();
+
+        // cargo sonido para las paletas
+        try {
+            File archivoSonido = new File(sonidoPaletas.get(Config.pistaMusical));
+            System.out.println("¿Existe archivo? " + archivoSonido.exists() + Config.pistaMusical);
+            //File archivoSonido = new File("../Sonidos/Boing1.wav");
+            AudioInputStream audioStream = AudioSystem.getAudioInputStream(archivoSonido);
+
+            paleta = AudioSystem.getClip();
+            paleta.open(audioStream);
+        } catch(UnsupportedAudioFileException | LineUnavailableException |IOException e){
+            e.printStackTrace();
+        }
+        //pared.start();
     }
 
     public void actualizar(Paleta j1, Paleta j2) {
@@ -42,18 +72,18 @@ public class Pelota {
         if (y <= 0 || y + tamaño >= 600) {
             velocidadY *= -1;
 
-            System.out.println("Clip cargado: " + (clip != null));
-            clip.setFramePosition(0); // reinicia el audio al comienzo
-            clip.start();
+            System.out.println("Clip cargado: " + (pared != null));
+            pared.setFramePosition(0); // reinicia el audio al comienzo
+            pared.start();
         }
 
         // Rebote con las paletas
         if (getRect().intersects(j1.getRect())){
             velocidadX *= -1;
 
-            System.out.println("Clip cargado: " + (clip != null));
-            clip.setFramePosition(0); // reinicia el audio al comienzo
-            clip.start();
+            System.out.println("Clip cargado: " + (paleta != null));
+            paleta.setFramePosition(0); // reinicia el audio al comienzo
+            paleta.start();
 
             if (j1.getBajando() && velocidadY > -25){
                 velocidadY += entropia.nextInt(factor) + 1;
@@ -65,8 +95,8 @@ public class Pelota {
         if (getRect().intersects(j2.getRect())){
             velocidadX *= -1;
 
-            clip.setFramePosition(0); // reinicia el audio al comienzo
-            clip.start();
+            paleta.setFramePosition(0); // reinicia el audio al comienzo
+            paleta.start();
 
             if (j2.getBajando() && velocidadY > -25){
                 velocidadY += entropia.nextInt(factor) + 1;
