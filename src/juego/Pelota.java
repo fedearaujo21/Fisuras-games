@@ -34,11 +34,10 @@ public class Pelota {
         direccionAleatoria();
 
 
-
         //cargo sonido de las paredes
         try {
             File archivoSonido = new File(sonidoParedes.get(Config.pistaMusical));
-            System.out.println("¿Existe archivo? " + archivoSonido.exists()+ Config.pistaMusical);
+            //System.out.println("¿Existe archivo? " + archivoSonido.exists()+ Config.pistaMusical);
             //File archivoSonido = new File("../Sonidos/Boing1.wav");
             AudioInputStream audioStream = AudioSystem.getAudioInputStream(archivoSonido);
 
@@ -51,7 +50,7 @@ public class Pelota {
         // cargo sonido para las paletas
         try {
             File archivoSonido = new File(sonidoPaletas.get(Config.pistaMusical));
-            System.out.println("¿Existe archivo? " + archivoSonido.exists() + Config.pistaMusical);
+            //System.out.println("¿Existe archivo? " + archivoSonido.exists() + Config.pistaMusical);
             //File archivoSonido = new File("../Sonidos/Boing1.wav");
             AudioInputStream audioStream = AudioSystem.getAudioInputStream(archivoSonido);
 
@@ -72,7 +71,8 @@ public class Pelota {
         if (y <= 0 || y + tamaño >= 600) {
             velocidadY *= -1;
 
-            System.out.println("Clip cargado: " + (pared != null));
+            if (pared.isRunning())
+                pared.stop();
             pared.setFramePosition(0); // reinicia el audio al comienzo
             pared.start();
         }
@@ -81,7 +81,8 @@ public class Pelota {
         if (getRect().intersects(j1.getRect())){
             velocidadX *= -1;
 
-            System.out.println("Clip cargado: " + (paleta != null));
+            if (paleta.isRunning())
+                paleta.stop();
             paleta.setFramePosition(0); // reinicia el audio al comienzo
             paleta.start();
 
