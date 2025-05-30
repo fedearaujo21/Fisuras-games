@@ -26,6 +26,7 @@ public class Pelota {
     );
     private Clip pared;
     private Clip paleta;
+    private Choque choque = new Choque();
 
 
     public Pelota(int x, int y) {
@@ -78,7 +79,7 @@ public class Pelota {
         }
 
         // Rebote con las paletas
-        if (getRect().intersects(j1.getRect())){
+        if (getRect().intersects(j1.getRect()) && choque.tangible){
             velocidadX *= -1;
 
             if (paleta.isRunning())
@@ -92,8 +93,15 @@ public class Pelota {
             if (j1.getSubiendo() && velocidadY < 25){
                 velocidadY -= entropia.nextInt(factor) + 1;
             } // si se quiere subir la dificultad se puede aumentar el factor
+
+            velocidadY += entropia.nextInt(factor - 1) - 2;
+            // esta linea evita que la pelota se mantenga horizontal;
+
+            // choque en el borde
+            Thread rebote = new Thread(choque);
+            rebote.start();
         }
-        if (getRect().intersects(j2.getRect())){
+        if (getRect().intersects(j2.getRect()) && choque.tangible){
             velocidadX *= -1;
 
             paleta.setFramePosition(0); // reinicia el audio al comienzo
@@ -105,6 +113,13 @@ public class Pelota {
             if (j2.getSubiendo() && velocidadY < 25){
                 velocidadY -= entropia.nextInt(factor) + 1;
             }
+
+            velocidadY += entropia.nextInt(factor - 1) - 2;
+            // esta linea evita que la pelota se mantenga horizontal;
+
+            // choque en el borde
+            Thread rebote = new Thread(choque);
+            rebote.start();
         }
     }
 
@@ -131,5 +146,20 @@ public class Pelota {
 
     public Rectangle getRect() {
         return new Rectangle(x, y, tamaño, tamaño);
+    }
+}
+
+class Choque implements Runnable{
+    public static boolean tangible = true;
+
+    @Override
+    public void run() {
+        tangible = false;
+        try {
+            Thread.sleep(500); // Pausa de 2 segundos
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        tangible = true;
     }
 }
