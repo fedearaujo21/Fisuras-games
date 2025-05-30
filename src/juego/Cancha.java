@@ -111,7 +111,7 @@ public class Cancha extends Panel {
         }
 
         // Dibujar el buffer en pantalla
-        g.drawImage(buffer, 0, 0, this);
+        g.drawImage(buffer, 0, Config.frameSuperior, this);
     }
     @Override
     public void update(Graphics g) {

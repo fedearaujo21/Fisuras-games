@@ -23,7 +23,7 @@ public class Paleta {
     public void actualizar() {
         if (subiendo && y > 0) {
             y -= velocidad;
-        } else if (bajando && y + alto < 600) {
+        } else if (bajando && y + alto + Config.frameSuperior < 600) {
             y += velocidad;
         }
     }

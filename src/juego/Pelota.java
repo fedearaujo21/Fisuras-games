@@ -68,7 +68,7 @@ public class Pelota {
         Random entropia = new Random();
 
         // Rebote contra los bordes superior/inferior
-        if (y <= 0 || y + tamaño >= 600) {
+        if (y <= 0 || y + Config.frameSuperior + tamaño >= 600) {
             velocidadY *= -1;
 
             if (pared.isRunning())

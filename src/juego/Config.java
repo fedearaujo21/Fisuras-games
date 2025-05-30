@@ -11,6 +11,8 @@ public class Config {
     public static int teclaArribaJugador2 = java.awt.event.KeyEvent.VK_W;
     public static int teclaAbajoJugador2 = java.awt.event.KeyEvent.VK_S;
 
+    public static final int frameSuperior = 30;
+
     public static void resetDefaults() {
         pantallaCompleta = false;
         sonidoActivado = true;
