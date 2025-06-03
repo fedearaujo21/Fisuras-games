@@ -1,4 +1,6 @@
 package pong;
+import juego.ConfigPantalla;
+
 import javax.swing.*;
 
 public class LanzadorPong {
