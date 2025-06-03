@@ -1,4 +1,4 @@
-package juego;
+package pong;
 
 public class Config {
     public static boolean pantallaCompleta = false;

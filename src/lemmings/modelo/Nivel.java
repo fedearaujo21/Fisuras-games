@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
+import lemmings.modelo.Lemming;
 
 public class Nivel {
     private int nivelNum;
@@ -24,7 +25,7 @@ public class Nivel {
         this.nivelNum = nivelNum;
         this.nombre = nombre;
         this.tiempo = 60;
-        this.cantidadLem = 10;
+        this.cantidadLem = 2;
         this.mapa = new Mapa(mapaImagen, COLOR_FONDO);
         this.lemmings = new ArrayList<>();
         this.entrada = new Entrada(300,80);
@@ -86,7 +87,8 @@ public class Nivel {
             if (habilidad != null && habilidad.activar(lemming)) {
                 System.out.println("Habilidad '" + nombreHabilidad + "' asignada a Lemming.");
                 return true;
-            } else {
+            }
+            else {
                 stockHabilidades.añadirHabilidad(nombreHabilidad, 1); // Devuelve el uso si no se pudo activar
                 System.out.println("No se pudo activar la habilidad '" + nombreHabilidad + "' en el Lemming.");
                 return false;

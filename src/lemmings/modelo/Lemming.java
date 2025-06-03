@@ -7,15 +7,21 @@ public class Lemming {
     private int x, y;
     private int direccion = 1;
     private Mapa mapa;
-    private int lemmingWidth = 6;
-    private int lemmingHeight = 9;
+    private int lemmingWidth = 10;
+    private int lemmingHeight = 14;
     private long tiempoCreacion;
-    private static final int MAX_STEP_HEIGHT = 9;
+    private static final int MAX_STEP_HEIGHT = 12;
 
     private Habilidad habilidadActiva;
     private int ticksHabilidad = 0;
     private static final int MAX_FALL_ADJUST = 5;
     private static final int TICKS_POR_ACCION_HABILIDAD = 5;
+
+    private static final int TICKS_POR_MOVIMIENTO_NORMAL = 2;
+    private int ticksMovimientoNormal = 0;
+
+    private int ticksEnAire = 0; // Contador de ticks que el Lemming lleva en el aire
+    private static final int UMBRAL_CAIDA_MINERO = 10;
 
     public Lemming(int x, int y, Mapa mapa) {
         this.x = x;
@@ -28,31 +34,64 @@ public class Lemming {
         long ahora = System.currentTimeMillis();
         boolean colisionTemporalmenteDesactivada = (ahora - tiempoCreacion) < 500;
 
-        if (habilidadActiva != null) {
-            ticksHabilidad++;
-            if (ticksHabilidad % TICKS_POR_ACCION_HABILIDAD == 0) {
-                if (habilidadActiva instanceof HabilidadMinero) {
-                    ((HabilidadMinero) habilidadActiva).excavar(this);
-                }
-            }
-        }
-
         // Verificamos si hay suelo debajo
         boolean haySueloDebajo = false;
         for (int i = 0; i < lemmingWidth; i++) {
-            if (!colisionTemporalmenteDesactivada && mapa.hayColision(x + i, y + lemmingHeight)) {
-                haySueloDebajo = true;
+            if (x + i >= 0 && x + i < mapa.getAncho() && y + lemmingHeight >= 0 && y + lemmingHeight < mapa.getAlto()) {
+                if (!colisionTemporalmenteDesactivada && mapa.hayColision(x + i, y + lemmingHeight)) {
+                    haySueloDebajo = true;
+                    break;
+                }
+            } else { // Si está fuera del mapa por abajo, es como si cayera al infinito
+                haySueloDebajo = false; // Asumimos que cae si llega al borde inferior del mapa
                 break;
             }
         }
 
         if (!haySueloDebajo) {
             y += 1;
-            return;
+            // Si el Lemming está en el aire (cayendo), incrementamos el contador
+            ticksEnAire++;
+            // Si la habilidad activa es Minero y ha caído más allá del umbral, la desactiva
+            if (habilidadActiva instanceof HabilidadMinero && ticksEnAire > UMBRAL_CAIDA_MINERO) {
+                desactivarHabilidad(); // El minero deja de excavar cuando cae una distancia
+            }
+            return; // Si está cayendo, no se mueve horizontalmente ni activa habilidades (ya hizo su acción vertical)
+        } else {
+            // Si hay suelo, el Lemming no está cayendo, reinicia el contador de ticks en el aire.
+            ticksEnAire = 0;
+        }
+
+        if (habilidadActiva != null) {
+            ticksHabilidad++;
+            if (ticksHabilidad >= TICKS_POR_ACCION_HABILIDAD) {
+
+                if (habilidadActiva instanceof HabilidadMinero) {
+                    ((HabilidadMinero) habilidadActiva).excavar(this);
+                }
+                // Añadir más habilidades aquí (ej. HabilidadParacaidas, HabilidadEscalador, etc.)
+
+                ticksHabilidad = 0;
+            }
+            // Después de ejecutar una habilidad que controla el movimiento (como minero),
+            // el Lemming no debería ejecutar el movimiento horizontal normal.
+            // PERO si la habilidad no controla el movimiento (ej. paracaídas),
+            // el Lemming seguiría con su movimiento normal.
+            // Para el minero, retornamos para que no intente mover horizontalmente.
+            if (habilidadActiva instanceof HabilidadMinero) {
+                return;
+            }
         }
 
         // Movimiento horizontal o subir pendiente
-        if (habilidadActiva == null || !(habilidadActiva instanceof HabilidadMinero)) {
+        if (habilidadActiva == null) {
+
+            ticksMovimientoNormal++;
+            if (ticksMovimientoNormal < TICKS_POR_MOVIMIENTO_NORMAL) {
+                return; // No se mueve horizontalmente aún, espera más ticks
+            }
+            ticksMovimientoNormal = 0;
+
             int siguienteX = x + direccion;
             int nuevaY = y;
             boolean puedeAvanzar = false;
@@ -133,14 +172,13 @@ public class Lemming {
     }
 
     public void dibujar(Graphics g) {
-        g.setColor(Color.GREEN);
-        g.fillRect(x, y, lemmingWidth, lemmingHeight);
-        if (habilidadActiva != null) {
-            if (habilidadActiva instanceof HabilidadMinero) {
-                g.setColor(Color.RED);
-                g.fillOval(x + lemmingWidth / 4, y + lemmingHeight / 4, lemmingWidth / 2, lemmingHeight / 2);
-            }
+        if (habilidadActiva instanceof HabilidadMinero) {
+            g.setColor(Color.RED); // El Lemming se vuelve rojo
+        } else {
+            g.setColor(Color.GREEN); // Color normal del Lemming
         }
+        g.fillRect(x, y, lemmingWidth, lemmingHeight);
+
     }
 
     public Habilidad getHabilidadActiva() { return habilidadActiva; }
