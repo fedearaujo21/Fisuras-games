@@ -1,5 +1,6 @@
 package lemmings.vista;
 
+import lemmings.control.AudioPlayer;
 import lemmings.modelo.Lemming;
 import lemmings.modelo.Mapa;
 import lemmings.modelo.Nivel;
@@ -20,24 +21,45 @@ public class PanelLemmings extends JPanel implements Runnable{
     private Mapa mapa;
     private Nivel nivel;
     private Thread hilo;
+    private boolean alertaMostrada = false;
+    private AudioPlayer musicaFondo;
+    private int nivelNum = 1;
 
     public PanelLemmings(JFrame ventana){
         setPreferredSize(new Dimension(800,600));
         setFocusable(true);
         setBackground(Color.black);
         //aca se cargan los niveles
-
-        try {
-            InputStream is = getClass().getResourceAsStream("/lemmings/recursos/Nivel1.png");
-            BufferedImage img = ImageIO.read(is);
-            //mapa = new Mapa(img);
-            nivel = new Nivel(1, "Nivel 1", img);
-        } catch (IOException e){
-            e.printStackTrace();
+        switch (nivelNum) {
+            case 1:
+                try {
+                InputStream is = getClass().getResourceAsStream("/lemmings/recursos/Nivel1.png");
+                BufferedImage img = ImageIO.read(is);
+                musicaFondo = new AudioPlayer("/lemmings/recursos/MusicaNivel1.wav");
+                //mapa = new Mapa(img);
+                nivel = new Nivel(1, "Nivel 1", img);
+            } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            case 2:
+                try {
+                    InputStream is = getClass().getResourceAsStream("/lemmings/recursos/Nivel1.png");
+                    BufferedImage img = ImageIO.read(is);
+                    musicaFondo = new AudioPlayer("/lemmings/recursos/MusicaNivel1.wav");
+                    //mapa = new Mapa(img);
+                    nivel = new Nivel(1, "Nivel 1", img);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
         }
-
         Thread hilo = new Thread(this);
         hilo.start();
+
+        if (musicaFondo != null) {
+            musicaFondo.loop(); // Empieza a reproducir la música en bucle
+        }
+
+
         //Para detectar coordenadas
         addMouseListener(new MouseAdapter() {
             @Override
@@ -47,8 +69,9 @@ public class PanelLemmings extends JPanel implements Runnable{
                     if (e.getX() >= lemming.getX() && e.getX() <= lemming.getX() + lemming.getLemmingWidth() &&
                             e.getY() >= lemming.getY() && e.getY() <= lemming.getY() + lemming.getLemmingHeight()) {
                         // Asignamos la habilidad "Minero" si se hace clic izquierdo
-                        if (e.getButton() == MouseEvent.BUTTON1) { // Clic izquierdo
+                        if (e.getButton() == MouseEvent.BUTTON1 && lemming.getFueUsado() == false) { // Clic izquierdo
                             nivel.asignarHabilidad(lemming, "Minero");
+                            lemming.setFueUsado(true);
                             break;
                         }
                     }
@@ -84,6 +107,21 @@ public class PanelLemmings extends JPanel implements Runnable{
         while(true){
             nivel.actualizar();
             repaint();
+            if (nivel.getNivelCompletado() && !alertaMostrada) {
+                alertaMostrada = true;
+                if (musicaFondo != null) {
+                    musicaFondo.stop();
+                    musicaFondo.close(); // Liberar recursos
+                }
+                SwingUtilities.invokeLater(() -> {
+                    JOptionPane.showMessageDialog(PanelLemmings.this,
+                            "¡Todos los Lemmings salvados!\nNivel Completado.",
+                            "¡Victoria!",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    // añadir lógica para cargar el siguiente nivel o mostrar un menú.
+                });
+
+            }
             try {
                 Thread.sleep(16);
             } catch (InterruptedException e){

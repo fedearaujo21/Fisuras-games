@@ -3,6 +3,7 @@ package lemmings.modelo;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import lemmings.modelo.Lemming;
 
@@ -14,30 +15,43 @@ public class Nivel {
     private Mapa mapa;
     private List<Lemming> lemmings;
     private Entrada entrada;
+    private Salida salida;
     private static final int COLOR_FONDO = 0xFF000000;
     private Stock stockHabilidades;
 
-    private boolean puertaAbierta = false;
+    private boolean nivelCompletado = false;
+
+    //private boolean puertaAbierta = false;
     private long tiempoInicio;
     private boolean lemmingsSpawneados = false;
+    private int lemmingsSalvados = 0;
 
     public Nivel (int nivelNum, String nombre, BufferedImage mapaImagen) {
         this.nivelNum = nivelNum;
         this.nombre = nombre;
         this.tiempo = 60;
-        this.cantidadLem = 2;
-        this.mapa = new Mapa(mapaImagen, COLOR_FONDO);
-        this.lemmings = new ArrayList<>();
-        this.entrada = new Entrada(300,80);
-        this.tiempoInicio = System.currentTimeMillis();
 
-        this.stockHabilidades = new Stock();
-        stockHabilidades.añadirHabilidad("Minero",5);
+        switch (nivelNum) {
+            case 1:
+                this.cantidadLem = 5; // Color negro del fondo en Nivel1.png
+                this.salida = new Salida(560, 210, 80, 80);
+                this.entrada = new Entrada(300,80);
+                this.mapa = new Mapa(mapaImagen, COLOR_FONDO);
+                this.lemmings = new ArrayList<>();
+                this.stockHabilidades = new Stock();
+                this.tiempoInicio = System.currentTimeMillis();
+                stockHabilidades.añadirHabilidad("Minero",5);
+                mapa.limpiarArea(salida.getX(), salida.getY(), salida.getAncho(), salida.getAlto(), COLOR_FONDO);
+                mapa.activarColisiones(false);
+                break;
 
+            case 2:
+                break;
+            default:
+                this.salida = new Salida(650, 460, 80, 100);
+        }
 
-        mapa.activarColisiones(false);  // Desactiva colisiones temporalmente
     }
-
     public void actualizar() {
         long ahora = System.currentTimeMillis();
 
@@ -49,7 +63,10 @@ public class Nivel {
         }
 
         // 2. Spawneo progresivo de lemmings
-        if (lemmings.size() < cantidadLem) {
+        if(cantidadLem == 0){
+            nivelCompletado = true;
+        }
+        else if (lemmings.size() < cantidadLem) {
             if (ahora - tiempoInicio > lemmings.size() * 3000) { // uno por segundo
                 int lemmingX = entrada.getX();
                 int lemmingY = entrada.getY();
@@ -58,9 +75,20 @@ public class Nivel {
         }
 
         // 3. Movimiento
-        for (Lemming l : lemmings) {
+        Iterator<Lemming> it = lemmings.iterator();
+        while (it.hasNext()) {
+            Lemming l = it.next();
             l.caminar();
+            // Comprobar si el Lemming llegó a la salida
+            if (salida.haAlcanzado(l)) {
+                lemmingsSalvados++;
+                cantidadLem -= 1;
+                System.out.println("¡Lemming salvado! Total salvados: " + lemmingsSalvados);
+                it.remove(); // Eliminar el Lemming de la lista
+            }
         }
+
+
     }
 
     public void dibujar(Graphics g){
@@ -68,7 +96,7 @@ public class Nivel {
         for (Lemming l : lemmings) {
             l.dibujar(g);
         }
-
+        salida.dibujar(g);
         g.setColor(Color.WHITE);
         g.drawString("Lemmings: " + lemmingsSpawneados + "/" + cantidadLem, 10, 20);
         g.drawString("Mineros: " + stockHabilidades.getCantidad("Minero"), 10, 40);
@@ -100,7 +128,7 @@ public class Nivel {
     public Stock getStockHabilidades() { return stockHabilidades; }
     public List<Lemming> getLemmings() { return lemmings; }
     public Mapa getMapa() { return mapa; }
-
+    public boolean getNivelCompletado(){return this.nivelCompletado;};
     public void reiniciar() { /* ... */ }
     public void pausar() { /* ... */ }
     public void completarNVL() { /* ... */ }

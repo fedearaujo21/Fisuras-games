@@ -10,6 +10,7 @@ public class Lemming {
     private int lemmingWidth = 10;
     private int lemmingHeight = 14;
     private long tiempoCreacion;
+    private boolean fueUsado = false;
     private static final int MAX_STEP_HEIGHT = 12;
 
     private Habilidad habilidadActiva;
@@ -183,13 +184,23 @@ public class Lemming {
 
     public Habilidad getHabilidadActiva() { return habilidadActiva; }
     public void setHabilidadActiva(Habilidad habilidadActiva) {
-        this.habilidadActiva = habilidadActiva;
-        this.ticksHabilidad = 0;
+        if(fueUsado == false) {
+            this.habilidadActiva = habilidadActiva;
+            this.ticksHabilidad = 0;
+        }
     }
     public void desactivarHabilidad() {
         this.habilidadActiva = null;
         this.ticksHabilidad = 0;
     }
+    public void setFueUsado(boolean fueUsado){
+        this.fueUsado = fueUsado;
+    };
+
+    public boolean getFueUsado(){
+        return this.fueUsado;
+    }
+
     public int getX() { return x; }
     public void setX(int x) { this.x = x; }
     public int getY() { return y; }

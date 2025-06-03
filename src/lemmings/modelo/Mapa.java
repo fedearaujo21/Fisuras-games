@@ -45,6 +45,17 @@ public class Mapa {
         }
     }
 
+    public void limpiarArea(int xInicio, int yInicio, int anchoArea, int altoArea, int colorParaLimpiar) {
+        for (int x = xInicio; x < xInicio + anchoArea; x++) {
+            for (int y = yInicio; y < yInicio + altoArea; y++) {
+                if (x >= 0 && x < this.ancho && y >= 0 && y < this.alto) {
+                    terreno.setRGB(x, y, colorParaLimpiar); // Pinta el píxel con el color de vacío
+                    colision[x][y] = false; // Establece ese píxel como NO colisionable
+                }
+            }
+        }
+    }
+
     public void activarColisiones(boolean estado) {
         this.colisionesActivas = estado;
     }
