@@ -8,7 +8,7 @@ public class ConfigPantalla extends Frame {
     private Checkbox sonidoCheck;
     private Choice selectorSkin;
     private Choice selectorMusica;
-
+    private Runnable onConfirm;
     private TextField teclaArribaJ1, teclaAbajoJ1, teclaArribaJ2, teclaAbajoJ2;
     private Button botonIniciar, botonReset;
 
@@ -17,12 +17,13 @@ public class ConfigPantalla extends Frame {
     private int keyCodeArribaJ2;
     private int keyCodeAbajoJ2;
 
-    public ConfigPantalla() {
+    public ConfigPantalla(Runnable onConfirm) {
         setTitle("Configuración - Fisuras Pong");
         setSize(500, 400);
         setLayout(null);
         setVisible(true);
         setLocationRelativeTo(null);
+        this.onConfirm = onConfirm;
 
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
@@ -107,7 +108,7 @@ public class ConfigPantalla extends Frame {
                 Config.teclaAbajoJugador2 = keyCodeAbajoJ2;
 
                 dispose();
-                new Juego().iniciar();
+                onConfirm.run();
             }
         });
 
