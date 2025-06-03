@@ -1,5 +1,4 @@
 package pong;
-import juego.ConfigPantalla;
 
 import javax.swing.*;
 
