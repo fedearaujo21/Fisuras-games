@@ -1,4 +1,5 @@
-package juego;
+package pong;
+import pong.Config;
 
 import java.awt.*;
 import java.awt.event.*;
