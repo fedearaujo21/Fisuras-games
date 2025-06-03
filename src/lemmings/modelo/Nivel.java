@@ -1,9 +1,9 @@
 package lemmings.modelo;
 
-import java.awt.Graphics; //
-import java.awt.image.BufferedImage; //
-import java.util.ArrayList; //
-import java.util.List; //
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Nivel {
     private int nivelNum;
@@ -13,67 +13,55 @@ public class Nivel {
     private Mapa mapa;
     private List<Lemming> lemmings;
     private Entrada entrada;
+    private static final int COLOR_FONDO = 0xFF000000;
 
-    // El color de fondo del vacío para este nivel
-    private int colorFondoNivel; // Nuevo campo para el color de fondo específico del nivel
+    private boolean puertaAbierta = false;
+    private long tiempoInicio;
+    private boolean lemmingsSpawneados = false;
 
-    // El constructor de Nivel ahora puede recibir el color de fondo,
-    // o puedes definirlo internamente basado en 'nivelNum'
-    public Nivel (int nivelNum, String nombre, BufferedImage mapaImagen){ //
-        this.nivelNum = nivelNum; //
-        this.nombre = nombre; //
-        this.tiempo = 60; //
-        this.cantidadLem = 2; //
+    public Nivel (int nivelNum, String nombre, BufferedImage mapaImagen) {
+        this.nivelNum = nivelNum;
+        this.nombre = nombre;
+        this.tiempo = 60;
+        this.cantidadLem = 10;
+        this.mapa = new Mapa(mapaImagen, COLOR_FONDO);
+        this.lemmings = new ArrayList<>();
+        this.entrada = new Entrada(300,80);
+        this.tiempoInicio = System.currentTimeMillis();
 
-        // **AQUÍ SE DEFINE EL COLOR DE FONDO PARA ESTE NIVEL**
-        switch (nivelNum) { //
-            case 1:
-                this.colorFondoNivel = 0xFF000000; // El color #010001 para el Nivel 1
-                break;
-            // case 2:
-            //    this.colorFondoNivel = 0xFFABCDEF;
-            //    break;
-            default:
-                this.colorFondoNivel = 0xFF000000;
-        }
-
-        // Se pasa el color de fondo al constructor del Mapa
-        this.mapa = new Mapa(mapaImagen, this.colorFondoNivel); //
-        this.lemmings = new ArrayList<>(); //
-        this.entrada = new Entrada(420,40); //
-
-        for(int i=0; i<cantidadLem;i++){
-            lemmings.add(entrada.spawnear(this.mapa));
-        } //
+        mapa.activarColisiones(false);  // Desactiva colisiones temporalmente
     }
 
-    public void actualizar(){ //
-        for(Lemming l: lemmings){ //
-            l.caminar(); //
-        }
-    }
+    public void actualizar() {
+        long ahora = System.currentTimeMillis();
 
-    public void dibujar(Graphics g){ //
-        mapa.dibujar(g); //
-        for (Lemming l : lemmings) { //
-            l.dibujar(g); //
+        // 1. Desactiva colisiones los primeros 500ms
+        if (ahora - tiempoInicio < 500) {
+            mapa.activarColisiones(false);
+        } else {
+            mapa.activarColisiones(true);
+        }
+
+        // 2. Spawneo progresivo de lemmings
+        if (lemmings.size() < cantidadLem) {
+            if (ahora - tiempoInicio > lemmings.size() * 1000) { // uno por segundo
+                int lemmingX = entrada.getX();
+                int lemmingY = entrada.getY();
+                lemmings.add(new Lemming(lemmingX, lemmingY, mapa));
+            }
+        }
+
+        // 3. Movimiento
+        for (Lemming l : lemmings) {
+            l.caminar();
         }
     }
 
-    public void reiniciar() { //
-        // Implementar reinicio más adelante
-    }
-
-    public void pausar() { //
-        // Implementar pausa más adelante
-    }
-
-    public void completarNVL() { //
-        // Lógica cuando se cumple el objetivo
-    }
-
-    // Puedes añadir getters si necesitas acceder a la información del nivel desde fuera
-    public Mapa getMapa() {
-        return mapa;
+    public void dibujar(Graphics g){
+        mapa.dibujar(g);
+        for (Lemming l : lemmings) {
+            l.dibujar(g);
+        }
     }
 }
+
