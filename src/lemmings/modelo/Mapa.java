@@ -26,10 +26,23 @@ public class Mapa {
     }
 
     public boolean hayColision(int x, int y) {
-        if (!colisionesActivas) return false;
         if (x < 0 || x >= ancho || y < 0 || y >= alto)
             return true;
         return colision[x][y];
+    }
+
+    public void eliminarPix(int x, int y) {
+        if (x >= 0 && x < ancho && y >= 0 && y < alto) {
+            terreno.setRGB(x, y, this.colorFondoVacio);
+            colision[x][y] = false;
+        }
+    }
+
+    public void agregarPix(int x, int y) {
+        if (x >= 0 && x < ancho && y >= 0 && y < alto) {
+            terreno.setRGB(x, y, 0xFF000000); // Negro opaco como ejemplo de terreno construido
+            colision[x][y] = true;
+        }
     }
 
     public void activarColisiones(boolean estado) {
