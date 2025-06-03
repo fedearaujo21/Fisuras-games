@@ -42,21 +42,18 @@ public class PanelLemmings extends JPanel implements Runnable{
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                // Iterar sobre los Lemmings para ver cuál fue clicado
                 for (Lemming lemming : nivel.getLemmings()) {
                     // Si el clic está dentro del área del Lemming
-                    // NOTA: Usamos getLemmingWidth() y getLemmingHeight() para precisión
                     if (e.getX() >= lemming.getX() && e.getX() <= lemming.getX() + lemming.getLemmingWidth() &&
                             e.getY() >= lemming.getY() && e.getY() <= lemming.getY() + lemming.getLemmingHeight()) {
-
                         // Asignamos la habilidad "Minero" si se hace clic izquierdo
                         if (e.getButton() == MouseEvent.BUTTON1) { // Clic izquierdo
                             nivel.asignarHabilidad(lemming, "Minero");
-                            break; // Se encontró y se le asignó la habilidad a un Lemming, salimos del bucle
+                            break;
                         }
                     }
                 }
-                repaint(); // Para que el UI y los cambios visuales se actualicen
+                //repaint();
             }
         });
         addMouseListener(new MouseAdapter() {
