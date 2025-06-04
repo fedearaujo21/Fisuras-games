@@ -13,11 +13,12 @@ public class Paleta {
     private int teclaArriba;
     private int teclaAbajo;
 
-    public Paleta(int x, int y, int teclaArriba, int teclaAbajo) {
+    public Paleta(int x, int y, int teclaArriba, int teclaAbajo, int multiplicador) {
         this.x = x;
         this.y = y;
         this.teclaArriba = teclaArriba;
         this.teclaAbajo = teclaAbajo;
+        this.velocidad *= (multiplicador + 1)/2;
     }
 
     public void actualizar() {

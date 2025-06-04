@@ -3,11 +3,16 @@ import pong.Config;
 
 import java.awt.*;
 import java.awt.event.*;
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 public class ConfigPantalla extends Frame {
     private Checkbox pantallaCompletaCheck;
     private Checkbox sonidoCheck;
     private Checkbox cpu;
+    private JSlider slider;
+    private Label dificultad1, dificultad2, dificultad3;
     private Choice selectorSkin;
     private Choice selectorMusica;
     private Runnable onConfirm;
@@ -97,6 +102,28 @@ public class ConfigPantalla extends Frame {
         teclaAbajoJ2 = crearCampoTecla(Config.teclaAbajoJugador2, 260, 240, code -> keyCodeAbajoJ2 = code, () -> keyCodeAbajoJ2);
         add(teclaAbajoJ2);
 
+        //slider de dificultad
+        slider = new JSlider(JSlider.HORIZONTAL, 1, 3, 2);
+        slider.setBounds(50,250,240, 20);
+        slider.setVisible(false);
+        this.add(slider);
+
+        dificultad1 = new Label("Facil");
+        dificultad2 = new Label("Medio");
+        dificultad3 = new Label("Dificil");
+
+        dificultad1.setBounds(50,230,60, 20);
+        dificultad2.setBounds(150,230,60, 20);
+        dificultad3.setBounds(255,230,60, 20);
+
+        dificultad1.setVisible(false);
+        dificultad2.setVisible(false);
+        dificultad3.setVisible(false);
+
+        this.add(dificultad1);
+        this.add(dificultad2);
+        this.add(dificultad3);
+
         // Botón iniciar
         botonIniciar = new Button("Iniciar Juego");
         botonIniciar.setBounds(100, 280, 120, 40);
@@ -116,9 +143,11 @@ public class ConfigPantalla extends Frame {
                 if (Config.singleMode){
                     Config.teclaArribaJugador2 = 0;
                     Config.teclaAbajoJugador2 = 0;
+                    Config.multiplicadorDificultad = slider.getValue();
                 }else{
                     Config.teclaArribaJugador2 = keyCodeArribaJ2;
                     Config.teclaAbajoJugador2 = keyCodeAbajoJ2;
+                    Config.multiplicadorDificultad = 1;
                 }
 
                 dispose();
@@ -148,6 +177,11 @@ public class ConfigPantalla extends Frame {
                 teclaArribaJ2.setVisible(!Config.singleMode);
                 teclaAbajoJ2.setVisible(!Config.singleMode);
                 j2Label.setVisible(!Config.singleMode);
+
+                slider.setVisible(Config.singleMode);
+                dificultad1.setVisible(Config.singleMode);
+                dificultad2.setVisible(Config.singleMode);
+                dificultad3.setVisible(Config.singleMode);
             }
         });
 
