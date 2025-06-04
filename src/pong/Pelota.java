@@ -146,6 +146,8 @@ public class Pelota {
     public Rectangle getRect() {
         return new Rectangle(x, y, tamaño, tamaño);
     }
+
+    public int getY(){return this.y;}
 }
 
 class Choque implements Runnable{

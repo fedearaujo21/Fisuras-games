@@ -54,4 +54,9 @@ public class Paleta {
     }
     public boolean getSubiendo(){return subiendo;}
     public boolean getBajando(){return bajando;}
+
+    // movimiento de cpu
+    public void setCpuSubiendo(boolean input){this.subiendo = input;};
+    public void setCpuBajando(boolean input){this.bajando = input;};
+    public int getY(){return this.y;}
 }

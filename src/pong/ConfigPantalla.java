@@ -7,6 +7,7 @@ import java.awt.event.*;
 public class ConfigPantalla extends Frame {
     private Checkbox pantallaCompletaCheck;
     private Checkbox sonidoCheck;
+    private Checkbox cpu;
     private Choice selectorSkin;
     private Choice selectorMusica;
     private Runnable onConfirm;
@@ -41,6 +42,12 @@ public class ConfigPantalla extends Frame {
         sonidoCheck = new Checkbox("Sonido Activado", Config.sonidoActivado);
         sonidoCheck.setBounds(50, 80, 200, 20);
         add(sonidoCheck);
+
+        //cpu
+        cpu = new Checkbox("CPU", Config.singleMode);
+        cpu.setBounds(50, 210, 200, 20);
+        this.add(cpu);
+
 
         // Skin
         Label skinLabel = new Label("Skin:");
@@ -81,13 +88,13 @@ public class ConfigPantalla extends Frame {
 
         // Teclas Jugador 2
         Label j2Label = new Label("Jugador 2:");
-        j2Label.setBounds(50, 210, 80, 20);
+        j2Label.setBounds(50, 240, 80, 20);
         add(j2Label);
 
-        teclaArribaJ2 = crearCampoTecla(Config.teclaArribaJugador2, 140, 210, code -> keyCodeArribaJ2 = code, () -> keyCodeArribaJ2);
+        teclaArribaJ2 = crearCampoTecla(Config.teclaArribaJugador2, 140, 240, code -> keyCodeArribaJ2 = code, () -> keyCodeArribaJ2);
         add(teclaArribaJ2);
 
-        teclaAbajoJ2 = crearCampoTecla(Config.teclaAbajoJugador2, 260, 210, code -> keyCodeAbajoJ2 = code, () -> keyCodeAbajoJ2);
+        teclaAbajoJ2 = crearCampoTecla(Config.teclaAbajoJugador2, 260, 240, code -> keyCodeAbajoJ2 = code, () -> keyCodeAbajoJ2);
         add(teclaAbajoJ2);
 
         // Botón iniciar
@@ -100,13 +107,19 @@ public class ConfigPantalla extends Frame {
                 // Guardar config
                 Config.pantallaCompleta = pantallaCompletaCheck.getState();
                 Config.sonidoActivado = sonidoCheck.getState();
+                Config.singleMode = cpu.getState();
                 Config.skin = selectorSkin.getSelectedItem();
                 Config.pistaMusical = selectorMusica.getSelectedItem();
 
                 Config.teclaArribaJugador1 = keyCodeArribaJ1;
                 Config.teclaAbajoJugador1 = keyCodeAbajoJ1;
-                Config.teclaArribaJugador2 = keyCodeArribaJ2;
-                Config.teclaAbajoJugador2 = keyCodeAbajoJ2;
+                if (Config.singleMode){
+                    Config.teclaArribaJugador2 = 0;
+                    Config.teclaAbajoJugador2 = 0;
+                }else{
+                    Config.teclaArribaJugador2 = keyCodeArribaJ2;
+                    Config.teclaAbajoJugador2 = keyCodeAbajoJ2;
+                }
 
                 dispose();
                 onConfirm.run();
@@ -124,6 +137,20 @@ public class ConfigPantalla extends Frame {
                 actualizarVistaDesdeConfig();
             }
         });
+
+        // esconde entradas de teclas para el jugador 2 si se activa cpu
+        cpu.addItemListener(new ItemListener() {
+            // tengo que usar un ItemListener porque cpu es de tipo checkbox, pero es basicamente lo mismo
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                boolean activado = e.getStateChange() == ItemEvent.SELECTED;
+                Config.singleMode = activado;
+                teclaArribaJ2.setVisible(!Config.singleMode);
+                teclaAbajoJ2.setVisible(!Config.singleMode);
+                j2Label.setVisible(!Config.singleMode);
+            }
+        });
+
     }
 
     private TextField crearCampoTecla(int keyCodeInicial, int x, int y, KeyCodeSetter setter, KeyCodeGetter getter) {

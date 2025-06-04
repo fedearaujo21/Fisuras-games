@@ -51,7 +51,21 @@ public class Cancha extends Panel {
         if (juegoTerminado) return;
 
         jugador1.actualizar();
-        jugador2.actualizar();
+        //cpu
+        if(Config.singleMode){
+            if(pelota.getY() < jugador2.getY())
+                jugador2.setCpuSubiendo(true);
+            else{
+                if(pelota.getY() > jugador2.getY()) {
+                    jugador2.setCpuSubiendo(false);
+                    jugador2.setCpuBajando(true);
+                }else
+                    jugador2.setCpuSubiendo(false);
+            }
+            jugador2.actualizar();
+        }else
+            jugador2.actualizar();
+
         pelota.actualizar(jugador1, jugador2);
 
         if (pelota.getX() < 0) {
