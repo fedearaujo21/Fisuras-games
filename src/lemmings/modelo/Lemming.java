@@ -70,6 +70,9 @@ public class Lemming {
                 if (habilidadActiva instanceof HabilidadMinero) {
                     ((HabilidadMinero) habilidadActiva).excavar(this);
                 }
+                if (habilidadActiva instanceof HabilidadRomper) {
+                    ((HabilidadRomper) habilidadActiva).romper(this);
+                }
                 // Añadir más habilidades aquí (ej. HabilidadParacaidas, HabilidadEscalador, etc.)
 
                 ticksHabilidad = 0;

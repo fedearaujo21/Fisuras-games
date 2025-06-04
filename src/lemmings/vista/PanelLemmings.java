@@ -30,28 +30,17 @@ public class PanelLemmings extends JPanel implements Runnable{
         setFocusable(true);
         setBackground(Color.black);
         //aca se cargan los niveles
-        switch (nivelNum) {
-            case 1:
-                try {
-                InputStream is = getClass().getResourceAsStream("/lemmings/recursos/Nivel1.png");
-                BufferedImage img = ImageIO.read(is);
-                musicaFondo = new AudioPlayer("/lemmings/recursos/MusicaNivel1.wav");
-                //mapa = new Mapa(img);
-                nivel = new Nivel(1, "Nivel 1", img);
-            } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            case 2:
-                try {
-                    InputStream is = getClass().getResourceAsStream("/lemmings/recursos/Nivel1.png");
-                    BufferedImage img = ImageIO.read(is);
-                    musicaFondo = new AudioPlayer("/lemmings/recursos/MusicaNivel1.wav");
-                    //mapa = new Mapa(img);
-                    nivel = new Nivel(1, "Nivel 1", img);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+        try {
+            System.out.println("/lemmings/recursos/Nivel" + nivelNum + ".png");
+            InputStream is = getClass().getResourceAsStream("/lemmings/recursos/Nivel" + nivelNum + ".png");
+            BufferedImage img = ImageIO.read(is);
+            musicaFondo = new AudioPlayer("/lemmings/recursos/MusicaNivel"+ nivelNum + ".wav");
+            //mapa = new Mapa(img);
+            nivel = new Nivel(1, "Nivel " + nivel, img);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+
         Thread hilo = new Thread(this);
         hilo.start();
 
@@ -71,6 +60,11 @@ public class PanelLemmings extends JPanel implements Runnable{
                         // Asignamos la habilidad "Minero" si se hace clic izquierdo
                         if (e.getButton() == MouseEvent.BUTTON1 && lemming.getFueUsado() == false) { // Clic izquierdo
                             nivel.asignarHabilidad(lemming, "Minero");
+                            lemming.setFueUsado(true);
+                            break;
+                        }
+                        if (e.getButton() == MouseEvent.BUTTON2 && lemming.getFueUsado() == false) { // Clic derecho
+                            nivel.asignarHabilidad(lemming, "Romper");
                             lemming.setFueUsado(true);
                             break;
                         }
