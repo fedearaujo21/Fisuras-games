@@ -1,5 +1,5 @@
 package pong;
-import pong.Config;
+//import pong.Config;
 
 import java.awt.*;
 import java.awt.event.*;

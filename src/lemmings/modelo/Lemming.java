@@ -1,14 +1,37 @@
 package lemmings.modelo;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import javax.imageio.ImageIO;
+
 import java.awt.*;
 
 public class Lemming {
+    // Hago listas para cada frame
+    private List<BufferedImage> framesCaminar;
+    private List<BufferedImage> framesCaida;
+    private List<BufferedImage> framesExcavar;
+
+
+    private int frameActual = 0;
+    private int frameTick = 0;
+    private int frameDelay = 8; // cuanto menor, más rápido cambia de frame
+    private EstadoLemming estado = EstadoLemming.CAMINANDO;
+
+    public enum EstadoLemming {
+        CAMINANDO,
+        CAYENDO,
+        EXCAVANDO
+    }
 
     private int x, y;
     private int direccion = 1;
     private Mapa mapa;
-    private int lemmingWidth = 10;
-    private int lemmingHeight = 14;
+    private int lemmingWidth = 16;
+    private int lemmingHeight = 32;
     private long tiempoCreacion;
     private boolean fueUsado = false;
     private static final int MAX_STEP_HEIGHT = 12;
@@ -29,11 +52,124 @@ public class Lemming {
         this.y = y;
         this.mapa = mapa;
         this.tiempoCreacion = System.currentTimeMillis();
+        cargarFramesCaida();
+        cargarFramesCaminata();
+        cargarFramesCaida();
+        cargarFramesExcavar();
+
     }
 
-    public void caminar(){
+    private void cargarFramesExcavar() {
+        framesExcavar = new ArrayList<>();
+        try {
+            BufferedImage spriteSheet = ImageIO.read(new File("src/lemmings/recursos/gokuCavando.png"));
+
+            int anchoFrame = 32;
+            int altoFrame = 64;
+            int espacio = 8;
+
+            for (int i = 0; i < 3; i++) {
+                int x = i * (anchoFrame + espacio);
+                BufferedImage frame = spriteSheet.getSubimage(x, 0, anchoFrame, altoFrame);
+
+                // Eliminar color de fondo (violeta o verde)
+                BufferedImage transparente = new BufferedImage(anchoFrame, altoFrame, BufferedImage.TYPE_INT_ARGB);
+                for (int y = 0; y < altoFrame; y++) {
+                    for (int xx = 0; xx < anchoFrame; xx++) {
+                        int color = frame.getRGB(xx, y);
+                        if (color == 0xFFF800F8 || color == 0xFF00FF00) {
+                            transparente.setRGB(xx, y, 0x00000000);
+                        } else {
+                            transparente.setRGB(xx, y, color);
+                        }
+                    }
+                }
+
+                framesExcavar.add(transparente);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void cargarFramesCaida() {
+        framesCaida = new ArrayList<>();
+        try {
+            BufferedImage spriteSheet = ImageIO.read(new File("src/lemmings/recursos/gokuVolador.png"));
+
+            int anchoFrame = 16;
+            int altoFrame = 32;
+            int espacio = 8;
+
+            for (int i = 0; i < 3; i++) {
+                int x = i * (anchoFrame + espacio);
+                BufferedImage frame = spriteSheet.getSubimage(x, 0, anchoFrame, altoFrame);
+
+                // Procesar transparencia igual que antes
+                BufferedImage transparente = new BufferedImage(anchoFrame, altoFrame, BufferedImage.TYPE_INT_ARGB);
+                for (int y = 0; y < altoFrame; y++) {
+                    for (int xx = 0; xx < anchoFrame; xx++) {
+                        int color = frame.getRGB(xx, y);
+                        if (color == 0xFFF800F8 || color == 0xFF00FF00) {
+                            transparente.setRGB(xx, y, 0x00000000);
+                        } else {
+                            transparente.setRGB(xx, y, color);
+                        }
+                    }
+                }
+
+                framesCaida.add(transparente);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void cargarFramesCaminata() {
+        framesCaminar = new ArrayList<>();
+        try {
+            BufferedImage spriteSheet = ImageIO.read(new File("src/lemmings/recursos/gokuWalker.png"));
+
+            int anchoFrame = 16;
+            int altoFrame = 32;
+            int espacio = 6;
+
+            for (int i = 0; i < 4; i++) {
+                int x = i * (anchoFrame + espacio);
+                BufferedImage frame = spriteSheet.getSubimage(x, 0, anchoFrame, altoFrame);
+
+                // Crear imagen con canal alfa (transparencia)
+                BufferedImage transparente = new BufferedImage(anchoFrame, altoFrame, BufferedImage.TYPE_INT_ARGB);
+                for (int y = 0; y < altoFrame; y++) {
+                    for (int xx = 0; xx < anchoFrame; xx++) {
+                        int color = frame.getRGB(xx, y);
+                        // Si es verde puro o violeta puro → hacerlo transparente
+                        if (color == 0xFFF800F8 || color == 0xFF00FF00) {
+                            transparente.setRGB(xx, y, 0x00000000); // transparente
+                        } else {
+                            transparente.setRGB(xx, y, color);
+                        }
+
+
+                    }
+                }
+                framesCaminar.add(transparente);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public void caminar() {
         long ahora = System.currentTimeMillis();
         boolean colisionTemporalmenteDesactivada = (ahora - tiempoCreacion) < 500;
+
+        frameTick++;
+        if (frameTick >= frameDelay) {
+            frameActual = (frameActual + 1) % framesCaminar.size();
+            frameTick = 0;
+        }
 
         // Verificamos si hay suelo debajo
         boolean haySueloDebajo = false;
@@ -43,8 +179,8 @@ public class Lemming {
                     haySueloDebajo = true;
                     break;
                 }
-            } else { // Si está fuera del mapa por abajo, es como si cayera al infinito
-                haySueloDebajo = false; // Asumimos que cae si llega al borde inferior del mapa
+            } else {
+                haySueloDebajo = false;
                 break;
             }
         }
@@ -53,46 +189,45 @@ public class Lemming {
             y += 1;
             // Si el Lemming está en el aire (cayendo), incrementamos el contador
             ticksEnAire++;
-            // Si la habilidad activa es Minero y ha caído más allá del umbral, la desactiva
-            if (habilidadActiva instanceof HabilidadMinero && ticksEnAire > UMBRAL_CAIDA_MINERO) {
-                desactivarHabilidad(); // El minero deja de excavar cuando cae una distancia
+
+            // 🔁 Prioridad al estado EXCAVANDO si es minero, incluso en el aire
+            if (habilidadActiva instanceof HabilidadMinero) {
+                estado = EstadoLemming.EXCAVANDO;
+            } else {
+                estado = EstadoLemming.CAYENDO;
             }
-            return; // Si está cayendo, no se mueve horizontalmente ni activa habilidades (ya hizo su acción vertical)
+
+            if (habilidadActiva instanceof HabilidadMinero && ticksEnAire > UMBRAL_CAIDA_MINERO) {
+                desactivarHabilidad();
+            }
+            return;
         } else {
-            // Si hay suelo, el Lemming no está cayendo, reinicia el contador de ticks en el aire.
             ticksEnAire = 0;
+            if (habilidadActiva instanceof HabilidadMinero) {
+                estado = EstadoLemming.EXCAVANDO;
+            } else {
+                estado = EstadoLemming.CAMINANDO;
+            }
         }
 
         if (habilidadActiva != null) {
             ticksHabilidad++;
             if (ticksHabilidad >= TICKS_POR_ACCION_HABILIDAD) {
-
                 if (habilidadActiva instanceof HabilidadMinero) {
                     ((HabilidadMinero) habilidadActiva).excavar(this);
                 }
-                if (habilidadActiva instanceof HabilidadRomper) {
-                    ((HabilidadRomper) habilidadActiva).romper(this);
-                }
-                // Añadir más habilidades aquí (ej. HabilidadParacaidas, HabilidadEscalador, etc.)
-
                 ticksHabilidad = 0;
             }
-            // Después de ejecutar una habilidad que controla el movimiento (como minero),
-            // el Lemming no debería ejecutar el movimiento horizontal normal.
-            // PERO si la habilidad no controla el movimiento (ej. paracaídas),
-            // el Lemming seguiría con su movimiento normal.
-            // Para el minero, retornamos para que no intente mover horizontalmente.
+
             if (habilidadActiva instanceof HabilidadMinero) {
                 return;
             }
         }
 
-        // Movimiento horizontal o subir pendiente
         if (habilidadActiva == null) {
-
             ticksMovimientoNormal++;
             if (ticksMovimientoNormal < TICKS_POR_MOVIMIENTO_NORMAL) {
-                return; // No se mueve horizontalmente aún, espera más ticks
+                return;
             }
             ticksMovimientoNormal = 0;
 
@@ -105,7 +240,6 @@ public class Lemming {
                 int yCandidatoPies = y - step + lemmingHeight;
 
                 boolean colisionHorizontalEnCandidato = false;
-                // Revisa toda la altura del Lemming para colisión horizontal
                 int checkXEdge = siguienteX + (direccion == 1 ? (lemmingWidth - 1) : 0);
                 for (int i = 0; i < lemmingHeight; i++) {
                     if (checkXEdge >= 0 && checkXEdge < mapa.getAncho() && yCandidatoCabeza + i >= 0 && yCandidatoCabeza + i < mapa.getAlto()) {
@@ -113,7 +247,7 @@ public class Lemming {
                             colisionHorizontalEnCandidato = true;
                             break;
                         }
-                    } else { // Si está fuera del mapa, es como una pared
+                    } else {
                         colisionHorizontalEnCandidato = true;
                         break;
                     }
@@ -145,7 +279,6 @@ public class Lemming {
             }
         }
 
-        // Asegurarse de que no flote
         for (int fallStep = 0; fallStep < MAX_FALL_ADJUST; fallStep++) {
             boolean sigueCayendo = false;
             for (int i = 0; i < lemmingWidth; i++) {
@@ -175,13 +308,31 @@ public class Lemming {
         }
     }
 
+
     public void dibujar(Graphics g) {
-        if (habilidadActiva instanceof HabilidadMinero) {
-            g.setColor(Color.RED); // El Lemming se vuelve rojo
-        } else {
-            g.setColor(Color.GREEN); // Color normal del Lemming
+        BufferedImage frame;
+        switch (estado) {
+            case CAMINANDO -> frame = framesCaminar.get(frameActual);
+            case CAYENDO -> frame = framesCaida.get(frameActual % framesCaida.size());
+            case EXCAVANDO -> frame = framesExcavar.get(frameActual % framesExcavar.size());
+            default -> frame = framesCaminar.get(0);
         }
-        g.fillRect(x, y, lemmingWidth, lemmingHeight);
+
+        int offsetX = 0;
+
+// Si está excavando y el frame es más ancho, lo ajustamos
+        if (estado == EstadoLemming.EXCAVANDO) {
+            offsetX = (frame.getWidth() - lemmingWidth) / 2;
+        }
+
+        if (direccion == 1) {
+            Graphics2D g2d = (Graphics2D) g;
+            g2d.drawImage(frame, x + frame.getWidth() - offsetX, y, -frame.getWidth(), frame.getHeight(), null);
+        } else {
+            g.drawImage(frame, x - offsetX, y, null);
+        }
+
+
 
     }
 
