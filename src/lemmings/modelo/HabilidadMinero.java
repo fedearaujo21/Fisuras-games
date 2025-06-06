@@ -3,7 +3,7 @@ package lemmings.modelo;
 public class HabilidadMinero extends Habilidad {
 
     private static final int ANCHO_EXCAVACION = 16;
-    private static final int ALTO_EXCAVACION = 10; // Profundidad de excavación por tick
+    private static final int ALTO_EXCAVACION = 2; // Profundidad de excavación por tick
 
     private Mapa mapa;
 
