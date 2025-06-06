@@ -2,7 +2,6 @@ package lemmings.vista;
 
 import lemmings.control.AudioPlayer;
 import lemmings.modelo.*;
-
 import java.util.List;
 import java.util.ArrayList;
 import javax.imageio.ImageIO;
@@ -86,11 +85,6 @@ public class PanelLemmings extends JPanel implements Runnable{
                             }
                             break;
                         }
-                        if (e.getButton() == MouseEvent.BUTTON2 && lemming.getFueUsado() == false) { // Clic derecho
-                            nivel.asignarHabilidad(lemming, "Romper");
-                            lemming.setFueUsado(true);
-                            break;
-                        }
                     }
                 }
             }
@@ -100,13 +94,13 @@ public class PanelLemmings extends JPanel implements Runnable{
         try {
             // ACA HAY QUE SEGUIR AGREGANDO LAS IMAGENES DE LAS HABILIDADES
             BufferedImage icono1Hab = ImageIO.read(new File("src/lemmings/recursos/iconoManolo.png"));
-            BufferedImage icono2Hab = ImageIO.read(new File("src/lemmings/recursos/iconoManolo.png"));
+            BufferedImage iconoParacaidas = ImageIO.read(new File("src/lemmings/recursos/iconoParacaidas.png"));
             BufferedImage icono3Hab = ImageIO.read(new File("src/lemmings/recursos/iconoManolo.png"));
             BufferedImage icono4Hab = ImageIO.read(new File("src/lemmings/recursos/iconoManolo.png"));
             BufferedImage icono5Hab = ImageIO.read(new File("src/lemmings/recursos/iconoManolo.png"));
             BufferedImage icono6Hab = ImageIO.read(new File("src/lemmings/recursos/iconoManolo.png"));
             BufferedImage icono7Hab = ImageIO.read(new File("src/lemmings/recursos/iconoManolo.png"));
-            BufferedImage icono8Hab = ImageIO.read(new File("src/lemmings/recursos/iconoManolo.png"));
+            BufferedImage iconoMinero = ImageIO.read(new File("src/lemmings/recursos/iconoMinero.png"));
             BufferedImage icono9Hab = ImageIO.read(new File("src/lemmings/recursos/iconoManolo.png"));
             BufferedImage icono10Hab = ImageIO.read(new File("src/lemmings/recursos/iconoManolo.png"));
             BufferedImage icono11Hab = ImageIO.read(new File("src/lemmings/recursos/iconoManolo.png"));
@@ -115,19 +109,19 @@ public class PanelLemmings extends JPanel implements Runnable{
             BufferedImage icono14Hab = ImageIO.read(new File("src/lemmings/recursos/iconoManolo.png"));
 
             int xInicial = 2;
-            int yBoton = 320+1;
+            int yBoton = 321;
             int ancho = 42;
             int alto = 76;
             int espacio = 44;
 
             botonesHabilidad.add(new BotonHabilidad(xInicial + 0 * espacio, yBoton, ancho, alto, icono1Hab, "Primera"));
-            botonesHabilidad.add(new BotonHabilidad(xInicial + 1 * espacio, yBoton, ancho, alto, icono2Hab, "Segunda"));
+            botonesHabilidad.add(new BotonHabilidad(xInicial + 1 * espacio, yBoton, ancho, alto, iconoParacaidas, "Paracaidas"));
             botonesHabilidad.add(new BotonHabilidad(xInicial + 2 * espacio, yBoton, ancho, alto, icono3Hab, "Tercera"));
             botonesHabilidad.add(new BotonHabilidad(xInicial + 3 * espacio, yBoton, ancho, alto, icono4Hab, "Cuarta"));
             botonesHabilidad.add(new BotonHabilidad(xInicial + 4 * espacio, yBoton, ancho, alto, icono5Hab, "Quinta"));
             botonesHabilidad.add(new BotonHabilidad(xInicial + 5 * espacio, yBoton, ancho, alto, icono6Hab, "Sexta"));
             botonesHabilidad.add(new BotonHabilidad(xInicial + 6 * espacio, yBoton, ancho, alto, icono7Hab, "Septima"));
-            botonesHabilidad.add(new BotonHabilidad(xInicial + 7 * espacio, yBoton, ancho, alto, icono8Hab, "Octava"));
+            botonesHabilidad.add(new BotonHabilidad(xInicial + 7 * espacio, yBoton, ancho, alto, iconoMinero, "Minero"));
             botonesHabilidad.add(new BotonHabilidad(xInicial + 8 * espacio, yBoton, ancho, alto, icono9Hab, "Novena"));
             botonesHabilidad.add(new BotonHabilidad(xInicial + 9 * espacio, yBoton, ancho, alto, icono10Hab, "Decima"));
             botonesHabilidad.add(new BotonHabilidad(xInicial + 10 * espacio, yBoton, ancho, alto, icono11Hab, "Onceava"));

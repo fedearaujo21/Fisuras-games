@@ -41,6 +41,7 @@ public class Nivel {
                 this.stockHabilidades = new Stock();
                 this.tiempoInicio = System.currentTimeMillis();
                 stockHabilidades.añadirHabilidad("Minero",5);
+                stockHabilidades.añadirHabilidad("Paracaidas", 5);
                 mapa.limpiarArea(salida.getX(), salida.getY(), salida.getAncho(), salida.getAlto(), COLOR_FONDO);
                 mapa.activarColisiones(false);
                 break;
@@ -109,7 +110,10 @@ public class Nivel {
                 case "Minero":
                     habilidad = new HabilidadMinero(this.mapa);
                     break;
-                // Agrega más casos para otras habilidades
+                case "Paracaidas":
+                    habilidad = new HabilidadParacaidas();
+                    break;
+                // Agregar más habilidades en el futuro
             }
 
             if (habilidad != null && habilidad.activar(lemming)) {

@@ -14,6 +14,8 @@ public class Lemming {
     private List<BufferedImage> framesCaminar;
     private List<BufferedImage> framesCaida;
     private List<BufferedImage> framesExcavar;
+    private List<BufferedImage> framesParacaidas;
+
 
 
     private int frameActual = 0;
@@ -56,7 +58,43 @@ public class Lemming {
         cargarFramesCaminata();
         cargarFramesCaida();
         cargarFramesExcavar();
+        cargarFramesParacaidas();
+    }
 
+    public void incrementarY() {
+        y += 1;
+    }
+    private void cargarFramesParacaidas() {
+        framesParacaidas = new ArrayList<>();
+        try {
+            BufferedImage spriteSheet = ImageIO.read(new File("src/lemmings/recursos/gokuParacaidas.png"));
+
+            int anchoFrame = 16;
+            int altoFrame = 32;
+            int espacio = 8;
+
+            for (int i = 0; i < 3; i++) {
+                int x = i * (anchoFrame + espacio);
+                BufferedImage frame = spriteSheet.getSubimage(x, 0, anchoFrame, altoFrame);
+
+                // Eliminar color de fondo (violeta o verde)
+                BufferedImage transparente = new BufferedImage(anchoFrame, altoFrame, BufferedImage.TYPE_INT_ARGB);
+                for (int y = 0; y < altoFrame; y++) {
+                    for (int xx = 0; xx < anchoFrame; xx++) {
+                        int color = frame.getRGB(xx, y);
+                        if (color == 0xFFF800F8 || color == 0xFF00FF00) {
+                            transparente.setRGB(xx, y, 0x00000000);
+                        } else {
+                            transparente.setRGB(xx, y, color);
+                        }
+                    }
+                }
+
+                framesParacaidas.add(transparente);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void cargarFramesExcavar() {
@@ -90,6 +128,9 @@ public class Lemming {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    public EstadoLemming getEstado() {
+        return estado;
     }
 
     private void cargarFramesCaida() {
@@ -160,6 +201,11 @@ public class Lemming {
         }
     }
 
+    public void setFrameParacaidas() {
+        if (framesParacaidas != null && !framesParacaidas.isEmpty()) {
+            frameActual = (frameActual + 1) % framesParacaidas.size();
+        }
+    }
 
     public void caminar() {
         long ahora = System.currentTimeMillis();
@@ -187,19 +233,24 @@ public class Lemming {
 
         if (!haySueloDebajo) {
             y += 1;
-            // Si el Lemming está en el aire (cayendo), incrementamos el contador
             ticksEnAire++;
 
-            // 🔁 Prioridad al estado EXCAVANDO si es minero, incluso en el aire
+            if (habilidadActiva instanceof HabilidadMinero && ticksEnAire > UMBRAL_CAIDA_MINERO) {
+                desactivarHabilidad();
+            }
+
             if (habilidadActiva instanceof HabilidadMinero) {
                 estado = EstadoLemming.EXCAVANDO;
             } else {
                 estado = EstadoLemming.CAYENDO;
             }
 
-            if (habilidadActiva instanceof HabilidadMinero && ticksEnAire > UMBRAL_CAIDA_MINERO) {
-                desactivarHabilidad();
+            if (habilidadActiva instanceof HabilidadParacaidas) {
+                ((HabilidadParacaidas) habilidadActiva).aplicarSiCayendo(this, ticksEnAire);
+            } else {
+                y += 1;
             }
+
             return;
         } else {
             ticksEnAire = 0;
@@ -212,6 +263,7 @@ public class Lemming {
 
         if (habilidadActiva != null) {
             ticksHabilidad++;
+
             if (ticksHabilidad >= TICKS_POR_ACCION_HABILIDAD) {
                 if (habilidadActiva instanceof HabilidadMinero) {
                     ((HabilidadMinero) habilidadActiva).excavar(this);
@@ -219,12 +271,13 @@ public class Lemming {
                 ticksHabilidad = 0;
             }
 
+            // SOLO el minero interrumpe el movimiento horizontal
             if (habilidadActiva instanceof HabilidadMinero) {
                 return;
             }
         }
 
-        if (habilidadActiva == null) {
+        if (habilidadActiva == null || habilidadActiva instanceof HabilidadParacaidas) {
             ticksMovimientoNormal++;
             if (ticksMovimientoNormal < TICKS_POR_MOVIMIENTO_NORMAL) {
                 return;
@@ -320,6 +373,25 @@ public class Lemming {
 
         int offsetX = 0;
 
+        if (estado == EstadoLemming.CAYENDO && habilidadActiva instanceof HabilidadParacaidas) {
+            // Asegurarse de no acceder a un frame fuera de rango
+            if (frameActual >= framesParacaidas.size()) {
+                frameActual = 0;
+            }
+
+            frame = framesParacaidas.get(frameActual);
+
+            if (direccion == 1) { // Si va a la derecha, espejar
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.drawImage(frame, x + frame.getWidth(), y, -frame.getWidth(), frame.getHeight(), null);
+            } else {
+                g.drawImage(frame, x, y, null);
+            }
+
+            return;
+        }
+
+
 // Si está excavando y el frame es más ancho, lo ajustamos
         if (estado == EstadoLemming.EXCAVANDO) {
             offsetX = (frame.getWidth() - lemmingWidth) / 2;
@@ -334,6 +406,9 @@ public class Lemming {
 
 
 
+    }
+    public int getTicksEnAire() {
+        return ticksEnAire;
     }
 
     public Habilidad getHabilidadActiva() { return habilidadActiva; }
