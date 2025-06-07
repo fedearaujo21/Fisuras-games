@@ -129,7 +129,13 @@ public class Pelota {
     }
 
     public void dibujar(Graphics g) {
-        g.setColor(Color.WHITE);
+        if (Config.skin == "original")
+            g.setColor(Color.WHITE);
+        if (Config.skin == "techno")
+            g.setColor(Color.RED);
+        if (Config.skin == "tropical")
+            g.setColor(Color.PINK);
+
         g.fillOval(x, y, tamaño, tamaño);
     }
 
