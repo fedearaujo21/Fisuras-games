@@ -16,6 +16,7 @@ public class MenuPrincipal extends Panel {
         titulo.setHorizontalAlignment(SwingConstants.CENTER);
         titulo.setBorder(new EmptyBorder(30,0,30,0));
         add(titulo,BorderLayout.NORTH);
+        ventana.setLocationRelativeTo(null);
 
         JButton btnLemmings = new JButton("Jugar Lemmings");
         JButton btnPong = new JButton("Jugar Pong");

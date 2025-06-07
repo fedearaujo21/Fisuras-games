@@ -23,8 +23,8 @@ public class Cancha extends Panel {
         setBackground(Color.BLACK);
 
         // Crear objetos
-        jugador1 = new Paleta(30, 250, Config.teclaArribaJugador1, Config.teclaAbajoJugador1, 1);
-        jugador2 = new Paleta(750, 250, Config.teclaArribaJugador2, Config.teclaAbajoJugador2, Config.multiplicadorDificultad);
+        jugador1 = new Paleta(30, 250, Config.teclaArribaJugador1, Config.teclaAbajoJugador1, 1, false);
+        jugador2 = new Paleta(750, 250, Config.teclaArribaJugador2, Config.teclaAbajoJugador2, Config.multiplicadorDificultad, true);
         pelota = new Pelota(390, 290);
 
         // Botón reiniciar (invisible al principio)

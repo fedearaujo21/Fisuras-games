@@ -6,8 +6,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-import javax.swing.*;
-
 public class LanzadorLemming{
 
     private static JPanel cardPanel;

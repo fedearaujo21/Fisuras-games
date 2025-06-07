@@ -61,8 +61,8 @@ public class ConfigPantalla extends Frame {
 
         selectorSkin = new Choice();
         selectorSkin.add("original");
-        selectorSkin.add("oscuro");
-        selectorSkin.add("retro");
+        selectorSkin.add("techno");
+        selectorSkin.add("tropical");
         selectorSkin.setBounds(110, 110, 120, 20);
         selectorSkin.select(Config.skin);
         add(selectorSkin);
