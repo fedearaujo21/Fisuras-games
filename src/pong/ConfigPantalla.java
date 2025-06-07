@@ -41,7 +41,7 @@ public class ConfigPantalla extends Frame {
         // Pantalla completa
         pantallaCompletaCheck = new Checkbox("Pantalla Completa", Config.pantallaCompleta);
         pantallaCompletaCheck.setBounds(50, 50, 200, 20);
-        add(pantallaCompletaCheck);
+        //add(pantallaCompletaCheck); desabilitado hasta proximo aviso
 
         // Sonido
         sonidoCheck = new Checkbox("Sonido Activado", Config.sonidoActivado);
