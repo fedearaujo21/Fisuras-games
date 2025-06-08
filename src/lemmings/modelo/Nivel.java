@@ -159,7 +159,7 @@ public class Nivel {
 
             // Muere por caída (si no tiene paracaídas)
             if (!(l.getHabilidadActiva() instanceof HabilidadParacaidas)) {
-                if (l.getY() > 318 || l.getTicksEnAire() > 109) {
+                if (l.getY() > 318 || (l.getTicksEnAire() > 109 && l.getImpacto()) ) {
                     lemmingsMuertos--;
                     cantidadSpawns--;
                     cantidadLem--;
