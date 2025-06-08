@@ -71,20 +71,24 @@ public class Pelota {
         if (y <= 0 || y + Config.frameSuperior + tamaño >= 600) {
             velocidadY *= -1;
 
-            if (pared.isRunning())
-                pared.stop();
-            pared.setFramePosition(0); // reinicia el audio al comienzo
-            pared.start();
+            if(Config.sonidoActivado) {
+                if (pared.isRunning())
+                    pared.stop();
+                pared.setFramePosition(0); // reinicia el audio al comienzo
+                pared.start();
+            }
         }
 
         // Rebote con las paletas
         if (getRect().intersects(j1.getRect()) && choque.tangible){
             velocidadX *= -1;
 
-            if (paleta.isRunning())
-                paleta.stop();
-            paleta.setFramePosition(0); // reinicia el audio al comienzo
-            paleta.start();
+            if(Config.sonidoActivado) {
+                if (paleta.isRunning())
+                    paleta.stop();
+                paleta.setFramePosition(0); // reinicia el audio al comienzo
+                paleta.start();
+            }
 
             if (j1.getBajando() && velocidadY > -25){
                 velocidadY += entropia.nextInt(factor) + 1;
@@ -103,8 +107,10 @@ public class Pelota {
         if (getRect().intersects(j2.getRect()) && choque.tangible){
             velocidadX *= -1;
 
-            paleta.setFramePosition(0); // reinicia el audio al comienzo
-            paleta.start();
+            if(Config.sonidoActivado) {
+                paleta.setFramePosition(0); // reinicia el audio al comienzo
+                paleta.start();
+            }
 
             if (j2.getBajando() && velocidadY > -25){
                 velocidadY += entropia.nextInt(factor) + 1;
@@ -123,7 +129,13 @@ public class Pelota {
     }
 
     public void dibujar(Graphics g) {
-        g.setColor(Color.WHITE);
+        if (Config.skin == "original")
+            g.setColor(Color.WHITE);
+        if (Config.skin == "techno")
+            g.setColor(Color.RED);
+        if (Config.skin == "tropical")
+            g.setColor(Color.PINK);
+
         g.fillOval(x, y, tamaño, tamaño);
     }
 
@@ -146,6 +158,8 @@ public class Pelota {
     public Rectangle getRect() {
         return new Rectangle(x, y, tamaño, tamaño);
     }
+
+    public int getY(){return this.y;}
 }
 
 class Choque implements Runnable{
