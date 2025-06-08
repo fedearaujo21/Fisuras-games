@@ -4,6 +4,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
 import javax.imageio.ImageIO;
 
@@ -15,7 +16,7 @@ public class Lemming {
     private List<BufferedImage> framesCaida;
     private List<BufferedImage> framesExcavar;
     private List<BufferedImage> framesParacaidas;
-
+    private List<BufferedImage> framesBloqueador;
 
 
     private int frameActual = 0;
@@ -26,16 +27,17 @@ public class Lemming {
     public enum EstadoLemming {
         CAMINANDO,
         CAYENDO,
-        EXCAVANDO
+        EXCAVANDO,
+        BLOQUEANDO
     }
 
     private int x, y;
     private int direccion = 1;
     private Mapa mapa;
     private int lemmingWidth = 16;
-    private int lemmingHeight = 32;
+    private int lemmingHeight = 25;
     private long tiempoCreacion;
-    private boolean fueUsado = false;
+    //private boolean fueUsado = false;
     private static final int MAX_STEP_HEIGHT = 12;
 
     private Habilidad habilidadActiva;
@@ -56,9 +58,9 @@ public class Lemming {
         this.tiempoCreacion = System.currentTimeMillis();
         cargarFramesCaida();
         cargarFramesCaminata();
-        cargarFramesCaida();
         cargarFramesExcavar();
         cargarFramesParacaidas();
+        //cargarFramesBloqueador();
     }
 
     public void incrementarY() {
@@ -70,7 +72,7 @@ public class Lemming {
             BufferedImage spriteSheet = ImageIO.read(new File("src/lemmings/recursos/gokuParacaidas.png"));
 
             int anchoFrame = 16;
-            int altoFrame = 32;
+            int altoFrame = 25;
             int espacio = 8;
 
             for (int i = 0; i < 3; i++) {
@@ -122,15 +124,11 @@ public class Lemming {
                         }
                     }
                 }
-
                 framesExcavar.add(transparente);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-    public EstadoLemming getEstado() {
-        return estado;
     }
 
     private void cargarFramesCaida() {
@@ -207,7 +205,12 @@ public class Lemming {
         }
     }
 
-    public void caminar() {
+    public void caminar(List<Lemming> todosLosLemmings) {
+
+        if (estado == EstadoLemming.BLOQUEANDO) {
+            return;
+        }
+
         long ahora = System.currentTimeMillis();
         boolean colisionTemporalmenteDesactivada = (ahora - tiempoCreacion) < 500;
 
@@ -324,6 +327,17 @@ public class Lemming {
             }
 
             if (puedeAvanzar) {
+                for (Lemming l : todosLosLemmings) {
+                    if (l == this) continue; // ignorar a sí mismo
+                    if (l.estado == EstadoLemming.BLOQUEANDO) {
+                        Rectangle rectEste = new Rectangle(siguienteX, nuevaY, lemmingWidth, lemmingHeight);
+                        Rectangle rectOtro = new Rectangle(l.x, l.y, lemmingWidth, lemmingHeight);
+                        if (rectEste.intersects(rectOtro)) {
+                            direccion *= -1; // cambiar dirección
+                            return; // no avanzar, simplemente se da vuelta
+                        }
+                    }
+                }
                 x = siguienteX;
                 y = nuevaY;
             } else {
@@ -367,6 +381,7 @@ public class Lemming {
             case CAMINANDO -> frame = framesCaminar.get(frameActual);
             case CAYENDO -> frame = framesCaida.get(frameActual % framesCaida.size());
             case EXCAVANDO -> frame = framesExcavar.get(frameActual % framesExcavar.size());
+            //case BLOQUEANDO -> frame = framesBloqueador.get(0);
             default -> frame = framesCaminar.get(0);
         }
 
@@ -403,8 +418,10 @@ public class Lemming {
             g.drawImage(frame, x - offsetX, y, null);
         }
 
-
-
+        // Ajuste para el bloqueador (si su sprite es diferente de las dimensiones del lemming)
+        if (estado == EstadoLemming.BLOQUEANDO) {
+            offsetX = (frame.getWidth() - lemmingWidth) / 2;
+        }
     }
     public int getTicksEnAire() {
         return ticksEnAire;
@@ -412,23 +429,21 @@ public class Lemming {
 
     public Habilidad getHabilidadActiva() { return habilidadActiva; }
     public void setHabilidadActiva(Habilidad habilidadActiva) {
-        if(fueUsado == false) {
-            this.habilidadActiva = habilidadActiva;
-            this.ticksHabilidad = 0;
+        this.habilidadActiva = habilidadActiva;
+        if (habilidadActiva instanceof HabilidadBloqueador) {
+            this.estado = EstadoLemming.BLOQUEANDO;
         }
+        this.ticksHabilidad = 0;
     }
     public void desactivarHabilidad() {
         this.habilidadActiva = null;
         this.ticksHabilidad = 0;
     }
-    public void setFueUsado(boolean fueUsado){
-        this.fueUsado = fueUsado;
-    };
 
-    public boolean getFueUsado(){
-        return this.fueUsado;
+    public EstadoLemming getEstado() {
+        return estado;
     }
-
+    public void setEstado(EstadoLemming estado){this.estado = estado;}
     public int getX() { return x; }
     public void setX(int x) { this.x = x; }
     public int getY() { return y; }

@@ -21,56 +21,41 @@ import java.io.File;
 
 
 public class PanelLemmings extends JPanel implements Runnable{
-    private Mapa mapa;
     private Nivel nivel;
     private Thread hilo;
-    private boolean alertaMostrada = false;
     private AudioPlayer musicaFondo;
     private int nivelNum = 1;
     private List<BotonHabilidad> botonesHabilidad = new ArrayList<>();
     private BotonHabilidad botonSeleccionado = null;
-
+    private boolean esperandoClick;
 
     public PanelLemmings(JFrame ventana){
         setPreferredSize(new Dimension(800,600));
         setFocusable(true);
         setBackground(Color.black);
         //aca se cargan los niveles
-        switch (nivelNum) {
-            case 1:
-                try {
-                InputStream is = getClass().getResourceAsStream("/lemmings/recursos/Nivel1.png");
-                BufferedImage img = ImageIO.read(is);
-                musicaFondo = new AudioPlayer("/lemmings/recursos/MusicaNivel1a.wav");
-                //mapa = new Mapa(img);
-                nivel = new Nivel(1, "Nivel 1", img);
-            } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            case 2:
-                try {
-                    InputStream is = getClass().getResourceAsStream("/lemmings/recursos/Nivel1.png");
-                    BufferedImage img = ImageIO.read(is);
-                    musicaFondo = new AudioPlayer("/lemmings/recursos/MusicaNivel1a.wav");
-                    //mapa = new Mapa(img);
-                    nivel = new Nivel(1, "Nivel 1", img);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-        }
-        Thread hilo = new Thread(this);
-        hilo.start();
+
+        cargarNivel(nivelNum);
 
         if (musicaFondo != null) {
             musicaFondo.loop(); // Empieza a reproducir la música en bucle
         }
-
 
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 int mx = e.getX();
                 int my = e.getY();
+
+                if (esperandoClick) {
+                    esperandoClick = false;
+                    if(nivel.getNivelAprobado()){
+                    cargarNivel(nivelNum + 1);
+                    }else{
+                        cargarNivel(nivelNum);
+                    }
+                    return;
+                }
 
                 // 1. Primero: ¿Hizo clic en algún botón?
                 for (BotonHabilidad boton : botonesHabilidad) {
@@ -86,12 +71,12 @@ public class PanelLemmings extends JPanel implements Runnable{
                     if (mx >= lemming.getX() && mx <= lemming.getX() + lemming.getLemmingWidth() &&
                             my >= lemming.getY() && my <= lemming.getY() + lemming.getLemmingHeight()) {
 
-                        if (e.getButton() == MouseEvent.BUTTON1 && !lemming.getFueUsado()) {
+                        if (e.getButton() == MouseEvent.BUTTON1) {
                             // Elegimos la habilidad según el botón seleccionado
                             if (botonSeleccionado != null) {
                                 String habilidad = botonSeleccionado.getNombre();
                                 nivel.asignarHabilidad(lemming, habilidad);
-                                lemming.setFueUsado(true);
+                                //lemming.setFueUsado(true);
                                 System.out.println("Asignada habilidad: " + habilidad);
                             }
                             break;
@@ -125,7 +110,7 @@ public class PanelLemmings extends JPanel implements Runnable{
             int alto = 76;
             int espacio = 44;
 
-            botonesHabilidad.add(new BotonHabilidad(xInicial + 0 * espacio, yBoton, ancho, alto, icono1Hab, "Primera"));
+            botonesHabilidad.add(new BotonHabilidad(xInicial + 0 * espacio, yBoton, ancho, alto, icono1Hab, "Bloqueador"));
             botonesHabilidad.add(new BotonHabilidad(xInicial + 1 * espacio, yBoton, ancho, alto, iconoParacaidas, "Paracaidas"));
             botonesHabilidad.add(new BotonHabilidad(xInicial + 2 * espacio, yBoton, ancho, alto, icono3Hab, "Tercera"));
             botonesHabilidad.add(new BotonHabilidad(xInicial + 3 * espacio, yBoton, ancho, alto, icono4Hab, "Cuarta"));
@@ -147,6 +132,49 @@ public class PanelLemmings extends JPanel implements Runnable{
 
 
     }
+
+    public void cargarNivel(int numero){
+        try {
+            if (musicaFondo != null) {
+                musicaFondo.close();
+            }
+
+            switch (numero) {
+                case 1:
+                    nivelNum = 1;
+                    nivel = new Nivel(1, "Nivel 1", ImageIO.read(getClass().getResourceAsStream("/lemmings/recursos/Nivel1.png")));
+                    musicaFondo = new AudioPlayer("/lemmings/recursos/MusicaNivel1.wav");
+                    break;
+                case 2:
+                    nivelNum = 2;
+                    nivel = new Nivel(2, "Nivel 2", ImageIO.read(getClass().getResourceAsStream("/lemmings/recursos/Nivel2.png")));
+                    musicaFondo = new AudioPlayer("/lemmings/recursos/MusicaNivel2.wav");
+                    break;
+                case 3:
+                    nivelNum = 3;
+                    nivel = new Nivel(3,"Nivel 3",ImageIO.read(getClass().getResourceAsStream("/lemmings/recursos/Nivel3.png")));
+                    musicaFondo = new AudioPlayer("/lemmings/recursos/MusicaNivel3.wav");
+                    break;
+                default:
+                    System.out.println("No hay más niveles.");
+                    return;
+            }
+
+            if (musicaFondo != null) {
+                musicaFondo.loop();
+            }
+
+            if (hilo == null || !hilo.isAlive()) {
+                hilo = new Thread(this);
+                hilo.start();
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -169,23 +197,20 @@ public class PanelLemmings extends JPanel implements Runnable{
     @Override
     public void run(){
         while(true){
-            nivel.actualizar();
-            repaint();
-            if (nivel.getNivelCompletado() && !alertaMostrada) {
-                alertaMostrada = true;
-                if (musicaFondo != null) {
-                    musicaFondo.stop();
-                    musicaFondo.close(); // Liberar recursos
-                }
-                SwingUtilities.invokeLater(() -> {
-                    JOptionPane.showMessageDialog(PanelLemmings.this,
-                            "¡Todos los Lemmings salvados!\nNivel Completado.",
-                            "¡Victoria!",
-                            JOptionPane.INFORMATION_MESSAGE);
-                    // añadir lógica para cargar el siguiente nivel o mostrar un menú.
-                });
-
+            if (!nivel.getNivelCompletado()) {
+                nivel.actualizar();
             }
+
+            repaint();
+
+            if (nivel.getNivelCompletado() && !esperandoClick) {
+                // El nivel se completó, mostramos mensaje y esperamos clic
+                esperandoClick = true;
+                nivel.setNivelCompletado(false);
+                System.out.println("Nivel completado. Esperando clic para continuar...");
+            }
+
+
             try {
                 Thread.sleep(16);
             } catch (InterruptedException e){
