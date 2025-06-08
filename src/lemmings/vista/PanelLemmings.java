@@ -1,10 +1,8 @@
 package lemmings.vista;
 
 import lemmings.control.AudioPlayer;
-import lemmings.modelo.Lemming;
-import lemmings.modelo.Mapa;
-import lemmings.modelo.Nivel;
-import lemmings.modelo.BotonHabilidad;
+import lemmings.modelo.*;
+
 import java.util.List;
 import java.util.ArrayList;
 import javax.imageio.ImageIO;
@@ -29,17 +27,14 @@ public class PanelLemmings extends JPanel implements Runnable{
     private BotonHabilidad botonSeleccionado = null;
     private boolean esperandoClick;
 
-    public PanelLemmings(JFrame ventana){
+    public PanelLemmings(JFrame ventana, int setNivel){
         setPreferredSize(new Dimension(800,600));
         setFocusable(true);
         setBackground(Color.black);
+        this.nivelNum = setNivel;
         //aca se cargan los niveles
 
         cargarNivel(nivelNum);
-
-        if (musicaFondo != null) {
-            musicaFondo.loop(); // Empieza a reproducir la música en bucle
-        }
 
         addMouseListener(new MouseAdapter() {
             @Override
@@ -160,8 +155,10 @@ public class PanelLemmings extends JPanel implements Runnable{
                     return;
             }
 
-            if (musicaFondo != null) {
-                musicaFondo.loop();
+            if (musicaFondo != null && !Config.mute) {
+                musicaFondo.setVolume(Config.volumen);
+                System.out.println(Config.volumen);
+                musicaFondo.loop(); // Empieza a reproducir la música en bucle
             }
 
             if (hilo == null || !hilo.isAlive()) {
