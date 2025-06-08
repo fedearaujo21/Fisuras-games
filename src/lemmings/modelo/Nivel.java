@@ -61,8 +61,8 @@ public class Nivel {
                 this.cantidadLem = 10;
                 this.cantidadSpawns = this.cantidadLem;
                 this.objetivoLemmings = 2;// Color negro del fondo en Nivel1.png
-                this.salida = new Salida(232, 235, 80, 80);
-                this.entrada = new Entrada(280,20);
+                this.salida = new Salida(232, 245, 80, 80);
+                this.entrada = new Entrada(230,15);
                 this.mapa = new Mapa(mapaImagen, COLOR_FONDO);
                 this.lemmings = new ArrayList<>();
                 this.stockHabilidades = new Stock();
@@ -74,11 +74,11 @@ public class Nivel {
                 mapa.activarColisiones(false);
                 break;
             case 3:
-                this.cantidadLem = 5;
+                this.cantidadLem = 20;
                 this.cantidadSpawns = this.cantidadLem;
                 this.objetivoLemmings = 5;
-                this.salida = new Salida(580,200 , 80, 80);
-                this.entrada = new Entrada(260,20);
+                this.salida = new Salida(580,230 , 80, 80);
+                this.entrada = new Entrada(150,10);
                 this.mapa = new Mapa(mapaImagen, COLOR_FONDO);
                 this.lemmings = new ArrayList<>();
                 this.stockHabilidades = new Stock();
@@ -91,6 +91,23 @@ public class Nivel {
                 System.out.println("Salida en: " + salida.getX());
                 mapa.activarColisiones(false);
                 break;
+            case 4:
+                this.cantidadLem = 5;
+                this.cantidadSpawns = this.cantidadLem;
+                this.objetivoLemmings = 5;
+                this.salida = new Salida(580,230 , 80, 80);
+                this.entrada = new Entrada(150,10);
+                this.mapa = new Mapa(mapaImagen, COLOR_FONDO);
+                this.lemmings = new ArrayList<>();
+                this.stockHabilidades = new Stock();
+                this.tiempoInicio = System.currentTimeMillis();
+                stockHabilidades.añadirHabilidad("Minero",5);
+                stockHabilidades.añadirHabilidad("Paracaidas", 5);
+                stockHabilidades.añadirHabilidad("Bloqueador",10);
+                mapa.limpiarArea(salida.getX(), salida.getY(), salida.getAncho(), salida.getAlto(), COLOR_FONDO);
+                System.out.println("Entrada en: " + entrada);
+                System.out.println("Salida en: " + salida.getX());
+                mapa.activarColisiones(false);
             default:
                 this.salida = new Salida(650, 460, 80, 100);
         }
@@ -216,6 +233,7 @@ public class Nivel {
                 break;
             case "Bloqueador":
                 habilidad = new HabilidadBloqueador();
+                cantidadLem--;
                 break;
             // Agregá más habilidades acá
         }
