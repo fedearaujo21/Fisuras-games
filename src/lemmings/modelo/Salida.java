@@ -1,5 +1,6 @@
 package lemmings.modelo;
 
+import pong.Assets;
 import java.awt.*; // Para Graphics y Color
 
 public class Salida {
@@ -12,13 +13,16 @@ public class Salida {
         this.y = y;
         this.ancho = ancho;
         this.alto = alto;
+        Assets.init();
     }
 
     // Método para dibujar la salida (un simple rectángulo por ahora)
     public void dibujar(Graphics g) {
-        g.setColor(Color.BLUE); // Color azul para la salida
+        Graphics2D g2d = (Graphics2D) g;
+        g2d.drawImage(Assets.salida, x, y, ancho, alto, null);
+        /*g.setColor(Color.BLUE); // Color azul para la salida
         g.drawRect(x, y, ancho, alto); // Dibuja el contorno con ancho y alto
-        g.drawString("SALIDA", x + 5, y + alto / 2); // Texto para identificar
+        g.drawString("SALIDA", x + 5, y + alto / 2); // Texto para identificar*/
     }
 
     // Mtodo para verificar si un Lemming ha alcanzado la salida

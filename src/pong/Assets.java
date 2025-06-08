@@ -10,6 +10,7 @@ public class Assets {
     public static BufferedImage bananaIzquierda;
     public static BufferedImage bladeDerecha;
     public static BufferedImage bladeIzquierda;
+    public static BufferedImage salida;
 
     public static void init() {
         try {
@@ -18,6 +19,8 @@ public class Assets {
             bananaIzquierda = ImageIO.read(Objects.requireNonNull(Assets.class.getResource("/pong/recursos/BananaIzquierda.png")));
             bladeDerecha = ImageIO.read(Objects.requireNonNull(Assets.class.getResource("/pong/recursos/bladeDerecha.jpg")));
             bladeIzquierda = ImageIO.read(Objects.requireNonNull(Assets.class.getResource("/pong/recursos/bladeIzquierda.jpg")));
+            salida = ImageIO.read(Objects.requireNonNull(Assets.class.getResource("/pong/recursos/naveSaiyajinw.png")));
+
         } catch (IOException e) {
             e.printStackTrace();
         }

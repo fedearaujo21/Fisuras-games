@@ -26,6 +26,7 @@ public class PanelLemmings extends JPanel implements Runnable{
     private int nivelNum = 1;
     private List<BotonHabilidad> botonesHabilidad = new ArrayList<>();
     private BotonHabilidad botonSeleccionado = null;
+    private int interframe = 16;
 
 
     public PanelLemmings(JFrame ventana, int setNivel){
@@ -125,7 +126,7 @@ public class PanelLemmings extends JPanel implements Runnable{
             botonesHabilidad.add(new BotonHabilidad(xInicial + 8 * espacio, yBoton, ancho, alto, icono9Hab, "Novena"));
             botonesHabilidad.add(new BotonHabilidad(xInicial + 9 * espacio, yBoton, ancho, alto, icono10Hab, "Decima"));
             botonesHabilidad.add(new BotonHabilidad(xInicial + 10 * espacio, yBoton, ancho, alto, icono11Hab, "Onceava"));
-            botonesHabilidad.add(new BotonHabilidad(xInicial + 11 * espacio, yBoton, ancho, alto, icono12Hab, "Doceava"));
+            botonesHabilidad.add(new BotonHabilidad(xInicial + 11 * espacio, yBoton, ancho, alto, icono12Hab, "acelerar"));
             botonesHabilidad.add(new BotonHabilidad(xInicial + 12 * espacio, yBoton, ancho, alto, icono13Hab, "DecimoTra"));
             botonesHabilidad.add(new BotonHabilidad(xInicial + 13 * espacio, yBoton, ancho, alto, icono14Hab, "DecimoCta"));
 
@@ -175,14 +176,17 @@ public class PanelLemmings extends JPanel implements Runnable{
                 });
 
             }
+            if (this.botonSeleccionado != null && this.botonSeleccionado.getNombre() == "acelerar")
+                interframe = 6;
+            else
+                interframe = 16;
+
             try {
-                Thread.sleep(16);
+                Thread.sleep(interframe);
             } catch (InterruptedException e){
                 e.printStackTrace();
             }
         }
     }
-
-
 
 }
