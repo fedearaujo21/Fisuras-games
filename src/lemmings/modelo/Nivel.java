@@ -268,7 +268,7 @@ public class Nivel {
     public boolean getNivelCompletado(){return this.nivelCompletado;}
     public void setNivelCompletado(boolean valor){this.nivelCompletado = valor;}
     public void reiniciar() { /* ... */ }
-    public void pausar() { /* ... */ }
+    //public void pausar() { /* ... */ }
     //public void completarNVL() { /* ... */ }
 }
 

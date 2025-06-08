@@ -10,8 +10,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 //Para detectar coordenadas
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -110,9 +108,9 @@ public class PanelLemmings extends JPanel implements Runnable{
             BufferedImage iconoMinero = ImageIO.read(new File("src/lemmings/recursos/iconoMinero.png"));
             BufferedImage iconoMas = ImageIO.read(new File("src/lemmings/recursos/esferaMas.png"));
             BufferedImage iconoMenos = ImageIO.read(new File("src/lemmings/recursos/esferaMenos.png"));
-            BufferedImage icono11Hab = ImageIO.read(new File("src/lemmings/recursos/acelerarIcono.png"));
-            BufferedImage icono12Hab = ImageIO.read(new File("src/lemmings/recursos/iconoManolo.png"));
-            BufferedImage icono13Hab = ImageIO.read(new File("src/lemmings/recursos/iconoManolo.png"));
+            BufferedImage iconoAcelerar = ImageIO.read(new File("src/lemmings/recursos/acelerarIcono.png"));
+            BufferedImage iconoPausa = ImageIO.read(new File("src/lemmings/recursos/iconoPausa.png"));
+            BufferedImage iconoPlay = ImageIO.read(new File("src/lemmings/recursos/iconoPlay.png"));
             BufferedImage icono14Hab = ImageIO.read(new File("src/lemmings/recursos/iconoManolo.png"));
 
             int xInicial = 2;
@@ -131,9 +129,9 @@ public class PanelLemmings extends JPanel implements Runnable{
             botonesHabilidad.add(new BotonHabilidad(xInicial + 7 * espacio, yBoton, ancho, alto, iconoMinero, "Minero", nivel.getStockHabilidades()));
             botonesHabilidad.add(new BotonHabilidad(xInicial + 8 * espacio, yBoton, ancho, alto, iconoMas, "Mas", nivel.getStockHabilidades()));
             botonesHabilidad.add(new BotonHabilidad(xInicial + 9 * espacio, yBoton, ancho, alto, iconoMenos, "Menos", nivel.getStockHabilidades()));
-            botonesHabilidad.add(new BotonHabilidad(xInicial + 10 * espacio, yBoton, ancho, alto, icono11Hab, "acelerar", nivel.getStockHabilidades()));
-            botonesHabilidad.add(new BotonHabilidad(xInicial + 11 * espacio, yBoton, ancho, alto, icono12Hab, "Doceava", nivel.getStockHabilidades()));
-            botonesHabilidad.add(new BotonHabilidad(xInicial + 12 * espacio, yBoton, ancho, alto, icono13Hab, "DecimoTra", nivel.getStockHabilidades()));
+            botonesHabilidad.add(new BotonHabilidad(xInicial + 10 * espacio, yBoton, ancho, alto, iconoAcelerar, "acelerar", nivel.getStockHabilidades()));
+            botonesHabilidad.add(new BotonHabilidad(xInicial + 11 * espacio, yBoton, ancho, alto, iconoPausa, "Pausa", nivel.getStockHabilidades()));
+            botonesHabilidad.add(new BotonHabilidad(xInicial + 12 * espacio, yBoton, ancho, alto, iconoPlay, "Play", nivel.getStockHabilidades()));
             botonesHabilidad.add(new BotonHabilidad(xInicial + 13 * espacio, yBoton, ancho, alto, icono14Hab, "DecimoCta", nivel.getStockHabilidades()));
 
         } catch (IOException e) {
@@ -238,6 +236,14 @@ public class PanelLemmings extends JPanel implements Runnable{
                 Thread.sleep(interframe);
             } catch (InterruptedException e){
                 e.printStackTrace();
+            }
+
+            while(this.botonSeleccionado != null && this.botonSeleccionado.getNombre() == "Pausa"){
+                try {
+                    Thread.sleep(interframe);
+                } catch (InterruptedException e){
+                    e.printStackTrace();
+                }
             }
         }
     }
