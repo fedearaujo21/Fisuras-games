@@ -10,7 +10,6 @@ public class HabilidadParacaidas extends Habilidad {
     public boolean activar(Lemming lemming) {
         lemming.setHabilidadActiva(this);
 
-        // ✅ Si ya está cayendo al asignar, no esperamos: aplicamos efecto inmediatamente
         if (lemming.getEstado() == Lemming.EstadoLemming.CAYENDO) {
             aplicarSiCayendo(lemming, lemming.getTicksEnAire());
         }
@@ -27,8 +26,6 @@ public class HabilidadParacaidas extends Habilidad {
             if (ticksEnAire % 2 == 0) {
                 lemming.incrementarY(); // caída más lenta
             }
-
-            // ✅ Forzamos que el frame se actualice también (opcional si ya lo hace)
             lemming.setFrameParacaidas();
         } else {
             // Ya no está cayendo: desactivar
