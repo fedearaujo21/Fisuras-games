@@ -29,19 +29,24 @@ public class Nivel {
     private boolean lemmingsSpawneados = false;
     private int lemmingsSalvados = 0;
     private int lemmingsMuertos = 0;
+    private static int frecuenciaSpawn; // menor = más rápido
+    private long ultimoSpawnTime = 0;
+
+
 
     public Nivel (int nivelNum, String nombre, BufferedImage mapaImagen) {
         this.nivelNum = nivelNum;
         this.nombre = nombre;
         this.tiempo = 60;
+        frecuenciaSpawn = 50;
 
         switch (nivelNum) {
             case 1:
                 this.cantidadLem = 5;
                 this.cantidadSpawns = this.cantidadLem;
                 this.objetivoLemmings = 2;// Color negro del fondo en Nivel1.png
-                this.salida = new Salida(560, 210, 80, 80);
-                this.entrada = new Entrada(300,80);
+                this.salida = new Salida(575, 222, 40, 40);
+                this.entrada = new Entrada(270,60);
                 this.mapa = new Mapa(mapaImagen, COLOR_FONDO);
                 this.lemmings = new ArrayList<>();
                 this.stockHabilidades = new Stock();
@@ -52,7 +57,6 @@ public class Nivel {
                 mapa.limpiarArea(salida.getX(), salida.getY(), salida.getAncho(), salida.getAlto(), COLOR_FONDO);
                 mapa.activarColisiones(false);
                 break;
-
             case 2:
                 this.cantidadLem = 10;
                 this.cantidadSpawns = this.cantidadLem;
@@ -92,6 +96,8 @@ public class Nivel {
         }
 
     }
+
+
     public void actualizar() {
         long ahora = System.currentTimeMillis();
 
@@ -102,52 +108,66 @@ public class Nivel {
             mapa.activarColisiones(true);
         }
 
-        // 2. Spawneo progresivo de lemmings
-        if(cantidadLem == 0){
+        // 2. Spawneo progresivo de lemmings según frecuenciaSpawn
+        if (cantidadLem == 0) {
             nivelCompletado = true;
-        }
-        else if (lemmings.size() < cantidadSpawns) {
-            if (ahora - tiempoInicio > lemmings.size() * 3000) { // uno por segundo
+        } else if (lemmings.size() < cantidadSpawns) {
+            int delayEntreSpawns = (int)((100 - frecuenciaSpawn) * 30); // frecuenciaSpawn: 50-99 → delay: 1500-30ms
+            if (ahora - ultimoSpawnTime >= delayEntreSpawns) {
                 int lemmingX = entrada.getX();
                 int lemmingY = entrada.getY();
-                lemmings.add(new Lemming(lemmingX, lemmingY, mapa));
+//                lemmings.add(new Lemming(lemmingX, lemmingY, mapa));
+                lemmings.add(entrada.spawnear(mapa));
+
+                ultimoSpawnTime = ahora;
             }
         }
 
-        // 3. Movimiento
+
+        // 3. Movimiento y detección de eventos
         Iterator<Lemming> it = lemmings.iterator();
         while (it.hasNext()) {
             Lemming l = it.next();
             l.caminar(lemmings);
-            // Comprobar si el Lemming llegó a la salida
+
+            // Llegó a la salida
             if (salida.haAlcanzado(l)) {
                 lemmingsSalvados++;
-                cantidadSpawns -= 1;
-                cantidadLem -= 1;
+                cantidadSpawns--;
+                cantidadLem--;
                 System.out.println("¡Lemming salvado! Total salvados: " + lemmingsSalvados);
-                it.remove(); // Eliminar el Lemming de la lista
+                it.remove();
+                continue;
             }
-            if (!(l.getHabilidadActiva() instanceof HabilidadParacaidas)){
+
+            // Muere por caída (si no tiene paracaídas)
+            if (!(l.getHabilidadActiva() instanceof HabilidadParacaidas)) {
                 if (l.getY() > 318 || l.getTicksEnAire() > 109) {
                     lemmingsMuertos--;
-                    cantidadSpawns -= 1;
-                    cantidadLem -= 1;
-                    System.out.println("Un lemming a muerto por caida");
+                    cantidadSpawns--;
+                    cantidadLem--;
+                    System.out.println("Un lemming ha muerto por caída");
                     it.remove();
                 }
             }
         }
-
     }
+
 
     public void dibujar(Graphics g){
         mapa.dibujar(g);
+
+        // DIBUJA LA ENTRADA (nube animada)
+        entrada.dibujar(g);
+
         for (Lemming l : lemmings) {
             l.dibujar(g);
         }
-        if(nivelCompletado == true){
+
+        if(nivelCompletado){
             g.setColor(new Color(0, 0, 0, 170)); // Fondo semitransparente
             g.fillRect(0, 0, mapa.getAncho(), mapa.getAlto());
+
             if(objetivoLemmings < lemmingsSalvados) {
                 this.nivelAprobado = true;
                 g.setColor(Color.YELLOW);
@@ -167,47 +187,62 @@ public class Nivel {
             }
             g.setFont(new Font("Arial", Font.PLAIN, 20));
             g.drawString("Lemmings salvados:" + this.lemmingsSalvados, mapa.getAncho() / 2 - 110, mapa.getAlto() / 2 + 40);
-            g.setFont(new Font("Arial", Font.PLAIN, 20));
             g.drawString("Lemmings muertos:" + this.lemmingsMuertos, mapa.getAncho() / 2 - 110, mapa.getAlto() / 2 + 60);
         }
+
         salida.dibujar(g);
+
         g.setColor(Color.WHITE);
         g.drawString("Lemmings: " + lemmingsSpawneados + "/" + cantidadLem, 10, 20);
         g.drawString("Mineros: " + stockHabilidades.getCantidad("Minero"), 10, 40);
     }
 
-    public boolean asignarHabilidad(Lemming lemming, String nombreHabilidad) {
-        if (stockHabilidades.consumirHabilidad(nombreHabilidad)) {
-            Habilidad habilidad = null;
-            switch (nombreHabilidad) {
-                case "Minero":
-                    habilidad = new HabilidadMinero(this.mapa);
-                    break;
-                case "Paracaidas":
-                    habilidad = new HabilidadParacaidas();
-                    break;
-                case "Bloqueador":
-                    habilidad = new HabilidadBloqueador();
-                    cantidadLem -= 1;
-                    break;
-                // Agregar más habilidades en el futuro
-            }
 
-            if (habilidad != null && habilidad.activar(lemming)) {
-                System.out.println("Habilidad '" + nombreHabilidad + "' asignada a Lemming.");
-                return true;
-            }
-            else {
-                stockHabilidades.añadirHabilidad(nombreHabilidad, 1); // Devuelve el uso si no se pudo activar
-                System.out.println("No se pudo activar la habilidad '" + nombreHabilidad + "' en el Lemming.");
-                return false;
-            }
+    public boolean asignarHabilidad(Lemming lemming, String nombreHabilidad) {
+        Habilidad habilidad = null;
+
+        // No permitir sobreescribir habilidades activas
+        if (lemming.getHabilidadActiva() != null) {
+            System.out.println("El lemming ya tiene una habilidad activa, no se puede asignar otra.");
+            return false;
         }
-        System.out.println("No quedan usos de '" + nombreHabilidad + "' en el stock del nivel.");
+
+        switch (nombreHabilidad) {
+            case "Minero":
+                habilidad = new HabilidadMinero(this.mapa);
+                break;
+            case "Paracaidas":
+                habilidad = new HabilidadParacaidas();
+                break;
+            case "Bloqueador":
+                habilidad = new HabilidadBloqueador();
+                break;
+            // Agregá más habilidades acá
+        }
+        if (habilidad != null && stockHabilidades.getCantidad(nombreHabilidad) > 0) {
+            if (habilidad.activar(lemming)) {
+                stockHabilidades.consumirHabilidad(nombreHabilidad);
+                System.out.println("Habilidad '" + nombreHabilidad + "' activada.");
+                return true;
+            } else {
+                System.out.println("No se pudo activar la habilidad '" + nombreHabilidad + "'.");
+            }
+        } else {
+            System.out.println("No hay stock de la habilidad '" + nombreHabilidad + "' o es inválida.");
+        }
         return false;
     }
 
 
+    public void aumentarFrecuenciaSpawn() {
+        if (frecuenciaSpawn < 99) frecuenciaSpawn++;
+    }
+
+    public void disminuirFrecuenciaSpawn() {
+        if (frecuenciaSpawn > 50) frecuenciaSpawn--;
+    }
+
+    public static int getFrecuenciaSpawn() {return frecuenciaSpawn;}
     public boolean getNivelAprobado(){return this.nivelAprobado;}
     public Stock getStockHabilidades() { return stockHabilidades; }
     public List<Lemming> getLemmings() { return lemmings; }
