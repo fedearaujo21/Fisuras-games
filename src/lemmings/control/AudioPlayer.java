@@ -63,10 +63,27 @@ public class AudioPlayer {
         }
     }
 
-    // Metodo para ajustar el volumen (en decibelios, por ejemplo, -10.0f)
-    public void setVolume(float volumeInDecibels) {
-        if (gainControl != null) {
-            gainControl.setValue(volumeInDecibels); // Ejemplo: -10.0f
+    // cambia el volumen de forma porcentual
+    public void setVolume(int volumen) {
+        if (volumen < 0 || volumen > 100) {
+            throw new IllegalArgumentException("El volumen debe estar entre 0 y 100");
+        }
+
+        if (clip.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
+            FloatControl control = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+
+            float min = control.getMinimum(); // volumen más bajo en dB (ej: -80.0)
+            float max = control.getMaximum(); // volumen más alto en dB (ej: 6.0)
+
+            if (volumen == 0) {
+                control.setValue(min); // silencio total
+            } else {
+                // Convertimos el volumen de 0–100 a un valor dB
+                float gain = (float) (Math.log10(volumen / 100.0) * 20.0);
+                control.setValue(Math.max(gain, min));
+            }
+        } else {
+            System.err.println("Algo exploto en el control de volumen");
         }
     }
 }
