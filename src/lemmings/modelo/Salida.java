@@ -1,36 +1,82 @@
 package lemmings.modelo;
 
-import java.awt.*; // Para Graphics y Color
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Salida {
     private int x, y;
-    private int ancho; // Ancho del área de salida
-    private int alto;  // Alto del área de salida
+    private int ancho = 86;
+    private int alto = 80;
 
-    public Salida(int x, int y, int ancho, int alto) { // Ahora recibe ancho y alto
+    private List<BufferedImage> framesSalida;
+    private int frameActual = 0;
+    private int frameTick = 0;
+    private final int frameDelay = 15;
+
+    public Salida(int x, int y, int ancho, int alto) {
         this.x = x;
         this.y = y;
-        this.ancho = ancho;
-        this.alto = alto;
+        this.ancho = 30; // podés ajustar si querés que coincida con el frame
+        this.alto = 30;
+        cargarFrames();
     }
 
-    // Método para dibujar la salida (un simple rectángulo por ahora)
+    private void cargarFrames() {
+        framesSalida = new ArrayList<>();
+        try {
+            BufferedImage spriteSheet = ImageIO.read(new File("src/lemmings/recursos/frameSalida.png"));
+            int espacio = 8;
+
+            for (int i = 0; i < 2; i++) {
+                int xFrame = i * (86 + espacio); // 86 de ancho + espacio
+                BufferedImage frame = spriteSheet.getSubimage(xFrame, 0, 86, 80);
+
+                // Eliminar fondo fucsia y verde
+                BufferedImage limpio = new BufferedImage(86, 80, BufferedImage.TYPE_INT_ARGB);
+                for (int yy = 0; yy < 80; yy++) {
+                    for (int xx = 0; xx < 86; xx++) {
+                        int color = frame.getRGB(xx, yy);
+                        if (color == 0xFFF800F8 || color == 0xFF00FF00) {
+                            limpio.setRGB(xx, yy, 0x00000000);
+                        } else {
+                            limpio.setRGB(xx, yy, color);
+                        }
+                    }
+                }
+
+                framesSalida.add(limpio);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void dibujar(Graphics g) {
-        g.setColor(Color.BLUE); // Color azul para la salida
-        g.drawRect(x, y, ancho, alto); // Dibuja el contorno con ancho y alto
-        g.drawString("SALIDA", x + 5, y + alto / 2); // Texto para identificar
+        if (framesSalida.isEmpty()) return;
+
+        g.drawImage(framesSalida.get(frameActual), x - 7, y - 5, 50, 46, null);
+
+        frameTick++;
+        if (frameTick >= frameDelay) {
+            frameActual = (frameActual + 1) % framesSalida.size();
+            frameTick = 0;
+        }
     }
 
-    // Mtodo para verificar si un Lemming ha alcanzado la salida
     public boolean haAlcanzado(Lemming lemming) {
-        return lemming.getX() < this.x + this.ancho &&        // El Lemming no está completamente a la derecha de la salida
-                lemming.getX() + lemming.getLemmingWidth() > this.x && // El Lemming no está completamente a la izquierda de la salida
-                lemming.getY() < this.y + this.alto &&        // El Lemming no está completamente debajo de la salida
-                lemming.getY() + lemming.getLemmingHeight() > this.y;  // El Lemming no está completamente encima de la salida
+        return lemming.getX() < this.x + this.ancho &&
+                lemming.getX() + lemming.getLemmingWidth() > this.x &&
+                lemming.getY() < this.y + this.alto &&
+                lemming.getY() + lemming.getLemmingHeight() > this.y;
     }
 
     public int getX() { return x; }
     public int getY() { return y; }
-    public int getAncho() { return ancho; } // Ahora se necesitan estos getters
-    public int getAlto() { return alto; }   // Ahora se necesitan estos getters
+    public int getAncho() { return ancho; }
+    public int getAlto() { return alto; }
 }

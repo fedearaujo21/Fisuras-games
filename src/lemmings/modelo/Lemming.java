@@ -60,12 +60,46 @@ public class Lemming {
         cargarFramesCaminata();
         cargarFramesExcavar();
         cargarFramesParacaidas();
-        //cargarFramesBloqueador();
+        cargarFramesBloqueador();
     }
 
     public void incrementarY() {
         y += 1;
     }
+
+    private void cargarFramesBloqueador() {
+        framesBloqueador = new ArrayList<>();
+        try {
+            BufferedImage spriteSheet = ImageIO.read(new File("src/lemmings/recursos/gokuBloqueador.png"));
+
+            int anchoFrame = 32;
+            int altoFrame = 32;
+            int espacio = 8;
+
+            for (int i = 0; i < 2; i++) { // ⚠️ Cambiar si hay más frames
+                int x = i * (anchoFrame + espacio);
+                BufferedImage frame = spriteSheet.getSubimage(x, 0, anchoFrame, altoFrame);
+
+                // Quitar fondo verde si es necesario
+                BufferedImage transparente = new BufferedImage(anchoFrame, altoFrame, BufferedImage.TYPE_INT_ARGB);
+                for (int y = 0; y < altoFrame; y++) {
+                    for (int xx = 0; xx < anchoFrame; xx++) {
+                        int color = frame.getRGB(xx, y);
+                        if (color == 0xFF00FF00 || color == 0xFFF800F8) {
+                            transparente.setRGB(xx, y, 0x00000000);
+                        } else {
+                            transparente.setRGB(xx, y, color);
+                        }
+                    }
+                }
+
+                framesBloqueador.add(transparente);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void cargarFramesParacaidas() {
         framesParacaidas = new ArrayList<>();
         try {
@@ -208,15 +242,27 @@ public class Lemming {
     public void caminar(List<Lemming> todosLosLemmings) {
 
         if (estado == EstadoLemming.BLOQUEANDO) {
+            frameTick++;
+            if (frameTick >= frameDelay) {
+                frameActual = (frameActual + 1) % framesBloqueador.size();
+                frameTick = 0;
+            }
             return;
         }
 
         long ahora = System.currentTimeMillis();
-        boolean colisionTemporalmenteDesactivada = (ahora - tiempoCreacion) < 500;
+        boolean colisionTemporalmenteDesactivada = (ahora - tiempoCreacion) < 300;
 
         frameTick++;
         if (frameTick >= frameDelay) {
-            frameActual = (frameActual + 1) % framesCaminar.size();
+            int totalFrames = switch (estado) {
+                case CAMINANDO -> framesCaminar.size();
+                case CAYENDO -> framesCaida.size();
+                case EXCAVANDO -> framesExcavar.size();
+                case BLOQUEANDO -> framesBloqueador.size();
+                default -> 1;
+            };
+            frameActual = (frameActual + 1) % totalFrames;
             frameTick = 0;
         }
 
@@ -236,23 +282,19 @@ public class Lemming {
 
         if (!haySueloDebajo) {
             ticksEnAire++;
-
             if (habilidadActiva instanceof HabilidadMinero && ticksEnAire > UMBRAL_CAIDA_MINERO) {
                 desactivarHabilidad();
             }
-
             if (habilidadActiva instanceof HabilidadMinero) {
                 estado = EstadoLemming.EXCAVANDO;
             } else {
                 estado = EstadoLemming.CAYENDO;
             }
-
             if (habilidadActiva instanceof HabilidadParacaidas) {
                 ((HabilidadParacaidas) habilidadActiva).aplicarSiCayendo(this, ticksEnAire);
             } else {
                 y += 1;
             }
-
             return;
         } else {
             ticksEnAire = 0;
@@ -262,30 +304,24 @@ public class Lemming {
                 estado = EstadoLemming.CAMINANDO;
             }
         }
-
         if (habilidadActiva != null) {
             ticksHabilidad++;
-
             if (ticksHabilidad >= TICKS_POR_ACCION_HABILIDAD) {
                 if (habilidadActiva instanceof HabilidadMinero) {
                     ((HabilidadMinero) habilidadActiva).excavar(this);
                 }
                 ticksHabilidad = 0;
             }
-
-            // SOLO el minero interrumpe el movimiento horizontal
             if (habilidadActiva instanceof HabilidadMinero) {
                 return;
             }
         }
-
         if (habilidadActiva == null || habilidadActiva instanceof HabilidadParacaidas) {
             ticksMovimientoNormal++;
             if (ticksMovimientoNormal < TICKS_POR_MOVIMIENTO_NORMAL) {
                 return;
             }
             ticksMovimientoNormal = 0;
-
             int siguienteX = x + direccion;
             int nuevaY = y;
             boolean puedeAvanzar = false;
@@ -328,13 +364,13 @@ public class Lemming {
 
             if (puedeAvanzar) {
                 for (Lemming l : todosLosLemmings) {
-                    if (l == this) continue; // ignorar a sí mismo
+                    if (l == this) continue;
                     if (l.estado == EstadoLemming.BLOQUEANDO) {
                         Rectangle rectEste = new Rectangle(siguienteX, nuevaY, lemmingWidth, lemmingHeight);
                         Rectangle rectOtro = new Rectangle(l.x, l.y, lemmingWidth, lemmingHeight);
                         if (rectEste.intersects(rectOtro)) {
-                            direccion *= -1; // cambiar dirección
-                            return; // no avanzar, simplemente se da vuelta
+                            direccion *= -1;
+                            return;
                         }
                     }
                 }
@@ -375,13 +411,14 @@ public class Lemming {
     }
 
 
+
     public void dibujar(Graphics g) {
         BufferedImage frame;
         switch (estado) {
             case CAMINANDO -> frame = framesCaminar.get(frameActual);
             case CAYENDO -> frame = framesCaida.get(frameActual % framesCaida.size());
             case EXCAVANDO -> frame = framesExcavar.get(frameActual % framesExcavar.size());
-            //case BLOQUEANDO -> frame = framesBloqueador.get(0);
+            case BLOQUEANDO -> frame = framesBloqueador.get(frameActual % framesBloqueador.size());
             default -> frame = framesCaminar.get(0);
         }
 
@@ -439,10 +476,21 @@ public class Lemming {
         this.habilidadActiva = null;
         this.ticksHabilidad = 0;
     }
-
     public EstadoLemming getEstado() {
         return estado;
     }
+
+    public boolean getImpacto(){
+        for (int i = 0; i < lemmingWidth; i++) {
+            if (x + i >= 0 && x + i < mapa.getAncho() && y + lemmingHeight >= 0 && y + lemmingHeight < mapa.getAlto()) {
+                if (mapa.hayColision(x + i, y + lemmingHeight)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public void setEstado(EstadoLemming estado){this.estado = estado;}
     public int getX() { return x; }
     public void setX(int x) { this.x = x; }
