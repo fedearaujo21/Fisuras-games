@@ -26,6 +26,7 @@ public class PanelLemmings extends JPanel implements Runnable{
     private List<BotonHabilidad> botonesHabilidad = new ArrayList<>();
     private BotonHabilidad botonSeleccionado = null;
     private boolean esperandoClick;
+    private int interframe = 16;
 
     public PanelLemmings(JFrame ventana, int setNivel){
         setPreferredSize(new Dimension(800,600));
@@ -94,7 +95,7 @@ public class PanelLemmings extends JPanel implements Runnable{
             BufferedImage iconoMinero = ImageIO.read(new File("src/lemmings/recursos/iconoMinero.png"));
             BufferedImage icono9Hab = ImageIO.read(new File("src/lemmings/recursos/iconoManolo.png"));
             BufferedImage icono10Hab = ImageIO.read(new File("src/lemmings/recursos/iconoManolo.png"));
-            BufferedImage icono11Hab = ImageIO.read(new File("src/lemmings/recursos/iconoManolo.png"));
+            BufferedImage icono11Hab = ImageIO.read(new File("src/lemmings/recursos/acelerarIcono.png"));
             BufferedImage icono12Hab = ImageIO.read(new File("src/lemmings/recursos/iconoManolo.png"));
             BufferedImage icono13Hab = ImageIO.read(new File("src/lemmings/recursos/iconoManolo.png"));
             BufferedImage icono14Hab = ImageIO.read(new File("src/lemmings/recursos/iconoManolo.png"));
@@ -115,7 +116,7 @@ public class PanelLemmings extends JPanel implements Runnable{
             botonesHabilidad.add(new BotonHabilidad(xInicial + 7 * espacio, yBoton, ancho, alto, iconoMinero, "Minero"));
             botonesHabilidad.add(new BotonHabilidad(xInicial + 8 * espacio, yBoton, ancho, alto, icono9Hab, "Novena"));
             botonesHabilidad.add(new BotonHabilidad(xInicial + 9 * espacio, yBoton, ancho, alto, icono10Hab, "Decima"));
-            botonesHabilidad.add(new BotonHabilidad(xInicial + 10 * espacio, yBoton, ancho, alto, icono11Hab, "Onceava"));
+            botonesHabilidad.add(new BotonHabilidad(xInicial + 10 * espacio, yBoton, ancho, alto, icono11Hab, "acelerar"));
             botonesHabilidad.add(new BotonHabilidad(xInicial + 11 * espacio, yBoton, ancho, alto, icono12Hab, "Doceava"));
             botonesHabilidad.add(new BotonHabilidad(xInicial + 12 * espacio, yBoton, ancho, alto, icono13Hab, "DecimoTra"));
             botonesHabilidad.add(new BotonHabilidad(xInicial + 13 * espacio, yBoton, ancho, alto, icono14Hab, "DecimoCta"));
@@ -208,8 +209,13 @@ public class PanelLemmings extends JPanel implements Runnable{
             }
 
 
+            if (this.botonSeleccionado != null && this.botonSeleccionado.getNombre() == "acelerar")
+                interframe = 6;
+            else
+                interframe = 16;
+
             try {
-                Thread.sleep(16);
+                Thread.sleep(interframe);
             } catch (InterruptedException e){
                 e.printStackTrace();
             }
