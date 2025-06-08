@@ -251,7 +251,7 @@ public class Lemming {
         }
 
         long ahora = System.currentTimeMillis();
-        boolean colisionTemporalmenteDesactivada = (ahora - tiempoCreacion) < 300;
+        boolean colisionTemporalmenteDesactivada = (ahora - tiempoCreacion) < 100;
 
         frameTick++;
         if (frameTick >= frameDelay) {
