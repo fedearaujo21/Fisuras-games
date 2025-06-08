@@ -479,6 +479,18 @@ public class Lemming {
     public EstadoLemming getEstado() {
         return estado;
     }
+
+    public boolean getImpacto(){
+        for (int i = 0; i < lemmingWidth; i++) {
+            if (x + i >= 0 && x + i < mapa.getAncho() && y + lemmingHeight >= 0 && y + lemmingHeight < mapa.getAlto()) {
+                if (mapa.hayColision(x + i, y + lemmingHeight)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public void setEstado(EstadoLemming estado){this.estado = estado;}
     public int getX() { return x; }
     public void setX(int x) { this.x = x; }
