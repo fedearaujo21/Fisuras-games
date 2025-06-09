@@ -51,6 +51,7 @@ public class Nivel {
                 this.lemmings = new ArrayList<>();
                 this.stockHabilidades = new Stock();
                 this.tiempoInicio = System.currentTimeMillis();
+                stockHabilidades.añadirHabilidad("AutoBomba",5);
                 stockHabilidades.añadirHabilidad("Minero",5);
                 stockHabilidades.añadirHabilidad("Paracaidas", 5);
                 stockHabilidades.añadirHabilidad("Bloqueador",5);
@@ -157,6 +158,18 @@ public class Nivel {
                 continue;
             }
 
+            if (l.getHabilidadActiva() instanceof HabilidadAutoBomba autoBomba) {
+                long tiempoActual = System.currentTimeMillis();
+                if(tiempoActual - l.getTiempoInicioAutoBomba() >= 3000){
+                    autoBomba.explotar(l.getX(),l.getY(),30);
+                    lemmingsMuertos--;
+                    cantidadSpawns--;
+                    cantidadLem--;
+                    System.out.println("Un lemming EXPLOTO");
+                    it.remove();
+                }
+            }
+
             // Muere por caída (si no tiene paracaídas)
             if (!(l.getHabilidadActiva() instanceof HabilidadParacaidas)) {
                 if (l.getY() > 318 || (l.getTicksEnAire() > 109 && l.getImpacto()) ) {
@@ -218,12 +231,17 @@ public class Nivel {
     public boolean asignarHabilidad(Lemming lemming, String nombreHabilidad) {
         Habilidad habilidad = null;
 
-        // No permitir sobreescribir habilidades activas
-        if (lemming.getHabilidadActiva() != null) {
-            System.out.println("El lemming ya tiene una habilidad activa, no se puede asignar otra.");
-            return false;
+        if (lemming.getHabilidadActiva() != null) { // Si ya hay una habilidad activa
+            if (nombreHabilidad.equals("AutoBomba")) { // Si la nueva habilidad es AutoBomba
+                if (!(lemming.getHabilidadActiva() instanceof HabilidadBloqueador)) {
+                    System.out.println("El Lemming ya tiene una habilidad activa que no puede ser interrumpida por AutoBomba.");
+                    return false;
+                }
+            } else {
+                System.out.println("El Lemming ya tiene una habilidad activa, no se puede asignar otra.");
+                return false;
+            }
         }
-
         switch (nombreHabilidad) {
             case "Minero":
                 habilidad = new HabilidadMinero(this.mapa);
@@ -234,6 +252,9 @@ public class Nivel {
             case "Bloqueador":
                 habilidad = new HabilidadBloqueador();
                 cantidadLem--;
+                break;
+            case "AutoBomba":
+                habilidad = new HabilidadAutoBomba(this.mapa);
                 break;
             // Agregá más habilidades acá
         }
