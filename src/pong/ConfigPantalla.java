@@ -3,10 +3,16 @@ package pong;
 
 import java.awt.*;
 import java.awt.event.*;
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 public class ConfigPantalla extends Frame {
     private Checkbox pantallaCompletaCheck;
     private Checkbox sonidoCheck;
+    private Checkbox cpu;
+    private JSlider slider;
+    private Label dificultad1, dificultad2, dificultad3;
     private Choice selectorSkin;
     private Choice selectorMusica;
     private Runnable onConfirm;
@@ -35,12 +41,18 @@ public class ConfigPantalla extends Frame {
         // Pantalla completa
         pantallaCompletaCheck = new Checkbox("Pantalla Completa", Config.pantallaCompleta);
         pantallaCompletaCheck.setBounds(50, 50, 200, 20);
-        add(pantallaCompletaCheck);
+        //add(pantallaCompletaCheck); desabilitado hasta proximo aviso
 
         // Sonido
         sonidoCheck = new Checkbox("Sonido Activado", Config.sonidoActivado);
         sonidoCheck.setBounds(50, 80, 200, 20);
         add(sonidoCheck);
+
+        //cpu
+        cpu = new Checkbox("CPU", Config.singleMode);
+        cpu.setBounds(50, 210, 200, 20);
+        this.add(cpu);
+
 
         // Skin
         Label skinLabel = new Label("Skin:");
@@ -49,8 +61,8 @@ public class ConfigPantalla extends Frame {
 
         selectorSkin = new Choice();
         selectorSkin.add("original");
-        selectorSkin.add("oscuro");
-        selectorSkin.add("retro");
+        selectorSkin.add("techno");
+        selectorSkin.add("tropical");
         selectorSkin.setBounds(110, 110, 120, 20);
         selectorSkin.select(Config.skin);
         add(selectorSkin);
@@ -81,14 +93,36 @@ public class ConfigPantalla extends Frame {
 
         // Teclas Jugador 2
         Label j2Label = new Label("Jugador 2:");
-        j2Label.setBounds(50, 210, 80, 20);
+        j2Label.setBounds(50, 240, 80, 20);
         add(j2Label);
 
-        teclaArribaJ2 = crearCampoTecla(Config.teclaArribaJugador2, 140, 210, code -> keyCodeArribaJ2 = code, () -> keyCodeArribaJ2);
+        teclaArribaJ2 = crearCampoTecla(Config.teclaArribaJugador2, 140, 240, code -> keyCodeArribaJ2 = code, () -> keyCodeArribaJ2);
         add(teclaArribaJ2);
 
-        teclaAbajoJ2 = crearCampoTecla(Config.teclaAbajoJugador2, 260, 210, code -> keyCodeAbajoJ2 = code, () -> keyCodeAbajoJ2);
+        teclaAbajoJ2 = crearCampoTecla(Config.teclaAbajoJugador2, 260, 240, code -> keyCodeAbajoJ2 = code, () -> keyCodeAbajoJ2);
         add(teclaAbajoJ2);
+
+        //slider de dificultad
+        slider = new JSlider(JSlider.HORIZONTAL, 1, 3, 2);
+        slider.setBounds(50,250,240, 20);
+        slider.setVisible(false);
+        this.add(slider);
+
+        dificultad1 = new Label("Facil");
+        dificultad2 = new Label("Medio");
+        dificultad3 = new Label("Dificil");
+
+        dificultad1.setBounds(50,230,60, 20);
+        dificultad2.setBounds(150,230,60, 20);
+        dificultad3.setBounds(255,230,60, 20);
+
+        dificultad1.setVisible(false);
+        dificultad2.setVisible(false);
+        dificultad3.setVisible(false);
+
+        this.add(dificultad1);
+        this.add(dificultad2);
+        this.add(dificultad3);
 
         // Botón iniciar
         botonIniciar = new Button("Iniciar Juego");
@@ -100,13 +134,21 @@ public class ConfigPantalla extends Frame {
                 // Guardar config
                 Config.pantallaCompleta = pantallaCompletaCheck.getState();
                 Config.sonidoActivado = sonidoCheck.getState();
+                Config.singleMode = cpu.getState();
                 Config.skin = selectorSkin.getSelectedItem();
                 Config.pistaMusical = selectorMusica.getSelectedItem();
 
                 Config.teclaArribaJugador1 = keyCodeArribaJ1;
                 Config.teclaAbajoJugador1 = keyCodeAbajoJ1;
-                Config.teclaArribaJugador2 = keyCodeArribaJ2;
-                Config.teclaAbajoJugador2 = keyCodeAbajoJ2;
+                if (Config.singleMode){
+                    Config.teclaArribaJugador2 = 0;
+                    Config.teclaAbajoJugador2 = 0;
+                    Config.multiplicadorDificultad = slider.getValue();
+                }else{
+                    Config.teclaArribaJugador2 = keyCodeArribaJ2;
+                    Config.teclaAbajoJugador2 = keyCodeAbajoJ2;
+                    Config.multiplicadorDificultad = 1;
+                }
 
                 dispose();
                 onConfirm.run();
@@ -124,6 +166,25 @@ public class ConfigPantalla extends Frame {
                 actualizarVistaDesdeConfig();
             }
         });
+
+        // esconde entradas de teclas para el jugador 2 si se activa cpu
+        cpu.addItemListener(new ItemListener() {
+            // tengo que usar un ItemListener porque cpu es de tipo checkbox, pero es basicamente lo mismo
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                boolean activado = e.getStateChange() == ItemEvent.SELECTED;
+                Config.singleMode = activado;
+                teclaArribaJ2.setVisible(!Config.singleMode);
+                teclaAbajoJ2.setVisible(!Config.singleMode);
+                j2Label.setVisible(!Config.singleMode);
+
+                slider.setVisible(Config.singleMode);
+                dificultad1.setVisible(Config.singleMode);
+                dificultad2.setVisible(Config.singleMode);
+                dificultad3.setVisible(Config.singleMode);
+            }
+        });
+
     }
 
     private TextField crearCampoTecla(int keyCodeInicial, int x, int y, KeyCodeSetter setter, KeyCodeGetter getter) {
