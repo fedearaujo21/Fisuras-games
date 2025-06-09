@@ -132,7 +132,7 @@ public class PanelLemmings extends JPanel implements Runnable{
             botonesHabilidad.add(new BotonHabilidad(xInicial + 1 * espacio, yBoton, ancho, alto, iconoParacaidas, "Paracaidas", nivel.getStockHabilidades()));
             botonesHabilidad.add(new BotonHabilidad(xInicial + 2 * espacio, yBoton, ancho, alto, iconoConstructor, "Constructor", nivel.getStockHabilidades()));
             botonesHabilidad.add(new BotonHabilidad(xInicial + 3 * espacio, yBoton, ancho, alto, iconoBloqueador, "Bloqueador", nivel.getStockHabilidades()));
-            botonesHabilidad.add(new BotonHabilidad(xInicial + 4 * espacio, yBoton, ancho, alto, iconoKameHameHa, "Quinta", nivel.getStockHabilidades()));
+            botonesHabilidad.add(new BotonHabilidad(xInicial + 4 * espacio, yBoton, ancho, alto, iconoKameHameHa, "KameHameHa", nivel.getStockHabilidades()));
             botonesHabilidad.add(new BotonHabilidad(xInicial + 5 * espacio, yBoton, ancho, alto, icono6Hab, "Sexta", nivel.getStockHabilidades()));
             botonesHabilidad.add(new BotonHabilidad(xInicial + 6 * espacio, yBoton, ancho, alto, icono7Hab, "Septima", nivel.getStockHabilidades()));
             botonesHabilidad.add(new BotonHabilidad(xInicial + 7 * espacio, yBoton, ancho, alto, iconoMinero, "Minero", nivel.getStockHabilidades()));
@@ -160,22 +160,22 @@ public class PanelLemmings extends JPanel implements Runnable{
                 case 1:
                     nivelNum = 1;
                     nivel = new Nivel(1, "Nivel 1", ImageIO.read(getClass().getResourceAsStream("/lemmings/recursos/Nivel1.png")));
-                    //musicaFondo = new AudioPlayer("/lemmings/recursos/MusicaNivel1.wav");
+                    musicaFondo = new AudioPlayer("/lemmings/recursos/MusicaNivel1.wav");
                     break;
                 case 2:
                     nivelNum = 2;
                     nivel = new Nivel(2, "Nivel 2", ImageIO.read(getClass().getResourceAsStream("/lemmings/recursos/Nivel2.png")));
-                    //musicaFondo = new AudioPlayer("/lemmings/recursos/MusicaNivel2.wav");
+                    musicaFondo = new AudioPlayer("/lemmings/recursos/MusicaNivel2.wav");
                     break;
                 case 3:
                     nivelNum = 3;
                     nivel = new Nivel(3,"Nivel 3",ImageIO.read(getClass().getResourceAsStream("/lemmings/recursos/Nivel3.png")));
-                    //musicaFondo = new AudioPlayer("/lemmings/recursos/MusicaNivel3.wav");
+                    musicaFondo = new AudioPlayer("/lemmings/recursos/MusicaNivel3.wav");
                     break;
                 case 4:
                     nivelNum = 4;
                     nivel = new Nivel(4,"Nivel 4",ImageIO.read(getClass().getResourceAsStream("/lemmings/recursos/Nivel4.png")));
-                    //musicaFondo = new AudioPlayer("/lemmings/recursos/MusicaNivel4.wav");
+                    musicaFondo = new AudioPlayer("/lemmings/recursos/MusicaNivel4.wav");
                     break;
                 default:
                     System.out.println("No hay más niveles.");
@@ -251,7 +251,7 @@ public class PanelLemmings extends JPanel implements Runnable{
                 interframe = 16;
 
             try {
-                Thread.sleep(16);
+                Thread.sleep(interframe);
             } catch (InterruptedException e){
                 e.printStackTrace();
             }
