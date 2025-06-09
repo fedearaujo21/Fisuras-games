@@ -3,6 +3,8 @@ package pong;
 public class Config {
     public static boolean pantallaCompleta = false;
     public static boolean sonidoActivado = true;
+    public static boolean singleMode = false;
+    public static int multiplicadorDificultad = 1;
     public static String skin = "original";
     public static String pistaMusical = "original";
 
@@ -16,6 +18,7 @@ public class Config {
     public static void resetDefaults() {
         pantallaCompleta = false;
         sonidoActivado = true;
+        singleMode = false;
         skin = "original";
         pistaMusical = "original";
         teclaArribaJugador1 = java.awt.event.KeyEvent.VK_UP;

@@ -4,6 +4,8 @@ import lemmings.control.AudioPlayer;
 import lemmings.modelo.Lemming;
 import lemmings.modelo.Nivel;
 import lemmings.modelo.BotonHabilidad;
+import lemmings.modelo.*;
+
 import java.util.List;
 import java.util.ArrayList;
 import javax.imageio.ImageIO;
@@ -11,6 +13,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 //Para detectar coordenadas
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -25,13 +29,15 @@ public class PanelLemmings extends JPanel implements Runnable{
     private List<BotonHabilidad> botonesHabilidad = new ArrayList<>();
     private BotonHabilidad botonSeleccionado = null;
     private boolean esperandoClick;
+    private int interframe = 16;
     private BotonHabilidad botonPresionadoMomentaneo = null;
     private long tiempoBotonPresionado = 0;
 
-    public PanelLemmings(JFrame ventana){
+    public PanelLemmings(JFrame ventana, int setNivel){
         setPreferredSize(new Dimension(800,600));
         setFocusable(true);
         setBackground(Color.black);
+        this.nivelNum = setNivel;
         //aca se cargan los niveles
 
         cargarNivel(nivelNum);
@@ -45,7 +51,7 @@ public class PanelLemmings extends JPanel implements Runnable{
             public void mouseClicked(MouseEvent e) {
                 int mx = e.getX();
                 int my = e.getY();
-                System.out.println("x: "+ mx +  "y" + my);
+
                 if (esperandoClick) {
                     esperandoClick = false;
                     if(nivel.getNivelAprobado()){
@@ -111,9 +117,9 @@ public class PanelLemmings extends JPanel implements Runnable{
             BufferedImage iconoMinero = ImageIO.read(new File("src/lemmings/recursos/iconoMinero.png"));
             BufferedImage iconoMas = ImageIO.read(new File("src/lemmings/recursos/esferaMas.png"));
             BufferedImage iconoMenos = ImageIO.read(new File("src/lemmings/recursos/esferaMenos.png"));
-            BufferedImage icono11Hab = ImageIO.read(new File("src/lemmings/recursos/iconoManolo.png"));
-            BufferedImage icono12Hab = ImageIO.read(new File("src/lemmings/recursos/iconoManolo.png"));
-            BufferedImage icono13Hab = ImageIO.read(new File("src/lemmings/recursos/iconoManolo.png"));
+            BufferedImage iconoAcelerar = ImageIO.read(new File("src/lemmings/recursos/acelerarIcono.png"));
+            BufferedImage iconoPausa = ImageIO.read(new File("src/lemmings/recursos/iconoPausa.png"));
+            BufferedImage iconoPlay = ImageIO.read(new File("src/lemmings/recursos/iconoPlay.png"));
             BufferedImage icono14Hab = ImageIO.read(new File("src/lemmings/recursos/iconoManolo.png"));
 
             int xInicial = 2;
@@ -126,15 +132,15 @@ public class PanelLemmings extends JPanel implements Runnable{
             botonesHabilidad.add(new BotonHabilidad(xInicial + 1 * espacio, yBoton, ancho, alto, iconoParacaidas, "Paracaidas", nivel.getStockHabilidades()));
             botonesHabilidad.add(new BotonHabilidad(xInicial + 2 * espacio, yBoton, ancho, alto, iconoConstructor, "Constructor", nivel.getStockHabilidades()));
             botonesHabilidad.add(new BotonHabilidad(xInicial + 3 * espacio, yBoton, ancho, alto, iconoBloqueador, "Bloqueador", nivel.getStockHabilidades()));
-            botonesHabilidad.add(new BotonHabilidad(xInicial + 4 * espacio, yBoton, ancho, alto, iconoKameHameHa, "KameHameHa", nivel.getStockHabilidades()));
+            botonesHabilidad.add(new BotonHabilidad(xInicial + 4 * espacio, yBoton, ancho, alto, iconoKameHameHa, "Quinta", nivel.getStockHabilidades()));
             botonesHabilidad.add(new BotonHabilidad(xInicial + 5 * espacio, yBoton, ancho, alto, icono6Hab, "Sexta", nivel.getStockHabilidades()));
             botonesHabilidad.add(new BotonHabilidad(xInicial + 6 * espacio, yBoton, ancho, alto, icono7Hab, "Septima", nivel.getStockHabilidades()));
             botonesHabilidad.add(new BotonHabilidad(xInicial + 7 * espacio, yBoton, ancho, alto, iconoMinero, "Minero", nivel.getStockHabilidades()));
             botonesHabilidad.add(new BotonHabilidad(xInicial + 8 * espacio, yBoton, ancho, alto, iconoMas, "Mas", nivel.getStockHabilidades()));
             botonesHabilidad.add(new BotonHabilidad(xInicial + 9 * espacio, yBoton, ancho, alto, iconoMenos, "Menos", nivel.getStockHabilidades()));
-            botonesHabilidad.add(new BotonHabilidad(xInicial + 10 * espacio, yBoton, ancho, alto, icono11Hab, "Onceava", nivel.getStockHabilidades()));
-            botonesHabilidad.add(new BotonHabilidad(xInicial + 11 * espacio, yBoton, ancho, alto, icono12Hab, "Doceava", nivel.getStockHabilidades()));
-            botonesHabilidad.add(new BotonHabilidad(xInicial + 12 * espacio, yBoton, ancho, alto, icono13Hab, "DecimoTra", nivel.getStockHabilidades()));
+            botonesHabilidad.add(new BotonHabilidad(xInicial + 10 * espacio, yBoton, ancho, alto, iconoAcelerar, "acelerar", nivel.getStockHabilidades()));
+            botonesHabilidad.add(new BotonHabilidad(xInicial + 11 * espacio, yBoton, ancho, alto, iconoPausa, "Pausa", nivel.getStockHabilidades()));
+            botonesHabilidad.add(new BotonHabilidad(xInicial + 12 * espacio, yBoton, ancho, alto, iconoPlay, "Play", nivel.getStockHabilidades()));
             botonesHabilidad.add(new BotonHabilidad(xInicial + 13 * espacio, yBoton, ancho, alto, icono14Hab, "DecimoCta", nivel.getStockHabilidades()));
 
         } catch (IOException e) {
@@ -176,8 +182,10 @@ public class PanelLemmings extends JPanel implements Runnable{
                     return;
             }
 
-            if (musicaFondo != null) {
-                musicaFondo.loop();
+            if (musicaFondo != null && !Config.mute) {
+                musicaFondo.setVolume(Config.volumen);
+                System.out.println(Config.volumen);
+                musicaFondo.loop(); // Empieza a reproducir la música en bucle
             }
 
             if (hilo == null || !hilo.isAlive()) {
@@ -189,6 +197,7 @@ public class PanelLemmings extends JPanel implements Runnable{
             e.printStackTrace();
         }
     }
+
 
     @Override
     protected void paintComponent(Graphics g) {
@@ -213,6 +222,10 @@ public class PanelLemmings extends JPanel implements Runnable{
         if (System.currentTimeMillis() - tiempoBotonPresionado >= 150) {
             botonPresionadoMomentaneo = null;
         }
+        g.setColor(Color.BLACK);
+        g.setFont(new Font("Arial", Font.PLAIN, 15));
+        g.drawString("Lemmings salvados: " + nivel.getLemmingsSalvados() + "/" + (nivel.getObjetivoLemmings() + 1), 620, 335);
+        g.drawString(Long.toString(nivel.getTiempo()/60) + ":" + Long.toString(nivel.getTiempo()%60) + "/" + Long.toString(nivel.getTiempoLimite()) + " minutos", 620, 350);
     }
 
     @Override
@@ -226,17 +239,29 @@ public class PanelLemmings extends JPanel implements Runnable{
 
             if (nivel.getNivelCompletado() && !esperandoClick) {
                 // El nivel se completó, mostramos mensaje y esperamos clic
-
                 esperandoClick = true;
                 nivel.setNivelCompletado(false);
                 System.out.println("Nivel completado. Esperando clic para continuar...");
             }
 
 
+            if (this.botonSeleccionado != null && this.botonSeleccionado.getNombre() == "acelerar")
+                interframe = 6;
+            else
+                interframe = 16;
+
             try {
                 Thread.sleep(16);
             } catch (InterruptedException e){
                 e.printStackTrace();
+            }
+
+            while(this.botonSeleccionado != null && this.botonSeleccionado.getNombre() == "Pausa"){
+                try {
+                    Thread.sleep(interframe);
+                } catch (InterruptedException e){
+                    e.printStackTrace();
+                }
             }
         }
     }

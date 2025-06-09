@@ -23,8 +23,8 @@ public class Cancha extends Panel {
         setBackground(Color.BLACK);
 
         // Crear objetos
-        jugador1 = new Paleta(30, 250, Config.teclaArribaJugador1, Config.teclaAbajoJugador1);
-        jugador2 = new Paleta(750, 250, Config.teclaArribaJugador2, Config.teclaAbajoJugador2);
+        jugador1 = new Paleta(30, 250, Config.teclaArribaJugador1, Config.teclaAbajoJugador1, 1, false);
+        jugador2 = new Paleta(750, 250, Config.teclaArribaJugador2, Config.teclaAbajoJugador2, Config.multiplicadorDificultad, true);
         pelota = new Pelota(390, 290);
 
         // Botón reiniciar (invisible al principio)
@@ -51,7 +51,21 @@ public class Cancha extends Panel {
         if (juegoTerminado) return;
 
         jugador1.actualizar();
-        jugador2.actualizar();
+        //cpu
+        if(Config.singleMode){
+            if(pelota.getY() < jugador2.getY())
+                jugador2.setCpuSubiendo(true);
+            else{
+                if(pelota.getY() > jugador2.getY()) {
+                    jugador2.setCpuSubiendo(false);
+                    jugador2.setCpuBajando(true);
+                }else
+                    jugador2.setCpuSubiendo(false);
+            }
+            jugador2.actualizar();
+        }else
+            jugador2.actualizar();
+
         pelota.actualizar(jugador1, jugador2);
 
         if (pelota.getX() < 0) {
