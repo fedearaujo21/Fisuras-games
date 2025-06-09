@@ -28,7 +28,9 @@ public class Lemming {
         CAMINANDO,
         CAYENDO,
         EXCAVANDO,
-        BLOQUEANDO
+        BLOQUEANDO,
+        AUTOBOMBA,
+        EXPLOTO
     }
 
     private int x, y;
@@ -39,7 +41,7 @@ public class Lemming {
     private long tiempoCreacion;
     //private boolean fueUsado = false;
     private static final int MAX_STEP_HEIGHT = 12;
-
+    private long tiempoInicioAutoBomba = -1;
     private Habilidad habilidadActiva;
     private int ticksHabilidad = 0;
     private static final int MAX_FALL_ADJUST = 5;
@@ -240,6 +242,13 @@ public class Lemming {
     }
 
     public void caminar(List<Lemming> todosLosLemmings) {
+
+        if (estado == EstadoLemming.AUTOBOMBA) {
+            if (tiempoInicioAutoBomba == -1) {
+                tiempoInicioAutoBomba = System.currentTimeMillis();
+            }
+            return;
+        }
 
         if (estado == EstadoLemming.BLOQUEANDO) {
             frameTick++;
@@ -467,11 +476,16 @@ public class Lemming {
     public Habilidad getHabilidadActiva() { return habilidadActiva; }
     public void setHabilidadActiva(Habilidad habilidadActiva) {
         this.habilidadActiva = habilidadActiva;
-        if (habilidadActiva instanceof HabilidadBloqueador) {
+        if (habilidadActiva instanceof HabilidadAutoBomba) {
+            this.estado = EstadoLemming.AUTOBOMBA;
+            this.tiempoInicioAutoBomba = System.currentTimeMillis();
+        }
+        else if (habilidadActiva instanceof HabilidadBloqueador) {
             this.estado = EstadoLemming.BLOQUEANDO;
         }
         this.ticksHabilidad = 0;
     }
+
     public void desactivarHabilidad() {
         this.habilidadActiva = null;
         this.ticksHabilidad = 0;
@@ -490,7 +504,8 @@ public class Lemming {
         }
         return false;
     }
-
+    public long getTiempoInicioAutoBomba(){return this.tiempoInicioAutoBomba;}
+    public int getTicksHabilidad(){return this.ticksHabilidad;}
     public void setEstado(EstadoLemming estado){this.estado = estado;}
     public int getX() { return x; }
     public void setX(int x) { this.x = x; }
