@@ -2,7 +2,6 @@ package lemmings.vista;
 
 import lemmings.control.AudioPlayer;
 import lemmings.modelo.Lemming;
-import lemmings.modelo.Mapa;
 import lemmings.modelo.Nivel;
 import lemmings.modelo.BotonHabilidad;
 import java.util.List;
@@ -12,8 +11,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 //Para detectar coordenadas
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -24,7 +21,7 @@ public class PanelLemmings extends JPanel implements Runnable{
     private Nivel nivel;
     private Thread hilo;
     private AudioPlayer musicaFondo;
-    private int nivelNum = 1;
+    private int nivelNum = 4;
     private List<BotonHabilidad> botonesHabilidad = new ArrayList<>();
     private BotonHabilidad botonSeleccionado = null;
     private boolean esperandoClick;
@@ -48,7 +45,7 @@ public class PanelLemmings extends JPanel implements Runnable{
             public void mouseClicked(MouseEvent e) {
                 int mx = e.getX();
                 int my = e.getY();
-
+                System.out.println("x: "+ mx +  "y" + my);
                 if (esperandoClick) {
                     esperandoClick = false;
                     if(nivel.getNivelAprobado()){
@@ -106,7 +103,7 @@ public class PanelLemmings extends JPanel implements Runnable{
             // ACA HAY QUE SEGUIR AGREGANDO LAS IMAGENES DE LAS HABILIDADES
             BufferedImage icono1Hab = ImageIO.read(new File("src/lemmings/recursos/iconoManolo.png"));
             BufferedImage iconoParacaidas = ImageIO.read(new File("src/lemmings/recursos/iconoParacaidas.png"));
-            BufferedImage icono3Hab = ImageIO.read(new File("src/lemmings/recursos/iconoManolo.png"));
+            BufferedImage iconoConstructor = ImageIO.read(new File("src/lemmings/recursos/iconoConstructor.png"));
             BufferedImage iconoBloqueador = ImageIO.read(new File("src/lemmings/recursos/iconoBloqueador.png"));
             BufferedImage icono5Hab = ImageIO.read(new File("src/lemmings/recursos/iconoManolo.png"));
             BufferedImage icono6Hab = ImageIO.read(new File("src/lemmings/recursos/iconoManolo.png"));
@@ -127,9 +124,9 @@ public class PanelLemmings extends JPanel implements Runnable{
 
             botonesHabilidad.add(new BotonHabilidad(xInicial + 0 * espacio, yBoton, ancho, alto, icono1Hab, "AutoBomba", nivel.getStockHabilidades()));
             botonesHabilidad.add(new BotonHabilidad(xInicial + 1 * espacio, yBoton, ancho, alto, iconoParacaidas, "Paracaidas", nivel.getStockHabilidades()));
-            botonesHabilidad.add(new BotonHabilidad(xInicial + 2 * espacio, yBoton, ancho, alto, icono3Hab, "Constructor", nivel.getStockHabilidades()));
+            botonesHabilidad.add(new BotonHabilidad(xInicial + 2 * espacio, yBoton, ancho, alto, iconoConstructor, "Constructor", nivel.getStockHabilidades()));
             botonesHabilidad.add(new BotonHabilidad(xInicial + 3 * espacio, yBoton, ancho, alto, iconoBloqueador, "Bloqueador", nivel.getStockHabilidades()));
-            botonesHabilidad.add(new BotonHabilidad(xInicial + 4 * espacio, yBoton, ancho, alto, icono5Hab, "Quinta", nivel.getStockHabilidades()));
+            botonesHabilidad.add(new BotonHabilidad(xInicial + 4 * espacio, yBoton, ancho, alto, icono5Hab, "KameHameHa", nivel.getStockHabilidades()));
             botonesHabilidad.add(new BotonHabilidad(xInicial + 5 * espacio, yBoton, ancho, alto, icono6Hab, "Sexta", nivel.getStockHabilidades()));
             botonesHabilidad.add(new BotonHabilidad(xInicial + 6 * espacio, yBoton, ancho, alto, icono7Hab, "Septima", nivel.getStockHabilidades()));
             botonesHabilidad.add(new BotonHabilidad(xInicial + 7 * espacio, yBoton, ancho, alto, iconoMinero, "Minero", nivel.getStockHabilidades()));
@@ -167,6 +164,11 @@ public class PanelLemmings extends JPanel implements Runnable{
                 case 3:
                     nivelNum = 3;
                     nivel = new Nivel(3,"Nivel 3",ImageIO.read(getClass().getResourceAsStream("/lemmings/recursos/Nivel3.png")));
+                    //musicaFondo = new AudioPlayer("/lemmings/recursos/MusicaNivel3.wav");
+                    break;
+                case 4:
+                    nivelNum = 4;
+                    nivel = new Nivel(4,"Nivel 4",ImageIO.read(getClass().getResourceAsStream("/lemmings/recursos/Nivel4.png")));
                     //musicaFondo = new AudioPlayer("/lemmings/recursos/MusicaNivel3.wav");
                     break;
                 default:
