@@ -31,7 +31,8 @@ public class Lemming {
         BLOQUEANDO,
         AUTOBOMBA,
         CONSTRUYENDO,
-        ESCALANDO
+        KAMEHAMEHA_CARGANDO,
+        KAMEHAMEHA_DISPARANDO
     }
 
     private int x, y;
@@ -52,7 +53,7 @@ public class Lemming {
     private int ticksMovimientoNormal = 0;
 
     private int bloquesConstruidos = 0; // Contador de bloques construidos
-    private static final int TICKS_POR_ACCION_CONSTRUCTOR = 20;
+    private static final int TICKS_POR_ACCION_CONSTRUCTOR = 10;
 
     private int ticksEnAire = 0; // Contador de ticks que el Lemming lleva en el aire
     private static final int UMBRAL_CAIDA_MINERO = 10;
@@ -286,6 +287,14 @@ public class Lemming {
             return; // El constructor no se mueve horizontalmente en cada tick normal
         }
 
+        if (estado == EstadoLemming.KAMEHAMEHA_CARGANDO || estado == EstadoLemming.KAMEHAMEHA_DISPARANDO) {
+            if (habilidadActiva instanceof HabilidadKameHameHa) {
+                ((HabilidadKameHameHa) habilidadActiva).aplicarKameHameHa(this);
+            }
+            // No se mueve horizontalmente ni verticalmente
+            return;
+        }
+
         long ahora = System.currentTimeMillis();
         boolean colisionTemporalmenteDesactivada = (ahora - tiempoCreacion) < 300;
         frameTick++;
@@ -454,6 +463,7 @@ public class Lemming {
             case CAYENDO -> frame = framesCaida.get(frameActual % framesCaida.size());
             case EXCAVANDO -> frame = framesExcavar.get(frameActual % framesExcavar.size());
             case BLOQUEANDO -> frame = framesBloqueador.get(frameActual % framesBloqueador.size());
+            case KAMEHAMEHA_CARGANDO, KAMEHAMEHA_DISPARANDO -> frame = framesCaminar.get(0);
             default -> frame = framesCaminar.get(0);
         }
 
@@ -494,6 +504,41 @@ public class Lemming {
         if (estado == EstadoLemming.BLOQUEANDO) {
             offsetX = (frame.getWidth() - lemmingWidth) / 2;
         }
+
+        if (habilidadActiva instanceof HabilidadKameHameHa kameHameHa) {
+            System.out.println();
+            int ticks = kameHameHa.getTicksActivo();
+            int duracionCarga = kameHameHa.getDuracionCargaTicks();
+            int duracionViaje = kameHameHa.getDuracionViajeTicks();
+
+            if (ticks > duracionCarga) {
+                // El rayo está viajando o ha impactado
+                int origenX = x + lemmingWidth - 4 ;
+                int origenY = y + lemmingHeight - 4;
+
+                int puntoImpactoX = kameHameHa.getPuntoImpactoX();
+                int puntoImpactoY = kameHameHa.getPuntoImpactoY();
+
+
+                // Calcular la posición actual del "frente" del rayo
+                float progresoViaje = (float)(ticks - duracionCarga) / duracionViaje;
+                progresoViaje = Math.min(1.0f, progresoViaje); // Asegurarse de que no exceda 1.0
+
+                int rayoActualX = origenX + (int)((puntoImpactoX - origenX) * progresoViaje);
+                int rayoActualY = origenY + (int)((puntoImpactoY - origenY) * progresoViaje);
+
+                // Dibujar el rayo
+                g.setColor(new Color(0, 255, 255, 180)); // Un azul brillante para el rayo
+                Graphics2D g2d = (Graphics2D) g;
+
+                // Dibujar la línea del rayo
+                g2d.setStroke(new BasicStroke(10)); // Grosor del rayo
+                g2d.drawLine(origenX, origenY, rayoActualX, rayoActualY);
+
+                // Dibujar una pequeña "bola" en el frente del rayo
+                g2d.fillOval(rayoActualX - 5, rayoActualY - 5, 20, 20);
+            }
+        }
     }
     public int getTicksEnAire() {
         return ticksEnAire;
@@ -511,6 +556,9 @@ public class Lemming {
         }
         else if (habilidadActiva instanceof HabilidadConstructor) { // ¡Nuevo!
             this.estado = EstadoLemming.CONSTRUYENDO;
+        }
+        else if (habilidadActiva instanceof HabilidadKameHameHa) { // ¡Nuevo!
+            this.estado = EstadoLemming.KAMEHAMEHA_CARGANDO;
         }
         this.ticksHabilidad = 0;
     }
