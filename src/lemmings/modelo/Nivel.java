@@ -2,6 +2,8 @@ package lemmings.modelo;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -9,6 +11,8 @@ import java.util.PrimitiveIterator;
 
 import lemmings.control.AudioPlayer;
 import lemmings.modelo.Lemming;
+
+import javax.imageio.ImageIO;
 
 public class Nivel {
     private int nivelNum;
@@ -174,7 +178,7 @@ public class Nivel {
                 if(tiempoActual - l.getTiempoInicioAutoBomba() >= 3800){
                     autoBomba.explotar(l.getX(),l.getY(),30);
                     sonidoExplosion.play();
-                    //lemmingsMuertos--;
+                    lemmingsMuertos++;
                     cantidadSpawns--;
                     cantidadLem--;
                     System.out.println("Un lemming EXPLOTO");
@@ -187,6 +191,7 @@ public class Nivel {
                     System.out.println("Lemming murió por agua");
                     cantidadSpawns -= 1;
                     cantidadLem -= 1;
+                    lemmingsMuertos++;
                     it.remove();
                 }
             }
@@ -194,7 +199,7 @@ public class Nivel {
             if (!(l.getHabilidadActiva() instanceof HabilidadParacaidas)) {
 
                 if (l.getY() > 318 || (l.getTicksEnAire() > 109 && l.getImpacto()) ) {
-                    lemmingsMuertos--;
+                    lemmingsMuertos++;
                     cantidadSpawns--;
                     cantidadLem--;
                     System.out.println("Un lemming ha muerto por caída");
@@ -210,7 +215,7 @@ public class Nivel {
     public void dibujar(Graphics g){
         long ahora = System.currentTimeMillis();
         mapa.dibujar(g);
-
+        salida.dibujar(g);
         // DIBUJA LA ENTRADA (nube animada)
         entrada.dibujar(g);
 
@@ -218,36 +223,81 @@ public class Nivel {
             l.dibujar(g);
         }
 
-        if(nivelCompletado){
-            g.setColor(new Color(0, 0, 0, 170)); // Fondo semitransparente
-            g.fillRect(0, 0, mapa.getAncho(), mapa.getAlto());
+        if (nivelCompletado) {
+            Graphics2D g2d = (Graphics2D) g;
+            g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
-            if(objetivoLemmings < lemmingsSalvados && ahora - tiempoInicio < tiempo) {
-                this.nivelAprobado = true;
-                g.setColor(Color.YELLOW);
-                g.setFont(new Font("Arial", Font.BOLD, 40));
-                g.drawString("¡Felicitaciones!", mapa.getAncho() / 2 - 150, mapa.getAlto() / 2 - 20);
+            int panelAncho = 400;
+            int panelAlto = 260;
+            int panelX = (mapa.getAncho() - panelAncho) / 2;
+            int panelY = (mapa.getAlto() - panelAlto) / 2;
 
-                g.setFont(new Font("Arial", Font.PLAIN, 24));
-                g.drawString("Nivel completado", mapa.getAncho() / 2 - 110, mapa.getAlto() / 2 + 20);
-            } else{
+            // Fondo oscuro semitransparente
+            g2d.setColor(new Color(0, 0, 0, 170));
+            g2d.fillRect(0, 0, mapa.getAncho(), mapa.getAlto());
+
+            // Cuadro del mensaje
+            g2d.setColor(new Color(30, 30, 30, 220));
+            g2d.fillRoundRect(panelX, panelY, panelAncho, panelAlto, 20, 20);
+            g2d.setColor(Color.YELLOW);
+            g2d.setStroke(new BasicStroke(3));
+            g2d.drawRoundRect(panelX, panelY, panelAncho, panelAlto, 20, 20);
+
+            // Título y subtítulo
+            String titulo = objetivoLemmings <= lemmingsSalvados && ahora - tiempoInicio < tiempo
+                    ? "¡Felicitaciones!" : "¡Perdiste!";
+            String subtitulo = "";
+
+            if (titulo.equals("¡Felicitaciones!")) {
+                nivelAprobado = true;
+                subtitulo = "Nivel completado";
+            } else {
                 nivelAprobado = false;
-                g.setColor(Color.YELLOW);
-                g.setFont(new Font("Arial", Font.BOLD, 40));
-                g.drawString("¡Perdiste!", mapa.getAncho() / 2 - 150, mapa.getAlto() / 2 - 20);
-
-                g.setFont(new Font("Arial", Font.PLAIN, 24));
                 if (tiempo < (ahora - tiempoInicio))
-                   g.drawString("Tiempor fuera pasaron los " + ((this.tiempo / 1000) /60) + " minutos de tiempo", mapa.getAncho() / 2 - 250, mapa.getAlto() / 2 + 20);
+                    subtitulo = "Se acabó el tiempo";
                 else
-                    g.drawString("Se necesita un total de: "+this.objetivoLemmings+" para poder avanzar...", mapa.getAncho() / 2 - 250, mapa.getAlto() / 2 + 20);
+                    subtitulo = "Necesitás salvar al menos: " + this.objetivoLemmings;
             }
-            g.setFont(new Font("Arial", Font.PLAIN, 20));
-            g.drawString("Lemmings salvados:" + this.lemmingsSalvados, mapa.getAncho() / 2 - 150, mapa.getAlto() / 2 + 40);
-            g.drawString("Lemmings muertos:" + -this.lemmingsMuertos, mapa.getAncho() / 2 - 150, mapa.getAlto() / 2 + 60);
+
+            g2d.setFont(new Font("Arial", Font.BOLD, 32));
+            FontMetrics fm = g2d.getFontMetrics();
+            g2d.drawString(titulo, panelX + (panelAncho - fm.stringWidth(titulo)) / 2, panelY + 45);
+
+            g2d.setFont(new Font("Arial", Font.PLAIN, 20));
+            fm = g2d.getFontMetrics();
+            g2d.drawString(subtitulo, panelX + (panelAncho - fm.stringWidth(subtitulo)) / 2, panelY + 75);
+
+            // Lemmings salvados/muertos
+            String s1 = "Lemmings salvados: " + this.lemmingsSalvados;
+            String s2 = "Lemmings muertos: " + (this.lemmingsMuertos);
+            g2d.drawString(s1, panelX + 30, panelY + 110);
+            g2d.drawString(s2, panelX + 30, panelY + 135);
+
+            // Imagen decorativa
+            try {
+                BufferedImage goku;
+                if (nivelAprobado) {
+                    goku = ImageIO.read(new File("src/lemmings/recursos/gokuFeliz.png"));
+                } else {
+                    goku = ImageIO.read(new File("src/lemmings/recursos/gokuTriste.png"));
+                }
+
+                int nuevoAncho = 100;
+                int nuevoAlto = 100;
+
+                Image gokuEscalado = goku.getScaledInstance(nuevoAncho, nuevoAlto, Image.SCALE_SMOOTH);
+
+                int imgX = panelX + (panelAncho - nuevoAncho) / 2;
+                int imgY = panelY + panelAlto - nuevoAlto - 10;
+
+                g2d.drawImage(gokuEscalado, imgX, imgY, null);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
-        salida.dibujar(g);
+
+
 
         //g.drawString("Mineros: " + stockHabilidades.getCantidad("Minero"), 10, 40);
     }
