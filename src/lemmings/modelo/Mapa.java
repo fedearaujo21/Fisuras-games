@@ -56,6 +56,8 @@ public class Mapa {
         }
     }
 
+
+
     public void activarColisiones(boolean estado) {
         this.colisionesActivas = estado;
     }

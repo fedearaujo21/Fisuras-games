@@ -125,7 +125,7 @@ public class PanelLemmings extends JPanel implements Runnable{
             int alto = 76;
             int espacio = 44;
 
-            botonesHabilidad.add(new BotonHabilidad(xInicial + 0 * espacio, yBoton, ancho, alto, icono1Hab, "Primera", nivel.getStockHabilidades()));
+            botonesHabilidad.add(new BotonHabilidad(xInicial + 0 * espacio, yBoton, ancho, alto, icono1Hab, "AutoBomba", nivel.getStockHabilidades()));
             botonesHabilidad.add(new BotonHabilidad(xInicial + 1 * espacio, yBoton, ancho, alto, iconoParacaidas, "Paracaidas", nivel.getStockHabilidades()));
             botonesHabilidad.add(new BotonHabilidad(xInicial + 2 * espacio, yBoton, ancho, alto, icono3Hab, "Tercera", nivel.getStockHabilidades()));
             botonesHabilidad.add(new BotonHabilidad(xInicial + 3 * espacio, yBoton, ancho, alto, iconoBloqueador, "Bloqueador", nivel.getStockHabilidades()));
@@ -157,17 +157,17 @@ public class PanelLemmings extends JPanel implements Runnable{
                 case 1:
                     nivelNum = 1;
                     nivel = new Nivel(1, "Nivel 1", ImageIO.read(getClass().getResourceAsStream("/lemmings/recursos/Nivel1.png")));
-                    musicaFondo = new AudioPlayer("/lemmings/recursos/MusicaNivel1.wav");
+                    //musicaFondo = new AudioPlayer("/lemmings/recursos/MusicaNivel1.wav");
                     break;
                 case 2:
                     nivelNum = 2;
                     nivel = new Nivel(2, "Nivel 2", ImageIO.read(getClass().getResourceAsStream("/lemmings/recursos/Nivel2.png")));
-                    musicaFondo = new AudioPlayer("/lemmings/recursos/MusicaNivel2.wav");
+                    //musicaFondo = new AudioPlayer("/lemmings/recursos/MusicaNivel2.wav");
                     break;
                 case 3:
                     nivelNum = 3;
                     nivel = new Nivel(3,"Nivel 3",ImageIO.read(getClass().getResourceAsStream("/lemmings/recursos/Nivel3.png")));
-                    musicaFondo = new AudioPlayer("/lemmings/recursos/MusicaNivel3.wav");
+                    //musicaFondo = new AudioPlayer("/lemmings/recursos/MusicaNivel3.wav");
                     break;
                 default:
                     System.out.println("No hay más niveles.");
