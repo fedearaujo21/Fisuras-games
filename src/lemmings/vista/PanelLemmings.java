@@ -117,9 +117,9 @@ public class PanelLemmings extends JPanel implements Runnable{
             BufferedImage iconoMinero = ImageIO.read(new File("src/lemmings/recursos/iconoMinero.png"));
             BufferedImage iconoMas = ImageIO.read(new File("src/lemmings/recursos/esferaMas.png"));
             BufferedImage iconoMenos = ImageIO.read(new File("src/lemmings/recursos/esferaMenos.png"));
-            BufferedImage iconoAcelerar = ImageIO.read(new File("src/lemmings/recursos/acelerarIcono.png"));
-            BufferedImage iconoPausa = ImageIO.read(new File("src/lemmings/recursos/iconoPausa.png"));
-            BufferedImage iconoPlay = ImageIO.read(new File("src/lemmings/recursos/iconoPlay.png"));
+            BufferedImage iconoAcelerar = ImageIO.read(new File("src/lemmings/recursos/esferaAcelerar.png"));
+            BufferedImage iconoPausa = ImageIO.read(new File("src/lemmings/recursos/esferaPausa.png"));
+            BufferedImage iconoPlay = ImageIO.read(new File("src/lemmings/recursos/esferaPlay.png"));
             BufferedImage icono14Hab = ImageIO.read(new File("src/lemmings/recursos/iconoManolo.png"));
 
             int xInicial = 2;
