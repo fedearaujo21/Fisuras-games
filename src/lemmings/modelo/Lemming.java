@@ -41,7 +41,6 @@ public class Lemming {
     private int lemmingWidth = 16;
     private int lemmingHeight = 25;
     private long tiempoCreacion;
-    //private boolean fueUsado = false;
     private static final int MAX_STEP_HEIGHT = 12;
     private long tiempoInicioAutoBomba = -1;
     private Habilidad habilidadActiva;
@@ -592,6 +591,7 @@ public class Lemming {
     public void resetBloquesConstruidos() {
         this.bloquesConstruidos = 0;
     }
+
 
     public long getTiempoInicioAutoBomba(){return this.tiempoInicioAutoBomba;}
     public int getTicksHabilidad(){return this.ticksHabilidad;}

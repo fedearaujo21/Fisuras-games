@@ -1,5 +1,7 @@
 package lemmings.modelo;
 
+import lemmings.control.AudioPlayer;
+
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -12,7 +14,7 @@ public class Salida {
     private int x, y;
     private int ancho = 86;
     private int alto = 80;
-
+    private AudioPlayer sonidoSalida;
     private List<BufferedImage> framesSalida;
     private int frameActual = 0;
     private int frameTick = 0;
