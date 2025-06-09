@@ -51,6 +51,7 @@ public class Nivel {
                 this.lemmings = new ArrayList<>();
                 this.stockHabilidades = new Stock();
                 this.tiempoInicio = System.currentTimeMillis();
+                stockHabilidades.añadirHabilidad("Constructor",5);
                 stockHabilidades.añadirHabilidad("AutoBomba",5);
                 stockHabilidades.añadirHabilidad("Minero",5);
                 stockHabilidades.añadirHabilidad("Paracaidas", 5);
@@ -178,6 +179,15 @@ public class Nivel {
                     cantidadLem--;
                     System.out.println("Un lemming ha muerto por caída");
                     it.remove();
+                    if (nivelNum == 4) { // sólo en Nivel 4 si querés
+                        boolean murioPorAgua = l.getX() >= 0 && l.getX() <= 800 && l.getY() >= 230 && l.getY() <= 300;
+                        if (murioPorAgua) {
+                            System.out.println("Lemming murió por agua");
+                            cantidadSpawns -= 1;
+                            cantidadLem -= 1;
+                            it.remove();
+                        }
+                    }
                 }
             }
         }
@@ -260,7 +270,10 @@ public class Nivel {
             case "AutoBomba":
                 habilidad = new HabilidadAutoBomba(this.mapa);
                 break;
-            // Agregá más habilidades acá
+            case "Constructor":
+                habilidad = new HabilidadConstructor(this.mapa);
+                break;
+            // Agrega más habilidades acá
         }
         if (habilidad != null && stockHabilidades.getCantidad(nombreHabilidad) > 0) {
             if (habilidad.activar(lemming)) {
