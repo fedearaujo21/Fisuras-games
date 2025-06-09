@@ -40,7 +40,7 @@ public class Mapa {
 
     public void agregarPix(int x, int y) {
         if (x >= 0 && x < ancho && y >= 0 && y < alto) {
-            terreno.setRGB(x, y, 0xFF000000); // Negro opaco como ejemplo de terreno construido
+            terreno.setRGB(x, y, 0xFF8B4513); // Negro opaco como ejemplo de terreno construido
             colision[x][y] = true;
         }
     }

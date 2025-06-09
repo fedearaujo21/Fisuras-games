@@ -30,7 +30,8 @@ public class Lemming {
         EXCAVANDO,
         BLOQUEANDO,
         AUTOBOMBA,
-        EXPLOTO
+        CONSTRUYENDO,
+        ESCALANDO
     }
 
     private int x, y;
@@ -49,6 +50,9 @@ public class Lemming {
 
     private static final int TICKS_POR_MOVIMIENTO_NORMAL = 2;
     private int ticksMovimientoNormal = 0;
+
+    private int bloquesConstruidos = 0; // Contador de bloques construidos
+    private static final int TICKS_POR_ACCION_CONSTRUCTOR = 20;
 
     private int ticksEnAire = 0; // Contador de ticks que el Lemming lleva en el aire
     private static final int UMBRAL_CAIDA_MINERO = 10;
@@ -257,6 +261,29 @@ public class Lemming {
                 frameTick = 0;
             }
             return;
+        }
+
+        if (estado == EstadoLemming.CONSTRUYENDO) {
+            // Un constructor se queda quieto mientras construye.
+            // La animación del constructor podría ser estática o específica.
+            // Aquí puedes actualizar el frame para una animación de construcción si la tienes.
+            // Si no, simplemente retorna para que no se mueva horizontalmente.
+            frameTick++;
+            if (frameTick >= frameDelay) {
+                // Si tienes frames específicos para construir, úsalos aquí
+                // Por ejemplo: frameActual = (frameActual + 1) % framesConstruyendo.size();
+                frameActual = (frameActual + 1) % framesCaminar.size(); // O usa frames de caminar si no hay específicos
+                frameTick = 0;
+            }
+
+            ticksHabilidad++; // Incrementa los ticks para la acción de habilidad
+            if (ticksHabilidad >= TICKS_POR_ACCION_CONSTRUCTOR) {
+                if (habilidadActiva instanceof HabilidadConstructor) {
+                    ((HabilidadConstructor) habilidadActiva).construir(this);
+                }
+                ticksHabilidad = 0; // Reinicia el contador de ticks
+            }
+            return; // El constructor no se mueve horizontalmente en cada tick normal
         }
 
         long ahora = System.currentTimeMillis();
@@ -482,6 +509,9 @@ public class Lemming {
         else if (habilidadActiva instanceof HabilidadBloqueador) {
             this.estado = EstadoLemming.BLOQUEANDO;
         }
+        else if (habilidadActiva instanceof HabilidadConstructor) { // ¡Nuevo!
+            this.estado = EstadoLemming.CONSTRUYENDO;
+        }
         this.ticksHabilidad = 0;
     }
 
@@ -503,6 +533,18 @@ public class Lemming {
         }
         return false;
     }
+    public int getBloquesConstruidos() {
+        return this.bloquesConstruidos;
+    }
+
+    public void aumentarBloquesConstruidos() {
+        this.bloquesConstruidos++;
+    }
+
+    public void resetBloquesConstruidos() {
+        this.bloquesConstruidos = 0;
+    }
+
     public long getTiempoInicioAutoBomba(){return this.tiempoInicioAutoBomba;}
     public int getTicksHabilidad(){return this.ticksHabilidad;}
     public void setEstado(EstadoLemming estado){this.estado = estado;}
@@ -513,4 +555,5 @@ public class Lemming {
     public int getDireccion() { return direccion; }
     public int getLemmingWidth() { return lemmingWidth; }
     public int getLemmingHeight() { return lemmingHeight; }
+
 }
