@@ -5,6 +5,9 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.PrimitiveIterator;
+
+import lemmings.control.AudioPlayer;
 import lemmings.modelo.Lemming;
 
 public class Nivel {
@@ -22,6 +25,7 @@ public class Nivel {
     private int objetivoLemmings;
     private boolean nivelAprobado;
 
+    private AudioPlayer sonidoSalida;
     private boolean nivelCompletado = false;
 
     //private boolean puertaAbierta = false;
@@ -147,7 +151,7 @@ public class Nivel {
             }
         }
 
-
+        AudioPlayer sonidoSalida = new AudioPlayer("/lemmings/recursos/SonidoSalida.wav");
         // 3. Movimiento y detección de eventos
         Iterator<Lemming> it = lemmings.iterator();
         while (it.hasNext()) {
@@ -156,6 +160,7 @@ public class Nivel {
 
             // Llegó a la salida
             if (salida.haAlcanzado(l)) {
+                sonidoSalida.play();
                 lemmingsSalvados++;
                 cantidadSpawns--;
                 cantidadLem--;
@@ -195,7 +200,6 @@ public class Nivel {
                     it.remove();
                 }
             }
-
         }
     }
 

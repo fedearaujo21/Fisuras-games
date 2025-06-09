@@ -1,7 +1,9 @@
 package lemmings.modelo;
 
-public class HabilidadMinero extends Habilidad {
+import lemmings.control.AudioPlayer;
 
+public class HabilidadMinero extends Habilidad {
+    private AudioPlayer musicaMinero;
     private static final int ANCHO_EXCAVACION = 16;
     private static final int ALTO_EXCAVACION = 2; // Profundidad de excavación por tick
 
@@ -34,7 +36,8 @@ public class HabilidadMinero extends Habilidad {
             System.out.println("El Lemming no tiene terreno debajo para minar.");
             return false;
         }
-
+        musicaMinero = new AudioPlayer("/lemmings/recursos/SonidoMinero.wav");
+        musicaMinero.play();
         lemming.setHabilidadActiva(this);
         System.out.println("Habilidad Minero activada en el Lemming (excava hacia abajo).");
         return true;
