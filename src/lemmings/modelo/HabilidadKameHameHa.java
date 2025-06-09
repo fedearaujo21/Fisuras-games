@@ -11,6 +11,7 @@ public class HabilidadKameHameHa extends Habilidad {
     private static final int DURACION_VIAJE_TICKS = 100; // Tiempo que tarda el rayo en "viajar"
     private static final int DURACION_TOTAL_KAMEHAMEHA_TICKS = DURACION_CARGA_TICKS + DURACION_VIAJE_TICKS;
     private AudioPlayer musicaKameHameHa;
+    private AudioPlayer sonidoImpacto = new AudioPlayer("/lemmings/recursos/SonidoExplosion.wav");
 
     private int ticksActivo = 0;
     private int puntoImpactoX; // Donde impactará el rayo
@@ -109,6 +110,7 @@ public class HabilidadKameHameHa extends Habilidad {
                 double distance = Math.sqrt(Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2));
                 if (distance <= radius) {
                     mapa.eliminarPix(x, y);
+                    sonidoImpacto.play();
                 }
             }
         }

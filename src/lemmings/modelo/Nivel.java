@@ -24,8 +24,8 @@ public class Nivel {
     private Stock stockHabilidades;
     private int objetivoLemmings;
     private boolean nivelAprobado;
-
-    private AudioPlayer sonidoSalida;
+    private AudioPlayer sonidoSalida = new AudioPlayer("/lemmings/recursos/SonidoSalida.wav");
+    private AudioPlayer sonidoExplosion = new AudioPlayer("/lemmings/recursos/SonidoExplosion.wav");
     private boolean nivelCompletado = false;
 
     //private boolean puertaAbierta = false;
@@ -151,7 +151,7 @@ public class Nivel {
             }
         }
 
-        AudioPlayer sonidoSalida = new AudioPlayer("/lemmings/recursos/SonidoSalida.wav");
+
         // 3. Movimiento y detección de eventos
         Iterator<Lemming> it = lemmings.iterator();
         while (it.hasNext()) {
@@ -171,9 +171,10 @@ public class Nivel {
 
             if (l.getHabilidadActiva() instanceof HabilidadAutoBomba autoBomba) {
                 long tiempoActual = System.currentTimeMillis();
-                if(tiempoActual - l.getTiempoInicioAutoBomba() >= 3000){
+                if(tiempoActual - l.getTiempoInicioAutoBomba() >= 3800){
                     autoBomba.explotar(l.getX(),l.getY(),30);
-                    lemmingsMuertos--;
+                    sonidoExplosion.play();
+                    //lemmingsMuertos--;
                     cantidadSpawns--;
                     cantidadLem--;
                     System.out.println("Un lemming EXPLOTO");
@@ -275,7 +276,6 @@ public class Nivel {
                 break;
             case "Bloqueador":
                 habilidad = new HabilidadBloqueador();
-                cantidadLem--;
                 break;
             case "AutoBomba":
                 habilidad = new HabilidadAutoBomba(this.mapa);

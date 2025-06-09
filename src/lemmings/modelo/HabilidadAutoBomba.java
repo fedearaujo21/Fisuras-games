@@ -1,8 +1,10 @@
 package lemmings.modelo;
 
+import lemmings.control.AudioPlayer;
+
 public class HabilidadAutoBomba extends Habilidad {
     private Mapa mapa;
-
+    private AudioPlayer musicaAutoBomba = new AudioPlayer("/lemmings/recursos/SonidoAutoBomba.wav");
     public HabilidadAutoBomba(Mapa mapa) {
         super("AutoBomba", 1, -1); // Nombre corregido
         this.mapa = mapa;
@@ -15,6 +17,7 @@ public class HabilidadAutoBomba extends Habilidad {
             return false;
         }
         lemming.setHabilidadActiva(this);
+        musicaAutoBomba.play();
         System.out.println("Habilidad 'AutoBomba' activada en Lemming.");
         return true;
     }
