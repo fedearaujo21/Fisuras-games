@@ -1,6 +1,9 @@
 package lemmings.modelo;
 
+import lemmings.control.AudioPlayer;
+
 public class HabilidadParacaidas extends Habilidad {
+    private AudioPlayer musicaParacaidas;
 
     public HabilidadParacaidas() {
         super("Paracaidas", 0, 0);
@@ -13,7 +16,8 @@ public class HabilidadParacaidas extends Habilidad {
         if (lemming.getEstado() == Lemming.EstadoLemming.CAYENDO) {
             aplicarSiCayendo(lemming, lemming.getTicksEnAire());
         }
-
+        AudioPlayer musicaParacidas = new AudioPlayer("/lemmings/recursos/SonidoParacaidas.wav");
+        musicaParacidas.play();
         return true;
     }
 

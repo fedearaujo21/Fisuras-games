@@ -21,7 +21,7 @@ public class PanelLemmings extends JPanel implements Runnable{
     private Nivel nivel;
     private Thread hilo;
     private AudioPlayer musicaFondo;
-    private int nivelNum = 4;
+    private int nivelNum = 1;
     private List<BotonHabilidad> botonesHabilidad = new ArrayList<>();
     private BotonHabilidad botonSeleccionado = null;
     private boolean esperandoClick;
@@ -169,7 +169,7 @@ public class PanelLemmings extends JPanel implements Runnable{
                 case 4:
                     nivelNum = 4;
                     nivel = new Nivel(4,"Nivel 4",ImageIO.read(getClass().getResourceAsStream("/lemmings/recursos/Nivel4.png")));
-                    //musicaFondo = new AudioPlayer("/lemmings/recursos/MusicaNivel3.wav");
+                    //musicaFondo = new AudioPlayer("/lemmings/recursos/MusicaNivel4.wav");
                     break;
                 default:
                     System.out.println("No hay más niveles.");
@@ -189,7 +189,6 @@ public class PanelLemmings extends JPanel implements Runnable{
             e.printStackTrace();
         }
     }
-
 
     @Override
     protected void paintComponent(Graphics g) {
@@ -227,6 +226,7 @@ public class PanelLemmings extends JPanel implements Runnable{
 
             if (nivel.getNivelCompletado() && !esperandoClick) {
                 // El nivel se completó, mostramos mensaje y esperamos clic
+
                 esperandoClick = true;
                 nivel.setNivelCompletado(false);
                 System.out.println("Nivel completado. Esperando clic para continuar...");

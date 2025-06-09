@@ -1,13 +1,16 @@
 package lemmings.modelo;
 
+import lemmings.control.AudioPlayer;
+
 import java.awt.Rectangle;
 
 public class HabilidadKameHameHa extends Habilidad {
     private Mapa mapa;
     private static final int RADIO_EXPLOSION = 30; // Radio del área a destruir
-    private static final int DURACION_CARGA_TICKS = 30; // Tiempo para cargar la habilidad
-    private static final int DURACION_VIAJE_TICKS = 40; // Tiempo que tarda el rayo en "viajar"
+    private static final int DURACION_CARGA_TICKS = 100; // Tiempo para cargar la habilidad
+    private static final int DURACION_VIAJE_TICKS = 100; // Tiempo que tarda el rayo en "viajar"
     private static final int DURACION_TOTAL_KAMEHAMEHA_TICKS = DURACION_CARGA_TICKS + DURACION_VIAJE_TICKS;
+    private AudioPlayer musicaKameHameHa;
 
     private int ticksActivo = 0;
     private int puntoImpactoX; // Donde impactará el rayo
@@ -26,7 +29,9 @@ public class HabilidadKameHameHa extends Habilidad {
             return false;
         }
         lemming.setHabilidadActiva(this);
-        lemming.setEstado(Lemming.EstadoLemming.KAMEHAMEHA_CARGANDO); // Nuevo estado para cargando
+        lemming.setEstado(Lemming.EstadoLemming.KAMEHAMEHA_CARGANDO);
+        musicaKameHameHa = new AudioPlayer("/lemmings/recursos/SonidoKameHameHa.wav");
+        musicaKameHameHa.play();
         this.ticksActivo = 0; // Reiniciar el contador de ticks al activar
         this.impactoSucedido = false;
         return true;
@@ -34,7 +39,6 @@ public class HabilidadKameHameHa extends Habilidad {
 
     public void aplicarKameHameHa(Lemming lemming) {
         ticksActivo++;
-
         // Fase de Carga
         if (ticksActivo <= DURACION_CARGA_TICKS) {
             // El lemming está cargando, no hace daño aún.
@@ -44,7 +48,6 @@ public class HabilidadKameHameHa extends Habilidad {
         // Fase de Viaje del Rayo y Impacto
         else if (ticksActivo <= DURACION_TOTAL_KAMEHAMEHA_TICKS) {
             lemming.setEstado(Lemming.EstadoLemming.KAMEHAMEHA_DISPARANDO); // Estado disparando
-
             if (!impactoSucedido) {
                 // Calcular el punto de impacto solo una vez
                 calcularPuntoImpacto(lemming);
