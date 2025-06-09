@@ -29,16 +29,17 @@ public class LanzadorLemming{
         panelPrincipal.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); // padding
 
         // Selector de nivel
-        String[] niveles = {"Nivel 1", "Nivel 2", "Nivel 3"};
+        String[] niveles = {"Nivel 1", "Nivel 2", "Nivel 3", "Nivel 4"};
         JComboBox<String> selectorNivel = new JComboBox<>(niveles);
 
         //Card Layout para mostrar los niveles
         cardLayout = new CardLayout();
         cardPanel = new JPanel(cardLayout);
 
-        cardPanel.add(crearSlide("src/lemmings/recursos/Nivel1.png"), "Nivel 1");
-        cardPanel.add(crearSlide("src/lemmings/recursos/Nivel2.png"), "Nivel 2");
-        cardPanel.add(crearSlide("src/lemmings/recursos/Nivel3.png"), "Nivel 3");
+        cardPanel.add(crearSlide("src/lemmings/recursos/Nivel1View.png"), "Nivel 1");
+        cardPanel.add(crearSlide("src/lemmings/recursos/Nivel2View.png"), "Nivel 2");
+        cardPanel.add(crearSlide("src/lemmings/recursos/Nivel3View.png"), "Nivel 3");
+        cardPanel.add(crearSlide("src/lemmings/recursos/Nivel4View.png"), "Nivel 4");
 
         ventana.add(cardPanel, BorderLayout.CENTER);
 
