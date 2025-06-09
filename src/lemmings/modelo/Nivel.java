@@ -12,7 +12,7 @@ import lemmings.modelo.Lemming;
 
 public class Nivel {
     private int nivelNum;
-    private int tiempo;
+    private long tiempo;
     private String nombre;
     private int cantidadLem;
     private int cantidadSpawns;
@@ -41,7 +41,7 @@ public class Nivel {
     public Nivel (int nivelNum, String nombre, BufferedImage mapaImagen) {
         this.nivelNum = nivelNum;
         this.nombre = nombre;
-        this.tiempo = 60;
+        this.tiempo = 120000;
         frecuenciaSpawn = 50;
 
         switch (nivelNum) {
@@ -91,7 +91,7 @@ public class Nivel {
                 this.stockHabilidades = new Stock();
                 this.tiempoInicio = System.currentTimeMillis();
                 stockHabilidades.añadirHabilidad("Minero",5);
-                stockHabilidades.añadirHabilidad("Paracaidas", 5);
+                stockHabilidades.añadirHabilidad("Paracaidas", 20);
                 stockHabilidades.añadirHabilidad("Bloqueador",10);
                 mapa.limpiarArea(salida.getX(), salida.getY(), salida.getAncho(), salida.getAlto(), COLOR_FONDO);
                 System.out.println("Entrada en: " + entrada);
@@ -201,10 +201,13 @@ public class Nivel {
                 }
             }
         }
+        if (tiempo < (ahora - tiempoInicio))
+            nivelCompletado = true;
     }
 
 
     public void dibujar(Graphics g){
+        long ahora = System.currentTimeMillis();
         mapa.dibujar(g);
 
         // DIBUJA LA ENTRADA (nube animada)
@@ -218,7 +221,7 @@ public class Nivel {
             g.setColor(new Color(0, 0, 0, 170)); // Fondo semitransparente
             g.fillRect(0, 0, mapa.getAncho(), mapa.getAlto());
 
-            if(objetivoLemmings < lemmingsSalvados) {
+            if(objetivoLemmings < lemmingsSalvados && ahora - tiempoInicio < tiempo) {
                 this.nivelAprobado = true;
                 g.setColor(Color.YELLOW);
                 g.setFont(new Font("Arial", Font.BOLD, 40));
@@ -233,18 +236,19 @@ public class Nivel {
                 g.drawString("¡Perdiste!", mapa.getAncho() / 2 - 150, mapa.getAlto() / 2 - 20);
 
                 g.setFont(new Font("Arial", Font.PLAIN, 24));
-                g.drawString("Se necesita un total de: "+this.objetivoLemmings+" para poder avanzar...", mapa.getAncho() / 2 - 110, mapa.getAlto() / 2 + 20);
+                if (tiempo < (ahora - tiempoInicio))
+                   g.drawString("Tiempor fuera pasaron los " + ((this.tiempo / 1000) /60) + " minutos de tiempo", mapa.getAncho() / 2 - 250, mapa.getAlto() / 2 + 20);
+                else
+                    g.drawString("Se necesita un total de: "+this.objetivoLemmings+" para poder avanzar...", mapa.getAncho() / 2 - 250, mapa.getAlto() / 2 + 20);
             }
             g.setFont(new Font("Arial", Font.PLAIN, 20));
-            g.drawString("Lemmings salvados:" + this.lemmingsSalvados, mapa.getAncho() / 2 - 110, mapa.getAlto() / 2 + 40);
-            g.drawString("Lemmings muertos:" + this.lemmingsMuertos, mapa.getAncho() / 2 - 110, mapa.getAlto() / 2 + 60);
+            g.drawString("Lemmings salvados:" + this.lemmingsSalvados, mapa.getAncho() / 2 - 150, mapa.getAlto() / 2 + 40);
+            g.drawString("Lemmings muertos:" + -this.lemmingsMuertos, mapa.getAncho() / 2 - 150, mapa.getAlto() / 2 + 60);
         }
 
         salida.dibujar(g);
 
-        g.setColor(Color.WHITE);
-        g.drawString("Lemmings: " + lemmingsSpawneados + "/" + cantidadLem, 10, 20);
-        g.drawString("Mineros: " + stockHabilidades.getCantidad("Minero"), 10, 40);
+        //g.drawString("Mineros: " + stockHabilidades.getCantidad("Minero"), 10, 40);
     }
 
 
@@ -315,7 +319,16 @@ public class Nivel {
     public boolean getNivelCompletado(){return this.nivelCompletado;}
     public void setNivelCompletado(boolean valor){this.nivelCompletado = valor;}
     public void reiniciar() { /* ... */ }
-    public void pausar() { /* ... */ }
+    public int getLemmingsSalvados(){return this.lemmingsSalvados;}
+    public int getObjetivoLemmings(){return this.objetivoLemmings;}
+    public long getTiempo(){
+        long ahora = System.currentTimeMillis();
+        return (ahora - tiempoInicio) / 1000;
+    }
+    public long getTiempoLimite(){
+        return (this.tiempo / (1000 * 60));
+    }
+    //public void pausar() { /* ... */ }
     //public void completarNVL() { /* ... */ }
 }
 
