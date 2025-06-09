@@ -10,7 +10,7 @@ import java.util.List;
 
 public class Entrada {
     private int x, y;
-
+    private boolean usarAnimacion;
     private List<BufferedImage> framesEntrada;
     private int frameActual = 0;
     private int frameTick = 0;
