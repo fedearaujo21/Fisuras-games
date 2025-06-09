@@ -204,13 +204,13 @@ public class Nivel {
 
                 g.setFont(new Font("Arial", Font.PLAIN, 24));
                 if (tiempo < (ahora - tiempoInicio))
-                   g.drawString("Tiempor fuera pasaron los " + ((this.tiempo / 1000) /60) + " minutos de tiempo", mapa.getAncho() / 2 - 160, mapa.getAlto() / 2 + 20);
+                   g.drawString("Tiempor fuera pasaron los " + ((this.tiempo / 1000) /60) + " minutos de tiempo", mapa.getAncho() / 2 - 250, mapa.getAlto() / 2 + 20);
                 else
-                    g.drawString("Se necesita un total de: "+this.objetivoLemmings+" para poder avanzar...", mapa.getAncho() / 2 - 160, mapa.getAlto() / 2 + 20);
+                    g.drawString("Se necesita un total de: "+this.objetivoLemmings+" para poder avanzar...", mapa.getAncho() / 2 - 250, mapa.getAlto() / 2 + 20);
             }
             g.setFont(new Font("Arial", Font.PLAIN, 20));
-            g.drawString("Lemmings salvados:" + this.lemmingsSalvados, mapa.getAncho() / 2 - 110, mapa.getAlto() / 2 + 40);
-            g.drawString("Lemmings muertos:" + -this.lemmingsMuertos, mapa.getAncho() / 2 - 110, mapa.getAlto() / 2 + 60);
+            g.drawString("Lemmings salvados:" + this.lemmingsSalvados, mapa.getAncho() / 2 - 150, mapa.getAlto() / 2 + 40);
+            g.drawString("Lemmings muertos:" + -this.lemmingsMuertos, mapa.getAncho() / 2 - 150, mapa.getAlto() / 2 + 60);
         }
 
         salida.dibujar(g);
@@ -272,6 +272,15 @@ public class Nivel {
     public boolean getNivelCompletado(){return this.nivelCompletado;}
     public void setNivelCompletado(boolean valor){this.nivelCompletado = valor;}
     public void reiniciar() { /* ... */ }
+    public int getLemmingsSalvados(){return this.lemmingsSalvados;}
+    public int getObjetivoLemmings(){return this.objetivoLemmings;}
+    public long getTiempo(){
+        long ahora = System.currentTimeMillis();
+        return (ahora - tiempoInicio) / 1000;
+    }
+    public long getTiempoLimite(){
+        return (this.tiempo / (1000 * 60));
+    }
     //public void pausar() { /* ... */ }
     //public void completarNVL() { /* ... */ }
 }

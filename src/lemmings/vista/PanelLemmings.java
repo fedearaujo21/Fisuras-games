@@ -208,6 +208,10 @@ public class PanelLemmings extends JPanel implements Runnable{
         if (System.currentTimeMillis() - tiempoBotonPresionado >= 150) {
             botonPresionadoMomentaneo = null;
         }
+        g.setColor(Color.BLACK);
+        g.setFont(new Font("Arial", Font.PLAIN, 15));
+        g.drawString("Lemmings salvados: " + nivel.getLemmingsSalvados() + "/" + (nivel.getObjetivoLemmings() + 1), 620, 335);
+        g.drawString(Long.toString(nivel.getTiempo()/60) + ":" + Long.toString(nivel.getTiempo()%60) + "/" + Long.toString(nivel.getTiempoLimite()) + " minutos", 620, 350);
     }
 
     @Override
