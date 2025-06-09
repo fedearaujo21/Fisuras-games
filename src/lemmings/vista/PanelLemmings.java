@@ -101,11 +101,11 @@ public class PanelLemmings extends JPanel implements Runnable{
 
         try {
             // ACA HAY QUE SEGUIR AGREGANDO LAS IMAGENES DE LAS HABILIDADES
-            BufferedImage icono1Hab = ImageIO.read(new File("src/lemmings/recursos/iconoManolo.png"));
+            BufferedImage iconoAutoBomba = ImageIO.read(new File("src/lemmings/recursos/iconoAutoBomba.png"));
             BufferedImage iconoParacaidas = ImageIO.read(new File("src/lemmings/recursos/iconoParacaidas.png"));
             BufferedImage iconoConstructor = ImageIO.read(new File("src/lemmings/recursos/iconoConstructor.png"));
             BufferedImage iconoBloqueador = ImageIO.read(new File("src/lemmings/recursos/iconoBloqueador.png"));
-            BufferedImage icono5Hab = ImageIO.read(new File("src/lemmings/recursos/iconoManolo.png"));
+            BufferedImage iconoKameHameHa = ImageIO.read(new File("src/lemmings/recursos/iconoKameHa.png"));
             BufferedImage icono6Hab = ImageIO.read(new File("src/lemmings/recursos/iconoManolo.png"));
             BufferedImage icono7Hab = ImageIO.read(new File("src/lemmings/recursos/iconoManolo.png"));
             BufferedImage iconoMinero = ImageIO.read(new File("src/lemmings/recursos/iconoMinero.png"));
@@ -122,11 +122,11 @@ public class PanelLemmings extends JPanel implements Runnable{
             int alto = 76;
             int espacio = 44;
 
-            botonesHabilidad.add(new BotonHabilidad(xInicial + 0 * espacio, yBoton, ancho, alto, icono1Hab, "AutoBomba", nivel.getStockHabilidades()));
+            botonesHabilidad.add(new BotonHabilidad(xInicial + 0 * espacio, yBoton, ancho, alto, iconoAutoBomba, "AutoBomba", nivel.getStockHabilidades()));
             botonesHabilidad.add(new BotonHabilidad(xInicial + 1 * espacio, yBoton, ancho, alto, iconoParacaidas, "Paracaidas", nivel.getStockHabilidades()));
             botonesHabilidad.add(new BotonHabilidad(xInicial + 2 * espacio, yBoton, ancho, alto, iconoConstructor, "Constructor", nivel.getStockHabilidades()));
             botonesHabilidad.add(new BotonHabilidad(xInicial + 3 * espacio, yBoton, ancho, alto, iconoBloqueador, "Bloqueador", nivel.getStockHabilidades()));
-            botonesHabilidad.add(new BotonHabilidad(xInicial + 4 * espacio, yBoton, ancho, alto, icono5Hab, "KameHameHa", nivel.getStockHabilidades()));
+            botonesHabilidad.add(new BotonHabilidad(xInicial + 4 * espacio, yBoton, ancho, alto, iconoKameHameHa, "KameHameHa", nivel.getStockHabilidades()));
             botonesHabilidad.add(new BotonHabilidad(xInicial + 5 * espacio, yBoton, ancho, alto, icono6Hab, "Sexta", nivel.getStockHabilidades()));
             botonesHabilidad.add(new BotonHabilidad(xInicial + 6 * espacio, yBoton, ancho, alto, icono7Hab, "Septima", nivel.getStockHabilidades()));
             botonesHabilidad.add(new BotonHabilidad(xInicial + 7 * espacio, yBoton, ancho, alto, iconoMinero, "Minero", nivel.getStockHabilidades()));

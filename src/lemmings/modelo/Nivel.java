@@ -104,6 +104,7 @@ public class Nivel {
                 this.lemmings = new ArrayList<>();
                 this.stockHabilidades = new Stock();
                 this.tiempoInicio = System.currentTimeMillis();
+                stockHabilidades.añadirHabilidad("AutoBomba", 5);
                 stockHabilidades.añadirHabilidad("KameHameHa", 5);
                 stockHabilidades.añadirHabilidad("Constructor" , 5);
                 stockHabilidades.añadirHabilidad("Minero",5);
@@ -174,24 +175,24 @@ public class Nivel {
                     it.remove();
                 }
             }
-
+            if (nivelNum == 4) { // sólo en Nivel 4 si querés
+                boolean murioPorAgua = l.getX() >= 0 && l.getX() <= 570 && l.getY() >= 235 && l.getY() <= 300;
+                if (murioPorAgua) {
+                    System.out.println("Lemming murió por agua");
+                    cantidadSpawns -= 1;
+                    cantidadLem -= 1;
+                    it.remove();
+                }
+            }
             // Muere por caída (si no tiene paracaídas)
             if (!(l.getHabilidadActiva() instanceof HabilidadParacaidas)) {
+
                 if (l.getY() > 318 || (l.getTicksEnAire() > 109 && l.getImpacto()) ) {
                     lemmingsMuertos--;
                     cantidadSpawns--;
                     cantidadLem--;
                     System.out.println("Un lemming ha muerto por caída");
                     it.remove();
-                }
-                if (nivelNum == 4) { // sólo en Nivel 4 si querés
-                    boolean murioPorAgua = l.getX() >= 0 && l.getX() <= 570 && l.getY() >= 235 && l.getY() <= 300;
-                    if (murioPorAgua) {
-                        System.out.println("Lemming murió por agua");
-                        cantidadSpawns -= 1;
-                        cantidadLem -= 1;
-                        it.remove();
-                    }
                 }
             }
 

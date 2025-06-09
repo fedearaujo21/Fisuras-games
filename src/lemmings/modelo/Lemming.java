@@ -17,6 +17,15 @@ public class Lemming {
     private List<BufferedImage> framesExcavar;
     private List<BufferedImage> framesParacaidas;
     private List<BufferedImage> framesBloqueador;
+    private List<BufferedImage> framesKameCarga;
+    private List<BufferedImage> framesKameDisparo;
+    private List<BufferedImage> framesConstructor;
+    private List<BufferedImage> framesAutoBomba;
+
+    private int frameKameActual = 0;
+    private int frameTickKame = 0;
+    private final int frameDelayKame = 6;
+
 
 
     private int frameActual = 0;
@@ -68,6 +77,116 @@ public class Lemming {
         cargarFramesExcavar();
         cargarFramesParacaidas();
         cargarFramesBloqueador();
+        cargarFramesKamehameha();
+        cargarFramesConstructor();
+        cargarFramesAutoBomba();
+
+    }
+    private void cargarFramesAutoBomba() {
+        framesAutoBomba = new ArrayList<>();
+
+        try {
+            BufferedImage spriteSheet = ImageIO.read(new File("src/lemmings/recursos/gokuAutoBomba.png"));
+            int ancho = 32;
+            int alto = 32;
+            int espacio = 8;
+
+            for (int i = 0; i < 5; i++) {
+                int xPos = i * (ancho + espacio);
+                BufferedImage frameCrudo = spriteSheet.getSubimage(xPos, 0, ancho, alto);
+
+                BufferedImage transparente = new BufferedImage(ancho, alto, BufferedImage.TYPE_INT_ARGB);
+                for (int yy = 0; yy < alto; yy++) {
+                    for (int xx = 0; xx < ancho; xx++) {
+                        int color = frameCrudo.getRGB(xx, yy);
+
+                        // Limpieza del color violeta y fucsia
+                        if (color == 0xFFFF00FF || color == 0xFFF800F8) {
+                            transparente.setRGB(xx, yy, 0x00000000);
+                        } else {
+                            transparente.setRGB(xx, yy, color);
+                        }
+                    }
+                }
+
+                framesAutoBomba.add(transparente);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    private void cargarFramesConstructor() {
+        framesConstructor = new ArrayList<>();
+        try {
+            BufferedImage spriteSheet = ImageIO.read(new File("src/lemmings/recursos/gokuConstructor.png"));
+            int anchoFrame = 32;
+            int altoFrame = 32;
+            int espacio = 8;
+
+            for (int i = 0; i < 8; i++) {
+                int xPos = i * (anchoFrame + espacio);
+                BufferedImage frameCrudo = spriteSheet.getSubimage(xPos, 0, anchoFrame, altoFrame);
+                BufferedImage limpio = hacerTransparente(frameCrudo, new int[]{0xFFF800F8, 0xFFFF00FF, 0xFF00FF00});
+                framesConstructor.add(limpio);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    private void cargarFramesKamehameha() {
+        framesKameCarga = new ArrayList<>();
+        framesKameDisparo = new ArrayList<>();
+
+        try {
+            BufferedImage carga = ImageIO.read(new File("src/lemmings/recursos/gokuCargando.png"));
+            BufferedImage disparo = ImageIO.read(new File("src/lemmings/recursos/gokuDisparando.png"));
+
+            // Carga: 16x32 + 8 espacio
+            int anchoCarga = 16;
+            int altoCarga = 32;
+            int espacio = 8;
+
+            for (int i = 0; i < 3; i++) {
+                int xPos = i * (anchoCarga + espacio);
+                BufferedImage frameCrudo = carga.getSubimage(xPos, 0, anchoCarga, altoCarga);
+                BufferedImage limpio = hacerTransparente(frameCrudo, new int[]{0xFFF800F8, 0xFFFF00FF}); // violeta y fucsia
+                framesKameCarga.add(limpio);
+            }
+
+            // Disparo: 32x32 + 8 espacio
+            int anchoDisparo = 32;
+            int altoDisparo = 32;
+            for (int i = 0; i < 3; i++) {
+                int xPos = i * (anchoDisparo + espacio);
+                BufferedImage frameCrudo = disparo.getSubimage(xPos, 0, anchoDisparo, altoDisparo);
+                BufferedImage limpio = hacerTransparente(frameCrudo, new int[]{0xFFF800F8, 0xFFFF00FF}); // violeta y fucsia
+                framesKameDisparo.add(limpio);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private BufferedImage hacerTransparente(BufferedImage original, int[] coloresTransparente) {
+        BufferedImage nueva = new BufferedImage(original.getWidth(), original.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        for (int y = 0; y < original.getHeight(); y++) {
+            for (int x = 0; x < original.getWidth(); x++) {
+                int color = original.getRGB(x, y);
+                boolean esTransparente = false;
+                for (int ct : coloresTransparente) {
+                    if (color == ct) {
+                        esTransparente = true;
+                        break;
+                    }
+                }
+                nueva.setRGB(x, y, esTransparente ? 0x00000000 : color);
+            }
+        }
+        return nueva;
     }
 
     public void incrementarY() {
@@ -252,7 +371,14 @@ public class Lemming {
             if (tiempoInicioAutoBomba == -1) {
                 tiempoInicioAutoBomba = System.currentTimeMillis();
             }
-            return;
+
+            // Animación: cambiar frame cada 150 ms
+            long duracion = System.currentTimeMillis() - tiempoInicioAutoBomba;
+            if (duracion / 150 > frameActual && frameActual < framesAutoBomba.size() - 1) {
+                frameActual++;
+            }
+
+            return; // No camina ni nada más
         }
 
         if (estado == EstadoLemming.BLOQUEANDO) {
@@ -455,7 +581,13 @@ public class Lemming {
     }
 
 
-
+    private void actualizarFrameKame() {
+        frameTickKame++;
+        if (frameTickKame >= frameDelayKame) {
+            frameKameActual++;
+            frameTickKame = 0;
+        }
+    }
     public void dibujar(Graphics g) {
         BufferedImage frame;
         switch (estado) {
@@ -463,7 +595,16 @@ public class Lemming {
             case CAYENDO -> frame = framesCaida.get(frameActual % framesCaida.size());
             case EXCAVANDO -> frame = framesExcavar.get(frameActual % framesExcavar.size());
             case BLOQUEANDO -> frame = framesBloqueador.get(frameActual % framesBloqueador.size());
-            case KAMEHAMEHA_CARGANDO, KAMEHAMEHA_DISPARANDO -> frame = framesCaminar.get(0);
+            case CONSTRUYENDO -> frame = framesConstructor.get(frameActual % framesConstructor.size());
+            case AUTOBOMBA -> frame = framesAutoBomba.get(Math.min(frameActual, framesAutoBomba.size() - 1));
+            case KAMEHAMEHA_CARGANDO -> {
+                actualizarFrameKame();
+                frame = framesKameCarga.get(frameKameActual % framesKameCarga.size());
+            }
+            case KAMEHAMEHA_DISPARANDO -> {
+                actualizarFrameKame();
+                frame = framesKameDisparo.get(frameKameActual % framesKameDisparo.size());
+            }
             default -> frame = framesCaminar.get(0);
         }
 
