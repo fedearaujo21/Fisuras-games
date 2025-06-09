@@ -9,12 +9,6 @@ public class HabilidadBloqueador extends Habilidad{
 
     @Override
     public boolean activar(Lemming lemming) {
-        if (lemming.getHabilidadActiva() != null) {
-            //lemming.setEstado(Lemming.EstadoLemming.BLOQUEANDO);
-            System.out.println("El Lemming ya tiene una habilidad activa, no puede ser Bloqueador.");
-            return false;
-        }
-
         if(lemming.getEstado() != Lemming.EstadoLemming.CAMINANDO){
             System.out.println("El lemming debe estar caminando");
             return false;
