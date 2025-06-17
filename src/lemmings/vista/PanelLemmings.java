@@ -215,21 +215,18 @@ public class PanelLemmings extends JPanel implements Runnable{
         g2d.setColor(new Color(0, 0, 0, 120)); // negro semi-transparente
         g2d.fillRoundRect(getWidth() - 220, 330, 210, 50, 15, 15); // fondo con bordes redondeados
 
-// Borde
         g2d.setColor(Color.YELLOW);
         g2d.setStroke(new BasicStroke(2));
         g2d.drawRoundRect(getWidth() - 220, 330, 210, 50, 15, 15);
 
-// Texto
         g2d.setColor(Color.WHITE);
         g2d.setFont(new Font("Arial", Font.BOLD, 14));
-        g2d.drawString("Salvados: " + nivel.getLemmingsSalvados() + "/" + (nivel.getObjetivoLemmings() + 1), getWidth() - 210, 350);
+        g2d.drawString("Salvados: " + nivel.getLemmingsSalvados() + "/" + nivel.getObjetivoLemmings(), getWidth() - 210, 350);
 
         long tiempoActual = nivel.getTiempo() / 60;
         long segundos = nivel.getTiempo() % 60;
         long tiempoMax = nivel.getTiempoLimite();
         g2d.drawString(String.format("Tiempo: %02d:%02d / %d min", tiempoActual, segundos, tiempoMax), getWidth() - 210, 370);
-
     }
 
     @Override
