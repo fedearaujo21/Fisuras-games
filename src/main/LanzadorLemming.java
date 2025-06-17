@@ -18,7 +18,7 @@ public class LanzadorLemming{
         ventana.revalidate();
         ventana.setLayout(new BorderLayout());
 
-        ventana.setTitle("Configuración del Juego");
+        ventana.setTitle("Configuración del Juego - Lemmings Z");
         ventana.setSize(800, 600);
         //ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); mepa que ya esta implementado
         ventana.setLocationRelativeTo(null); // Centra la ventana
@@ -73,11 +73,18 @@ public class LanzadorLemming{
             public void actionPerformed(ActionEvent e) {
                 Config.mute = muteCheck.isSelected();
                 Config.volumen = volumenSlider.getValue();
-                ventana.setLayout(null);
-                PanelLemmings juego = new PanelLemmings(ventana, selectorNivel.getSelectedIndex() + 1); //arranca de 0
-                ventana.setContentPane(juego);
-                ventana.revalidate();
-                juego.requestFocusInWindow();
+                ventana.dispose(); // cerrar la ventana de configuración
+
+                JFrame juegoFrame = new JFrame("Lemmings Z");
+                juegoFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                juegoFrame.setSize(800, 600);
+                juegoFrame.setResizable(false);
+                juegoFrame.setLocationRelativeTo(null);
+
+                PanelLemmings juego = new PanelLemmings(juegoFrame, selectorNivel.getSelectedIndex() + 1);
+                juegoFrame.setContentPane(juego);
+                juegoFrame.setVisible(true);
+
                 System.out.println(selectorNivel.getSelectedIndex());
             }
         });

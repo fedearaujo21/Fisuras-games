@@ -5,7 +5,10 @@ import lemmings.modelo.Lemming;
 import lemmings.modelo.Nivel;
 import lemmings.modelo.BotonHabilidad;
 import lemmings.modelo.*;
+import main.MenuPrincipal;
 
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.util.List;
 import java.util.ArrayList;
 import javax.imageio.ImageIO;
@@ -105,10 +108,47 @@ public class PanelLemmings extends JPanel implements Runnable{
             }
         });
 
+        addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+                    volverAlMenuPrincipal();
+                } else if (e.getKeyCode() == KeyEvent.VK_R) {
+                    reiniciarNivel();
+                }
+            }
+        });
+        setFocusable(true);
+        requestFocusInWindow();
+
+
+    }
+
+    private void volverAlMenuPrincipal() {
+        if (musicaFondo != null) {
+            musicaFondo.close(); // Detener la música si está sonando
+        }
+
+        JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+        topFrame.dispose(); // Cerrar la ventana actual del juego
+
+        // Crear una nueva ventana con el menú principal, bien configurada
+        SwingUtilities.invokeLater(() -> {
+            JFrame nuevaVentana = new JFrame("Fisuras");
+            nuevaVentana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            nuevaVentana.setContentPane(new MenuPrincipal(nuevaVentana));
+            nuevaVentana.setSize(800, 600);
+            nuevaVentana.setResizable(false);
+            nuevaVentana.setLocationRelativeTo(null);
+            nuevaVentana.setVisible(true);
+        });
+    }
 
 
 
 
+    private void reiniciarNivel() {
+        cargarNivel(nivelNum);
     }
 
 
@@ -228,6 +268,7 @@ public class PanelLemmings extends JPanel implements Runnable{
         long tiempoMax = nivel.getTiempoLimite();
         g2d.drawString(String.format("Tiempo: %02d:%02d / %d min", tiempoActual, segundos, tiempoMax), getWidth() - 210, 370);
     }
+
 
     @Override
     public void run(){

@@ -1,7 +1,5 @@
 package main;
 
-import pong.LanzadorPong;
-
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
@@ -34,5 +32,12 @@ public class MenuPrincipal extends Panel {
         botones.add(btnPong);
         botones.setBorder(new EmptyBorder(10, 100, 200, 100));
         add(botones, BorderLayout.CENTER);
+
+        ventana.setTitle("Fisuras Games");
+        ventana.setResizable(false);
+        ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        ventana.setContentPane(this);
+        ventana.setLocationRelativeTo(null);
+        ventana.setVisible(true);
     }
 }
