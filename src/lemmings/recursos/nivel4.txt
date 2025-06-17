@@ -1,0 +1,9 @@
+nombre=Nivel 4
+tiempo=120000
+frecuenciaSpawn=50
+cantidadLem=5
+objetivoLemmings=5
+entrada=150,10
+salida=740,212,80,80
+
+habilidades=AutoBomba:5,KameHameHa:5,Constructor:5,Minero:5,Paracaidas:5,Bloqueador:10

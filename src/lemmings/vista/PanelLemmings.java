@@ -55,12 +55,14 @@ public class PanelLemmings extends JPanel implements Runnable{
                 if (esperandoClick) {
                     esperandoClick = false;
                     if(nivel.getNivelAprobado()){
-                    cargarNivel(nivelNum + 1);
-                    }else{
+                        cargarNivel(nivelNum + 1);
+                    } else {
                         cargarNivel(nivelNum);
                     }
                     return;
                 }
+
+
 
                 for (BotonHabilidad boton : botonesHabilidad) {
                     if (boton.contienePunto(mx, my)) {
@@ -104,50 +106,11 @@ public class PanelLemmings extends JPanel implements Runnable{
         });
 
 
-        try {
-            // ACA HAY QUE SEGUIR AGREGANDO LAS IMAGENES DE LAS HABILIDADES
-            BufferedImage iconoAutoBomba = ImageIO.read(new File("src/lemmings/recursos/iconoAutoBomba.png"));
-            BufferedImage iconoParacaidas = ImageIO.read(new File("src/lemmings/recursos/iconoParacaidas.png"));
-            BufferedImage iconoConstructor = ImageIO.read(new File("src/lemmings/recursos/iconoConstructor.png"));
-            BufferedImage iconoBloqueador = ImageIO.read(new File("src/lemmings/recursos/iconoBloqueador.png"));
-            BufferedImage iconoKameHameHa = ImageIO.read(new File("src/lemmings/recursos/iconoKameHa.png"));
-//            BufferedImage icono6Hab = ImageIO.read(new File("src/lemmings/recursos/iconoManolo.png"));
-//            BufferedImage icono7Hab = ImageIO.read(new File("src/lemmings/recursos/iconoManolo.png"));
-            BufferedImage iconoMinero = ImageIO.read(new File("src/lemmings/recursos/iconoMinero.png"));
-            BufferedImage iconoMas = ImageIO.read(new File("src/lemmings/recursos/esferaMas.png"));
-            BufferedImage iconoMenos = ImageIO.read(new File("src/lemmings/recursos/esferaMenos.png"));
-            BufferedImage iconoAcelerar = ImageIO.read(new File("src/lemmings/recursos/esferaAcelerar.png"));
-            BufferedImage iconoPausa = ImageIO.read(new File("src/lemmings/recursos/esferaPausa.png"));
-            BufferedImage iconoPlay = ImageIO.read(new File("src/lemmings/recursos/esferaPlay.png"));
-//            BufferedImage icono14Hab = ImageIO.read(new File("src/lemmings/recursos/iconoManolo.png"));
 
-            int xInicial = 2;
-            int yBoton = 321;
-            int ancho = 42;
-            int alto = 76;
-            int espacio = 44;
-
-            botonesHabilidad.add(new BotonHabilidad(xInicial + 0 * espacio, yBoton, ancho, alto, iconoAutoBomba, "AutoBomba", nivel.getStockHabilidades()));
-            botonesHabilidad.add(new BotonHabilidad(xInicial + 1 * espacio, yBoton, ancho, alto, iconoParacaidas, "Paracaidas", nivel.getStockHabilidades()));
-            botonesHabilidad.add(new BotonHabilidad(xInicial + 2 * espacio, yBoton, ancho, alto, iconoConstructor, "Constructor", nivel.getStockHabilidades()));
-            botonesHabilidad.add(new BotonHabilidad(xInicial + 3 * espacio, yBoton, ancho, alto, iconoBloqueador, "Bloqueador", nivel.getStockHabilidades()));
-            botonesHabilidad.add(new BotonHabilidad(xInicial + 4 * espacio, yBoton, ancho, alto, iconoKameHameHa, "KameHameHa", nivel.getStockHabilidades()));
-//            botonesHabilidad.add(new BotonHabilidad(xInicial + 5 * espacio, yBoton, ancho, alto, icono6Hab, "Sexta", nivel.getStockHabilidades()));
-//            botonesHabilidad.add(new BotonHabilidad(xInicial + 6 * espacio, yBoton, ancho, alto, icono7Hab, "Septima", nivel.getStockHabilidades()));
-            botonesHabilidad.add(new BotonHabilidad(xInicial + 5 * espacio, yBoton, ancho, alto, iconoMinero, "Minero", nivel.getStockHabilidades()));
-            botonesHabilidad.add(new BotonHabilidad(xInicial + 6 * espacio, yBoton, ancho, alto, iconoMas, "Mas", nivel.getStockHabilidades()));
-            botonesHabilidad.add(new BotonHabilidad(xInicial + 7 * espacio, yBoton, ancho, alto, iconoMenos, "Menos", nivel.getStockHabilidades()));
-            botonesHabilidad.add(new BotonHabilidad(xInicial + 8 * espacio, yBoton, ancho, alto, iconoAcelerar, "acelerar", nivel.getStockHabilidades()));
-            botonesHabilidad.add(new BotonHabilidad(xInicial + 9 * espacio, yBoton, ancho, alto, iconoPausa, "Pausa", nivel.getStockHabilidades()));
-            botonesHabilidad.add(new BotonHabilidad(xInicial + 10 * espacio, yBoton, ancho, alto, iconoPlay, "Play", nivel.getStockHabilidades()));
-//            botonesHabilidad.add(new BotonHabilidad(xInicial + 13 * espacio, yBoton, ancho, alto, icono14Hab, "DecimoCta", nivel.getStockHabilidades()));
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
 
     }
+
 
     public void cargarNivel(int numero){
         try {
@@ -181,6 +144,8 @@ public class PanelLemmings extends JPanel implements Runnable{
                     return;
             }
 
+            inicializarBotonesHabilidad();
+
             if (musicaFondo != null && !Config.mute) {
                 musicaFondo.setVolume(Config.volumen);
                 System.out.println(Config.volumen);
@@ -197,6 +162,31 @@ public class PanelLemmings extends JPanel implements Runnable{
         }
     }
 
+    private void inicializarBotonesHabilidad() {
+        botonesHabilidad.clear();
+        int xInicial = 2;
+        int yBoton = 321;
+        int ancho = 42;
+        int alto = 76;
+        int espacio = 44;
+
+
+        try {
+            botonesHabilidad.add(new BotonHabilidad(xInicial + 0 * espacio, yBoton, ancho, alto, ImageIO.read(getClass().getResourceAsStream("/lemmings/recursos/iconoAutoBomba.png")), "AutoBomba", nivel.getStockHabilidades()));
+            botonesHabilidad.add(new BotonHabilidad(xInicial + 1 * espacio, yBoton, ancho, alto, ImageIO.read(getClass().getResourceAsStream("/lemmings/recursos/iconoParacaidas.png")), "Paracaidas", nivel.getStockHabilidades()));
+            botonesHabilidad.add(new BotonHabilidad(xInicial + 2 * espacio, yBoton, ancho, alto, ImageIO.read(getClass().getResourceAsStream("/lemmings/recursos/iconoConstructor.png")), "Constructor", nivel.getStockHabilidades()));
+            botonesHabilidad.add(new BotonHabilidad(xInicial + 3 * espacio, yBoton, ancho, alto, ImageIO.read(getClass().getResourceAsStream("/lemmings/recursos/iconoBloqueador.png")), "Bloqueador", nivel.getStockHabilidades()));
+            botonesHabilidad.add(new BotonHabilidad(xInicial + 4 * espacio, yBoton, ancho, alto, ImageIO.read(getClass().getResourceAsStream("/lemmings/recursos/iconoKameHameHa.png")), "KameHameHa", nivel.getStockHabilidades()));
+            botonesHabilidad.add(new BotonHabilidad(xInicial + 5 * espacio, yBoton, ancho, alto, ImageIO.read(getClass().getResourceAsStream("/lemmings/recursos/iconoMinero.png")), "Minero", nivel.getStockHabilidades()));
+            botonesHabilidad.add(new BotonHabilidad(xInicial + 6 * espacio, yBoton, ancho, alto, ImageIO.read(getClass().getResourceAsStream("/lemmings/recursos/iconoMas.png")), "Mas", nivel.getStockHabilidades()));
+            botonesHabilidad.add(new BotonHabilidad(xInicial + 7 * espacio, yBoton, ancho, alto, ImageIO.read(getClass().getResourceAsStream("/lemmings/recursos/iconoMenos.png")), "Menos", nivel.getStockHabilidades()));
+            botonesHabilidad.add(new BotonHabilidad(xInicial + 8 * espacio, yBoton, ancho, alto, ImageIO.read(getClass().getResourceAsStream("/lemmings/recursos/iconoAcelerar.png")), "acelerar", nivel.getStockHabilidades()));
+            botonesHabilidad.add(new BotonHabilidad(xInicial + 9 * espacio, yBoton, ancho, alto, ImageIO.read(getClass().getResourceAsStream("/lemmings/recursos/iconoPausa.png")), "Pausa", nivel.getStockHabilidades()));
+            botonesHabilidad.add(new BotonHabilidad(xInicial + 10 * espacio, yBoton, ancho, alto, ImageIO.read(getClass().getResourceAsStream("/lemmings/recursos/iconoPlay.png")), "Play", nivel.getStockHabilidades()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Override
     protected void paintComponent(Graphics g) {
@@ -216,15 +206,30 @@ public class PanelLemmings extends JPanel implements Runnable{
             boolean seleccionado = boton == botonSeleccionado ||
                     (boton == botonPresionadoMomentaneo && System.currentTimeMillis() - tiempoBotonPresionado < 150);
             boton.dibujar(g, seleccionado);
-
         }
         if (System.currentTimeMillis() - tiempoBotonPresionado >= 150) {
             botonPresionadoMomentaneo = null;
         }
-        g.setColor(Color.BLACK);
-        g.setFont(new Font("Arial", Font.PLAIN, 15));
-        g.drawString("Lemmings salvados: " + nivel.getLemmingsSalvados() + "/" + (nivel.getObjetivoLemmings() + 1), 620, 335);
-        g.drawString(Long.toString(nivel.getTiempo()/60) + ":" + Long.toString(nivel.getTiempo()%60) + "/" + Long.toString(nivel.getTiempoLimite()) + " minutos", 620, 350);
+        // Fondo suavizado
+        Graphics2D g2d = (Graphics2D) g;
+        g2d.setColor(new Color(0, 0, 0, 120)); // negro semi-transparente
+        g2d.fillRoundRect(getWidth() - 220, 330, 210, 50, 15, 15); // fondo con bordes redondeados
+
+// Borde
+        g2d.setColor(Color.YELLOW);
+        g2d.setStroke(new BasicStroke(2));
+        g2d.drawRoundRect(getWidth() - 220, 330, 210, 50, 15, 15);
+
+// Texto
+        g2d.setColor(Color.WHITE);
+        g2d.setFont(new Font("Arial", Font.BOLD, 14));
+        g2d.drawString("Salvados: " + nivel.getLemmingsSalvados() + "/" + (nivel.getObjetivoLemmings() + 1), getWidth() - 210, 350);
+
+        long tiempoActual = nivel.getTiempo() / 60;
+        long segundos = nivel.getTiempo() % 60;
+        long tiempoMax = nivel.getTiempoLimite();
+        g2d.drawString(String.format("Tiempo: %02d:%02d / %d min", tiempoActual, segundos, tiempoMax), getWidth() - 210, 370);
+
     }
 
     @Override

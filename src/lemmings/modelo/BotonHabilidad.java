@@ -1,8 +1,11 @@
 package lemmings.modelo;
 
 import lemmings.modelo.Nivel;
+
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 
 public class BotonHabilidad {
     private int x, y, ancho, alto;
@@ -18,6 +21,26 @@ public class BotonHabilidad {
         this.icono = icono;
         this.nombre = nombre;
         this.stock = stock;
+    }
+
+    public BotonHabilidad(String nombre, Stock stock) {
+        this.nombre = nombre;
+        this.stock = stock;
+
+        try {
+            this.icono = ImageIO.read(getClass().getResourceAsStream("/lemmings/recursos/icono" + nombre + ".png"));
+        } catch (IOException e) {
+            System.err.println("No se encontró el icono para: " + nombre);
+        }
+    }
+    public void setPosicion(int x, int y, int ancho, int alto) {
+        this.x = x;
+        this.y = y;
+        this.ancho = ancho;
+        this.alto = alto;
+    }
+    public Stock getStock() {
+        return stock;
     }
 
 
@@ -44,11 +67,13 @@ public class BotonHabilidad {
             texto = String.valueOf(Nivel.getFrecuenciaSpawn()); // dinámico
         } else if (nombre.equals("Menos")) {
             texto = "50"; // fijo
+        } else if (stock == null) {
+            texto = ""; // para botones como Pausa, Acelerar, etc.
         } else {
-            // ← caso normal: habilidades con stock
             int cantidad = stock.getCantidad(nombre);
             texto = (cantidad < 0) ? "∞" : String.valueOf(cantidad);
         }
+
 
         int textoX = contadorX + (ladoContador - fm.stringWidth(texto)) / 2;
         int textoY = contadorY + (ladoContador + fm.getAscent()) / 2 - 2;
