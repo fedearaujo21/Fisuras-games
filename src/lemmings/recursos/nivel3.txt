@@ -1,0 +1,9 @@
+nombre=Nivel 3
+tiempo=120000
+frecuenciaSpawn=50
+cantidadLem=20
+objetivoLemmings=5
+entrada=150,10
+salida=580,230,80,80
+
+habilidades=Minero:5,Paracaidas:20,Bloqueador:10

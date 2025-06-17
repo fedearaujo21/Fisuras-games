@@ -2,8 +2,10 @@ package lemmings.modelo;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -41,93 +43,139 @@ public class Nivel {
     private long ultimoSpawnTime = 0;
 
 
-
-    public Nivel (int nivelNum, String nombre, BufferedImage mapaImagen) {
+    public Nivel(int nivelNum, String nombre, BufferedImage mapaImagen) {
         this.nivelNum = nivelNum;
         this.nombre = nombre;
-        this.tiempo = 120000;
-        frecuenciaSpawn = 50;
+        this.mapa = new Mapa(mapaImagen, COLOR_FONDO);
+        this.lemmings = new ArrayList<>();
+        this.stockHabilidades = new Stock();
+        this.tiempoInicio = System.currentTimeMillis();
 
-        switch (nivelNum) {
-            case 1:
-                this.cantidadLem = 5;
-                this.cantidadSpawns = this.cantidadLem;
-                this.objetivoLemmings = 2;// Color negro del fondo en Nivel1.png
-                this.salida = new Salida(575, 222, 40, 40);
-                this.entrada = new Entrada(270,60);
-                this.mapa = new Mapa(mapaImagen, COLOR_FONDO);
-                this.lemmings = new ArrayList<>();
-                this.stockHabilidades = new Stock();
-                this.tiempoInicio = System.currentTimeMillis();
-                stockHabilidades.añadirHabilidad("KameHameHa",5);
-                stockHabilidades.añadirHabilidad("Constructor",5);
-                stockHabilidades.añadirHabilidad("AutoBomba",5);
-                stockHabilidades.añadirHabilidad("Minero",5);
-                stockHabilidades.añadirHabilidad("Paracaidas", 5);
-                stockHabilidades.añadirHabilidad("Bloqueador",5);
-                mapa.limpiarArea(salida.getX(), salida.getY(), salida.getAncho(), salida.getAlto(), COLOR_FONDO);
-                mapa.activarColisiones(false);
-                break;
-            case 2:
-                this.cantidadLem = 10;
-                this.cantidadSpawns = this.cantidadLem;
-                this.objetivoLemmings = 2;// Color negro del fondo en Nivel1.png
-                this.salida = new Salida(232, 245, 80, 80);
-                this.entrada = new Entrada(230,15);
-                this.mapa = new Mapa(mapaImagen, COLOR_FONDO);
-                this.lemmings = new ArrayList<>();
-                this.stockHabilidades = new Stock();
-                this.tiempoInicio = System.currentTimeMillis();
-                stockHabilidades.añadirHabilidad("Minero",5);
-                stockHabilidades.añadirHabilidad("Paracaidas", 5);
-                stockHabilidades.añadirHabilidad("Bloqueador",10);
-                mapa.limpiarArea(salida.getX(), salida.getY(), salida.getAncho(), salida.getAlto(), COLOR_FONDO);
-                mapa.activarColisiones(false);
-                break;
-            case 3:
-                this.cantidadLem = 20;
-                this.cantidadSpawns = this.cantidadLem;
-                this.objetivoLemmings = 5;
-                this.salida = new Salida(580,230 , 80, 80);
-                this.entrada = new Entrada(150,10);
-                this.mapa = new Mapa(mapaImagen, COLOR_FONDO);
-                this.lemmings = new ArrayList<>();
-                this.stockHabilidades = new Stock();
-                this.tiempoInicio = System.currentTimeMillis();
-                stockHabilidades.añadirHabilidad("Minero",5);
-                stockHabilidades.añadirHabilidad("Paracaidas", 20);
-                stockHabilidades.añadirHabilidad("Bloqueador",10);
-                mapa.limpiarArea(salida.getX(), salida.getY(), salida.getAncho(), salida.getAlto(), COLOR_FONDO);
-                System.out.println("Entrada en: " + entrada);
-                System.out.println("Salida en: " + salida.getX());
-                mapa.activarColisiones(false);
-                break;
-            case 4:
-                this.cantidadLem = 5;
-                this.cantidadSpawns = this.cantidadLem;
-                this.objetivoLemmings = 5;
-                this.salida = new Salida(740,212 , 80, 80);
-                this.entrada = new Entrada(150,10);
-                this.mapa = new Mapa(mapaImagen, COLOR_FONDO);
-                this.lemmings = new ArrayList<>();
-                this.stockHabilidades = new Stock();
-                this.tiempoInicio = System.currentTimeMillis();
-                stockHabilidades.añadirHabilidad("AutoBomba", 5);
-                stockHabilidades.añadirHabilidad("KameHameHa", 5);
-                stockHabilidades.añadirHabilidad("Constructor" , 5);
-                stockHabilidades.añadirHabilidad("Minero",5);
-                stockHabilidades.añadirHabilidad("Paracaidas", 5);
-                stockHabilidades.añadirHabilidad("Bloqueador",10);
-                mapa.limpiarArea(salida.getX(), salida.getY(), salida.getAncho(), salida.getAlto(), COLOR_FONDO);
-                System.out.println("Entrada en: " + entrada);
-                System.out.println("Salida en: " + salida.getX());
-                mapa.activarColisiones(false);
-                break;
-            default:
-                this.salida = new Salida(650, 460, 80, 100);
-        }
-
+        cargarConfiguracionDesdeArchivo("/lemmings/recursos/nivel" + nivelNum + ".txt");
     }
+
+    private void cargarConfiguracionDesdeArchivo(String path) {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream(path)))) {
+            String linea;
+            while ((linea = br.readLine()) != null) {
+                if (linea.startsWith("tiempo=")) this.tiempo = Integer.parseInt(linea.split("=")[1]);
+                else if (linea.startsWith("frecuenciaSpawn=")) frecuenciaSpawn = Integer.parseInt(linea.split("=")[1]);
+                else if (linea.startsWith("cantidadLem=")) this.cantidadLem = Integer.parseInt(linea.split("=")[1]);
+                else if (linea.startsWith("objetivoLemmings=")) this.objetivoLemmings = Integer.parseInt(linea.split("=")[1]);
+                else if (linea.startsWith("entrada=")) {
+                    String[] partes = linea.split("=")[1].split(",");
+                    this.entrada = new Entrada(Integer.parseInt(partes[0]), Integer.parseInt(partes[1]));
+                } else if (linea.startsWith("salida=")) {
+                    String[] partes = linea.split("=")[1].split(",");
+                    this.salida = new Salida(
+                            Integer.parseInt(partes[0]),
+                            Integer.parseInt(partes[1]),
+                            Integer.parseInt(partes[2]),
+                            Integer.parseInt(partes[3]));
+                } else if (linea.startsWith("habilidades=")) {
+                    String[] habilidades = linea.split("=")[1].split(",");
+                    for (String h : habilidades) {
+                        String[] partes = h.split(":");
+                        String nombreHab = partes[0];
+                        int cantidad = Integer.parseInt(partes[1]);
+                        stockHabilidades.añadirHabilidad(nombreHab, cantidad);
+                    }
+                }
+            }
+            this.cantidadSpawns = this.cantidadLem;
+            mapa.limpiarArea(salida.getX(), salida.getY(), salida.getAncho(), salida.getAlto(), COLOR_FONDO);
+            mapa.activarColisiones(false);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+//    public Nivel (int nivelNum, String nombre, BufferedImage mapaImagen) {
+//        this.nivelNum = nivelNum;
+//        this.nombre = nombre;
+//        this.tiempo = 120000;
+//        frecuenciaSpawn = 50;
+//
+//        switch (nivelNum) {
+//            case 1:
+//                this.cantidadLem = 5;
+//                this.cantidadSpawns = this.cantidadLem;
+//                this.objetivoLemmings = 2;// Color negro del fondo en Nivel1.png
+//                this.salida = new Salida(575, 222, 40, 40);
+//                this.entrada = new Entrada(270,60);
+//                this.mapa = new Mapa(mapaImagen, COLOR_FONDO);
+//                this.lemmings = new ArrayList<>();
+//                this.stockHabilidades = new Stock();
+//                this.tiempoInicio = System.currentTimeMillis();
+////                stockHabilidades.añadirHabilidad("KameHameHa",5);
+////                stockHabilidades.añadirHabilidad("Constructor",5);
+////                stockHabilidades.añadirHabilidad("AutoBomba",5);
+//                stockHabilidades.añadirHabilidad("Minero",2);
+////                stockHabilidades.añadirHabilidad("Paracaidas", 5);
+////                stockHabilidades.añadirHabilidad("Bloqueador",5);
+//                mapa.limpiarArea(salida.getX(), salida.getY(), salida.getAncho(), salida.getAlto(), COLOR_FONDO);
+//                mapa.activarColisiones(false);
+//                break;
+//            case 2:
+//                this.cantidadLem = 10;
+//                this.cantidadSpawns = this.cantidadLem;
+//                this.objetivoLemmings = 2;// Color negro del fondo en Nivel1.png
+//                this.salida = new Salida(232, 245, 80, 80);
+//                this.entrada = new Entrada(230,15);
+//                this.mapa = new Mapa(mapaImagen, COLOR_FONDO);
+//                this.lemmings = new ArrayList<>();
+//                this.stockHabilidades = new Stock();
+//                this.tiempoInicio = System.currentTimeMillis();
+////                stockHabilidades.añadirHabilidad("Minero",5);
+////                stockHabilidades.añadirHabilidad("Paracaidas", 5);
+//                stockHabilidades.añadirHabilidad("Bloqueador",3);
+//                mapa.limpiarArea(salida.getX(), salida.getY(), salida.getAncho(), salida.getAlto(), COLOR_FONDO);
+//                mapa.activarColisiones(false);
+//                break;
+//            case 3:
+//                this.cantidadLem = 20;
+//                this.cantidadSpawns = this.cantidadLem;
+//                this.objetivoLemmings = 5;
+//                this.salida = new Salida(580,230 , 80, 80);
+//                this.entrada = new Entrada(150,10);
+//                this.mapa = new Mapa(mapaImagen, COLOR_FONDO);
+//                this.lemmings = new ArrayList<>();
+//                this.stockHabilidades = new Stock();
+//                this.tiempoInicio = System.currentTimeMillis();
+//                stockHabilidades.añadirHabilidad("Minero",5);
+//                stockHabilidades.añadirHabilidad("Paracaidas", 20);
+//                stockHabilidades.añadirHabilidad("Bloqueador",10);
+//                mapa.limpiarArea(salida.getX(), salida.getY(), salida.getAncho(), salida.getAlto(), COLOR_FONDO);
+//                System.out.println("Entrada en: " + entrada);
+//                System.out.println("Salida en: " + salida.getX());
+//                mapa.activarColisiones(false);
+//                break;
+//            case 4:
+//                this.cantidadLem = 5;
+//                this.cantidadSpawns = this.cantidadLem;
+//                this.objetivoLemmings = 5;
+//                this.salida = new Salida(740,212 , 80, 80);
+//                this.entrada = new Entrada(150,10);
+//                this.mapa = new Mapa(mapaImagen, COLOR_FONDO);
+//                this.lemmings = new ArrayList<>();
+//                this.stockHabilidades = new Stock();
+//                this.tiempoInicio = System.currentTimeMillis();
+//                stockHabilidades.añadirHabilidad("AutoBomba", 5);
+//                stockHabilidades.añadirHabilidad("KameHameHa", 5);
+//                stockHabilidades.añadirHabilidad("Constructor" , 5);
+//                stockHabilidades.añadirHabilidad("Minero",5);
+//                stockHabilidades.añadirHabilidad("Paracaidas", 5);
+//                stockHabilidades.añadirHabilidad("Bloqueador",10);
+//                mapa.limpiarArea(salida.getX(), salida.getY(), salida.getAncho(), salida.getAlto(), COLOR_FONDO);
+//                System.out.println("Entrada en: " + entrada);
+//                System.out.println("Salida en: " + salida.getX());
+//                mapa.activarColisiones(false);
+//                break;
+//            default:
+//                this.salida = new Salida(650, 460, 80, 100);
+//        }
+//
+//    }
 
 
     public void actualizar() {
@@ -196,15 +244,19 @@ public class Nivel {
                 }
             }
             // Muere por caída (si no tiene paracaídas)
-            if (!(l.getHabilidadActiva() instanceof HabilidadParacaidas)) {
-
-                if (l.getY() > 318 || (l.getTicksEnAire() > 109 && l.getImpacto()) ) {
+            if (l.getY() > 318) {
+                lemmingsMuertos++;
+                cantidadSpawns--;
+                cantidadLem--;
+                System.out.println("Un lemming ha muerto por caída");
+                it.remove();
+            }
+            if (!(l.getHabilidadActiva() instanceof HabilidadParacaidas) && (l.getTicksEnAire() > 109 && l.getImpacto())){
                     lemmingsMuertos++;
                     cantidadSpawns--;
                     cantidadLem--;
                     System.out.println("Un lemming ha muerto por caída");
                     it.remove();
-                }
             }
         }
         if (tiempo < (ahora - tiempoInicio))

@@ -1,0 +1,9 @@
+nombre=Nivel 1
+tiempo=120000
+frecuenciaSpawn=50
+cantidadLem=5
+objetivoLemmings=3
+entrada=270,60
+salida=575,222,40,40
+
+habilidades=KameHameHa:5,Constructor:5,AutoBomba:5,Minero:5,Paracaidas:5,Bloqueador:5
