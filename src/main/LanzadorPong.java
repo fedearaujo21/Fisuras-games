@@ -1,4 +1,7 @@
-package pong;
+package main;
+
+import pong.ConfigPantalla;
+import pong.Juego;
 
 import javax.swing.*;
 
@@ -8,9 +11,9 @@ public class LanzadorPong {
         ventanaDelMenu.setVisible(false);
 
         new ConfigPantalla(() -> {
-            Juego juego = new Juego(); // Tu clase original que extiende Frame
-            juego.setVisible(true);
-            juego.iniciar();});
+            Juego juego = new Juego(ventanaDelMenu);
+            juego.iniciar();
+        });
     }
 }
 
