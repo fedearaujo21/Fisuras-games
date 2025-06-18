@@ -12,6 +12,7 @@ public class Juego extends JPanel implements Runnable, KeyListener {
     private Cancha cancha;
     private boolean reiniciarSolicitado = false;
     private boolean volverAlMenu = false;
+    private boolean volverAConfiguracion = false;
     private JFrame ventana;
 
 
@@ -33,7 +34,7 @@ public class Juego extends JPanel implements Runnable, KeyListener {
         ventana.setVisible(true);
 
         setFocusable(true);
-        addKeyListener(this); // ← MOVER AQUÍ
+        addKeyListener(this);
     }
 
 
@@ -67,6 +68,11 @@ public class Juego extends JPanel implements Runnable, KeyListener {
                 volverAlMenuPrincipal();
                 return;
             }
+            if (volverAConfiguracion) {
+                volverAConfig();
+                return;
+            }
+
         }
     }
 
@@ -80,6 +86,8 @@ public class Juego extends JPanel implements Runnable, KeyListener {
             reiniciarSolicitado = true;
         } else if (code == KeyEvent.VK_ESCAPE) {
             volverAlMenu = true;
+        } else if (code == KeyEvent.VK_C) {
+            volverAConfiguracion = true;
         } else {
             cancha.teclaPresionada(e); // solo si no fue una tecla especial
         }
@@ -117,5 +125,14 @@ public class Juego extends JPanel implements Runnable, KeyListener {
         ventana.setVisible(true);
     }
 
+    private void volverAConfig() {
+        JFrame ventanaActual = (JFrame) SwingUtilities.getWindowAncestor(this);
+        ventanaActual.dispose(); // Cierra la ventana actual del juego
+
+        new ConfigPantalla(() -> {
+            Juego nuevoJuego = new Juego(new JFrame());
+            nuevoJuego.iniciar();
+        });
+    }
 
 }

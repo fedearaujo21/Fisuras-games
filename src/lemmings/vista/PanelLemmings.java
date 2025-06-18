@@ -5,6 +5,7 @@ import lemmings.modelo.Lemming;
 import lemmings.modelo.Nivel;
 import lemmings.modelo.BotonHabilidad;
 import lemmings.modelo.*;
+import main.LanzadorLemming;
 import main.MenuPrincipal;
 
 import java.awt.event.KeyAdapter;
@@ -115,6 +116,8 @@ public class PanelLemmings extends JPanel implements Runnable{
                     volverAlMenuPrincipal();
                 } else if (e.getKeyCode() == KeyEvent.VK_R) {
                     reiniciarNivel();
+                } else if (e.getKeyCode() == KeyEvent.VK_C) {
+                    volverAConfiguracion();
                 }
             }
         });
@@ -122,6 +125,24 @@ public class PanelLemmings extends JPanel implements Runnable{
         requestFocusInWindow();
 
 
+    }
+
+    private void volverAConfiguracion() {
+        if (musicaFondo != null) {
+            musicaFondo.close(); // Detiene la música actual
+        }
+
+        JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+        topFrame.dispose(); // Cierra la ventana actual
+
+        SwingUtilities.invokeLater(() -> {
+            JFrame nuevaVentana = new JFrame("Fisuras Games");
+            nuevaVentana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            nuevaVentana.setSize(800, 600);
+            nuevaVentana.setResizable(false);
+            nuevaVentana.setLocationRelativeTo(null);
+            LanzadorLemming.iniciar(nuevaVentana); // Volver a la configuración inicial
+        });
     }
 
     private void volverAlMenuPrincipal() {
