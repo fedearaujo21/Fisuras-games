@@ -36,6 +36,11 @@ public class PanelLemmings extends JPanel implements Runnable{
     private int interframe = 16;
     private BotonHabilidad botonPresionadoMomentaneo = null;
     private long tiempoBotonPresionado = 0;
+    private Rectangle botonHome;
+    private Rectangle botonConfig;
+    private Rectangle botonReiniciar;
+    private BufferedImage iconoHome, iconoConfig, iconoReiniciar;
+
 
     public PanelLemmings(JFrame ventana, int setNivel){
         setPreferredSize(new Dimension(800,600));
@@ -66,7 +71,18 @@ public class PanelLemmings extends JPanel implements Runnable{
                     return;
                 }
 
-
+                if (botonHome.contains(mx, my)) {
+                    volverAlMenuPrincipal();
+                    return;
+                }
+                if (botonReiniciar.contains(mx, my)) {
+                    reiniciarNivel();
+                    return;
+                }
+                if (botonConfig.contains(mx, my)) {
+                    volverAConfiguracion();
+                    return;
+                }
 
                 for (BotonHabilidad boton : botonesHabilidad) {
                     if (boton.contienePunto(mx, my)) {
@@ -244,6 +260,13 @@ public class PanelLemmings extends JPanel implements Runnable{
             botonesHabilidad.add(new BotonHabilidad(xInicial + 8 * espacio, yBoton, ancho, alto, ImageIO.read(getClass().getResourceAsStream("/lemmings/recursos/iconoAcelerar.png")), "acelerar", nivel.getStockHabilidades()));
             botonesHabilidad.add(new BotonHabilidad(xInicial + 9 * espacio, yBoton, ancho, alto, ImageIO.read(getClass().getResourceAsStream("/lemmings/recursos/iconoPausa.png")), "Pausa", nivel.getStockHabilidades()));
             botonesHabilidad.add(new BotonHabilidad(xInicial + 10 * espacio, yBoton, ancho, alto, ImageIO.read(getClass().getResourceAsStream("/lemmings/recursos/iconoPlay.png")), "Play", nivel.getStockHabilidades()));
+            iconoHome = ImageIO.read(new File("src/lemmings/recursos/iconoHome.png"));
+            iconoReiniciar = ImageIO.read(new File("src/lemmings/recursos/iconoReiniciar.png"));
+            iconoConfig = ImageIO.read(new File("src/lemmings/recursos/iconoConfigurar.png"));
+
+            botonHome = new Rectangle(10, 10, 32, 32);
+            botonConfig = new Rectangle(50, 10, 32, 32);
+            botonReiniciar = new Rectangle(90, 10, 32, 32);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -268,6 +291,10 @@ public class PanelLemmings extends JPanel implements Runnable{
                     (boton == botonPresionadoMomentaneo && System.currentTimeMillis() - tiempoBotonPresionado < 150);
             boton.dibujar(g, seleccionado);
         }
+        if (iconoHome != null) g.drawImage(iconoHome, botonHome.x, botonHome.y, botonHome.width, botonHome.height, null);
+        if (iconoReiniciar != null) g.drawImage(iconoReiniciar, botonReiniciar.x, botonReiniciar.y, botonReiniciar.width, botonReiniciar.height, null);
+        if (iconoConfig != null) g.drawImage(iconoConfig, botonConfig.x, botonConfig.y, botonConfig.width, botonConfig.height, null);
+
         if (System.currentTimeMillis() - tiempoBotonPresionado >= 150) {
             botonPresionadoMomentaneo = null;
         }
