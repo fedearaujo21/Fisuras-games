@@ -32,7 +32,7 @@ public class PanelLemmings extends JPanel implements Runnable{
     private int nivelNum = 1;
     private List<BotonHabilidad> botonesHabilidad = new ArrayList<>();
     private BotonHabilidad botonSeleccionado = null;
-    private boolean esperandoClick;
+//    private boolean esperandoClick;
     private int interframe = 16;
     private BotonHabilidad botonPresionadoMomentaneo = null;
     private long tiempoBotonPresionado = 0;
@@ -41,6 +41,9 @@ public class PanelLemmings extends JPanel implements Runnable{
     private Rectangle botonReiniciar;
     private BufferedImage iconoHome, iconoConfig, iconoReiniciar;
 
+    // NUEVO ENUM para el estado del juego
+    private enum EstadoJuego { JUGANDO, ESPERANDO_CLICK }
+    private EstadoJuego estadoJuego = EstadoJuego.JUGANDO;
 
     public PanelLemmings(JFrame ventana, int setNivel){
         setPreferredSize(new Dimension(800,600));
@@ -61,13 +64,15 @@ public class PanelLemmings extends JPanel implements Runnable{
                 int mx = e.getX();
                 int my = e.getY();
 
-                if (esperandoClick) {
-                    esperandoClick = false;
-                    if(nivel.getNivelAprobado()){
+                // <<< CAMBIO ACÁ >>>
+                if (estadoJuego == EstadoJuego.ESPERANDO_CLICK) {
+                    if (nivel.getNivelAprobado()) {
                         cargarNivel(nivelNum + 1);
                     } else {
                         cargarNivel(nivelNum);
                     }
+                    estadoJuego = EstadoJuego.JUGANDO;
+                    nivel.setNivelCompletado(false);  // 👈 Ahora sí, reseteamos acá
                     return;
                 }
 
@@ -309,7 +314,7 @@ public class PanelLemmings extends JPanel implements Runnable{
 
         g2d.setColor(Color.WHITE);
         g2d.setFont(new Font("Arial", Font.BOLD, 14));
-        g2d.drawString("Salvados: " + nivel.getLemmingsSalvados() + "/" + nivel.getObjetivoLemmings(), getWidth() - 210, 350);
+        g2d.drawString("Salvar: " + nivel.getObjetivoLemmings() + "/" + nivel.getCantidadLem(), getWidth() - 210, 350);
 
         long tiempoActual = nivel.getTiempo() / 60;
         long segundos = nivel.getTiempo() % 60;
@@ -319,41 +324,41 @@ public class PanelLemmings extends JPanel implements Runnable{
 
 
     @Override
-    public void run(){
-        while(true){
-            if (!nivel.getNivelCompletado()) {
+    public void run() {
+        while (true) {
+            if (estadoJuego == EstadoJuego.JUGANDO && !nivel.getNivelCompletado()) {
                 nivel.actualizar();
             }
 
             repaint();
 
-            if (nivel.getNivelCompletado() && !esperandoClick) {
-                // El nivel se completó, mostramos mensaje y esperamos clic
-                esperandoClick = true;
-                nivel.setNivelCompletado(false);
+            // Cuando se completa el nivel por primera vez, cambiamos al modo espera de clic
+            if (nivel.getNivelCompletado() && estadoJuego == EstadoJuego.JUGANDO) {
+                estadoJuego = EstadoJuego.ESPERANDO_CLICK;
+                // NO ponemos nivel.setNivelCompletado(false);
                 System.out.println("Nivel completado. Esperando clic para continuar...");
             }
 
-
-            if (this.botonSeleccionado != null && this.botonSeleccionado.getNombre() == "acelerar")
+            if (this.botonSeleccionado != null && "acelerar".equals(this.botonSeleccionado.getNombre()))
                 interframe = 6;
             else
                 interframe = 16;
 
             try {
                 Thread.sleep(interframe);
-            } catch (InterruptedException e){
+            } catch (InterruptedException e) {
                 e.printStackTrace();
             }
 
-            while(this.botonSeleccionado != null && this.botonSeleccionado.getNombre() == "Pausa"){
+            while (this.botonSeleccionado != null && "Pausa".equals(this.botonSeleccionado.getNombre())) {
                 try {
                     Thread.sleep(interframe);
-                } catch (InterruptedException e){
+                } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
         }
     }
+
 
 }

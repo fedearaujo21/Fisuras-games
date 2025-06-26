@@ -335,6 +335,7 @@ public class Nivel {
     public void reiniciar() { /* ... */ }
     public int getLemmingsSalvados(){return this.lemmingsSalvados;}
     public int getObjetivoLemmings(){return this.objetivoLemmings;}
+    public int getCantidadLem(){return this.cantidadLem;}
     public long getTiempo(){
         long ahora = System.currentTimeMillis();
         return (ahora - tiempoInicio) / 1000;
