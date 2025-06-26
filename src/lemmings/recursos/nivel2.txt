@@ -6,4 +6,4 @@ objetivoLemmings=2
 entrada=230,15
 salida=232,245,80,80
 
-habilidades=Bloqueador:3
+habilidades=Bloqueador:3,AutoBomba:5
