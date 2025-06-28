@@ -81,7 +81,7 @@ public class LanzadorLemming{
                 juegoFrame.setResizable(false);
                 juegoFrame.setLocationRelativeTo(null);
 
-                PanelLemmings juego = new PanelLemmings(juegoFrame, selectorNivel.getSelectedIndex() + 1);
+                PanelLemmings juego = new PanelLemmings(/*juegoFrame,*/ selectorNivel.getSelectedIndex() + 1);
                 juegoFrame.setContentPane(juego);
                 juegoFrame.setVisible(true);
 

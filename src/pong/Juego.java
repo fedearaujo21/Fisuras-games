@@ -1,5 +1,6 @@
 package pong;
 
+import main.LanzadorPong;
 import main.MenuPrincipal;
 
 import javax.swing.*;
@@ -72,7 +73,6 @@ public class Juego extends JPanel implements Runnable, KeyListener {
                 volverAConfig();
                 return;
             }
-
         }
     }
 
@@ -129,10 +129,15 @@ public class Juego extends JPanel implements Runnable, KeyListener {
         JFrame ventanaActual = (JFrame) SwingUtilities.getWindowAncestor(this);
         ventanaActual.dispose(); // Cierra la ventana actual del juego
 
-        new ConfigPantalla(() -> {
+        /*new ConfigPantalla(() -> {
             Juego nuevoJuego = new Juego(new JFrame());
             nuevoJuego.iniciar();
-        });
-    }
+        });*/
+        JFrame ventana = new JFrame("Fisuras Games");
+        ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        ventana.setResizable(false);
+        ventana.setSize(800,600);
 
+        new LanzadorPong(ventana);
+    }
 }
