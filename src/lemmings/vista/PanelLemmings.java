@@ -45,7 +45,7 @@ public class PanelLemmings extends JPanel implements Runnable{
     private enum EstadoJuego { JUGANDO, ESPERANDO_CLICK }
     private EstadoJuego estadoJuego = EstadoJuego.JUGANDO;
 
-    public PanelLemmings(JFrame ventana, int setNivel){
+    public PanelLemmings(/*JFrame ventana,*/ int setNivel){
         setPreferredSize(new Dimension(800,600));
         setFocusable(true);
         setBackground(Color.black);
@@ -54,9 +54,6 @@ public class PanelLemmings extends JPanel implements Runnable{
 
         cargarNivel(nivelNum);
 
-        if (musicaFondo != null) {
-            musicaFondo.loop(); // Empieza a reproducir la música en bucle
-        }
 
         addMouseListener(new MouseAdapter() {
             @Override

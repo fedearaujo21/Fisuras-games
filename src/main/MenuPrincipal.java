@@ -23,7 +23,7 @@ public class MenuPrincipal extends Panel {
         });
 
         btnPong.addActionListener((ActionEvent e) -> {
-            LanzadorPong.iniciar(ventana);
+            new LanzadorPong(ventana);
         });
 
         JPanel botones = new JPanel();
