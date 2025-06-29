@@ -9,6 +9,7 @@ public class AudioPlayer {
 
     private Clip clip; // Para la reproducción de clips de audio (sonidos cortos o música en bucle)
     private FloatControl gainControl; // Para controlar el volumen
+    private static AudioPlayer musicaFondo;
 
     public AudioPlayer(String filePath) {
         try {

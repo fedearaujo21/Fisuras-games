@@ -12,7 +12,7 @@ public class Main {
             JFrame ventana = new JFrame("Fisuras Games");
             ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             ventana.setResizable(false);
-            ventana.setSize(800,600);
+            ventana.setSize(500,700);
 
             MenuPrincipal menu = new MenuPrincipal(ventana);
             ventana.setContentPane(menu);
