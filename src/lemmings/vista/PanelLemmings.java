@@ -202,7 +202,7 @@ public class PanelLemmings extends JPanel implements Runnable{
             JFrame nuevaVentana = new JFrame("Fisuras");
             nuevaVentana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             nuevaVentana.setContentPane(new MenuPrincipal(nuevaVentana));
-            nuevaVentana.setSize(800, 600);
+            nuevaVentana.setSize(500, 700);
             nuevaVentana.setResizable(false);
             nuevaVentana.setLocationRelativeTo(null);
             nuevaVentana.setVisible(true);

@@ -119,7 +119,7 @@ public class Juego extends JPanel implements Runnable, KeyListener {
         JFrame ventana = new JFrame("Fisuras");
         ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         ventana.setContentPane(new MenuPrincipal(ventana));
-        ventana.setSize(800, 600);
+        ventana.setSize(500, 700);
         ventana.setResizable(false);
         ventana.setLocationRelativeTo(null);
         ventana.setVisible(true);
