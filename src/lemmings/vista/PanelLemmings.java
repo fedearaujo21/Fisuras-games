@@ -34,7 +34,6 @@ public class PanelLemmings extends JPanel implements Runnable{
     private List<BotonHabilidad> botonesHabilidad = new ArrayList<>();
     private BotonHabilidad botonSeleccionado = null;
 //    private boolean esperandoClick;
-    private int interframe = 16;
     private BotonHabilidad botonPresionadoMomentaneo = null;
     private long tiempoBotonPresionado = 0;
     private Rectangle botonHome;
@@ -45,10 +44,10 @@ public class PanelLemmings extends JPanel implements Runnable{
     private double escalaY;
 
     // NUEVO ENUM para el estado del juego
-    private enum EstadoJuego { JUGANDO, ESPERANDO_CLICK }
+    private enum EstadoJuego { JUGANDO, ESPERANDO_CLICK, PAUSA }
     private EstadoJuego estadoJuego = EstadoJuego.JUGANDO;
 
-    public PanelLemmings(JFrame ventana, int setNivel){
+    public PanelLemmings(/*JFrame ventana,*/ int setNivel){
         setPreferredSize(new Dimension(800,600));
         setFocusable(true);
         setBackground(Color.black);
@@ -65,9 +64,6 @@ public class PanelLemmings extends JPanel implements Runnable{
 
         cargarNivel(nivelNum);
 
-        if (musicaFondo != null) {
-            musicaFondo.loop(); // Empieza a reproducir la música en bucle
-        }
 
         addMouseListener(new MouseAdapter() {
             @Override
@@ -83,7 +79,7 @@ public class PanelLemmings extends JPanel implements Runnable{
                         cargarNivel(nivelNum);
                     }
                     estadoJuego = EstadoJuego.JUGANDO;
-                    nivel.setNivelCompletado(false);  // 👈 Ahora sí, reseteamos acá
+                    nivel.setNivelCompletado(false);
                     return;
                 }
 
@@ -111,6 +107,23 @@ public class PanelLemmings extends JPanel implements Runnable{
                         } else if (nombre.equals("Menos")) {
                             nivel.disminuirFrecuenciaSpawn();
                             repaint();
+                            return;
+                        }
+
+                        if (nombre.equals("acelerar")){
+                            Config.interframe = 6;
+                            System.out.println("acelerandodoodoodod");
+                            return;
+                        }
+
+                        if (nombre.equals("Play")) {
+                            Config.interframe = 16;
+                            estadoJuego = EstadoJuego.JUGANDO;
+                            return;
+                        }
+
+                        if (nombre.equals("Pausa")) {
+                            estadoJuego = EstadoJuego.PAUSA;
                             return;
                         }
 
@@ -363,20 +376,20 @@ public class PanelLemmings extends JPanel implements Runnable{
                 System.out.println("Nivel completado. Esperando clic para continuar...");
             }
 
-            if (this.botonSeleccionado != null && "acelerar".equals(this.botonSeleccionado.getNombre()))
+/*            if (this.botonSeleccionado != null && "acelerar".equals(this.botonSeleccionado.getNombre()))
                 interframe = 6;
             else
-                interframe = 16;
+                interframe = 16;*/
 
             try {
-                Thread.sleep(interframe);
+                Thread.sleep(Config.interframe);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
 
-            while (this.botonSeleccionado != null && "Pausa".equals(this.botonSeleccionado.getNombre())) {
+            while (this.botonSeleccionado != null && estadoJuego == EstadoJuego.PAUSA) {
                 try {
-                    Thread.sleep(interframe);
+                    Thread.sleep(Config.interframe);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
