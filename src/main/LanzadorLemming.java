@@ -20,7 +20,6 @@ public class LanzadorLemming{
 
         ventana.setTitle("Configuración del Juego - Lemmings Z");
         ventana.setSize(800, 600);
-        //ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); mepa que ya esta implementado
         ventana.setLocationRelativeTo(null); // Centra la ventana
 
         // Panel principal con layout vertical
@@ -43,22 +42,19 @@ public class LanzadorLemming{
 
         ventana.add(cardPanel, BorderLayout.CENTER);
 
-        // Cambiar slide al seleccionar nivel
         selectorNivel.addActionListener(e -> {
             String nivelSeleccionado = (String) selectorNivel.getSelectedItem();
             cardLayout.show(cardPanel, nivelSeleccionado);
         });
 
-        //
         // Mute
-        JPanel mutePanel = new JPanel();
-        mutePanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+        JPanel mutePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JCheckBox muteCheck = new JCheckBox("Mute");
+
         mutePanel.add(muteCheck);
 
         // Volumen
-        JPanel volumenPanel = new JPanel();
-        volumenPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+        JPanel volumenPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         volumenPanel.add(new JLabel("Volumen:"));
         JSlider volumenSlider = new JSlider(0, 100, 50);
         volumenSlider.setMajorTickSpacing(25);
@@ -66,27 +62,37 @@ public class LanzadorLemming{
         volumenSlider.setPaintLabels(true);
         volumenPanel.add(volumenSlider);
 
+        // Pantalla completa
+        JPanel pantallaPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JCheckBox chkPantallaCompleta = new JCheckBox("Pantalla completa");
+        pantallaPanel.add(chkPantallaCompleta);
+
         // Botón Aceptar
         JButton aceptarButton = new JButton("Aceptar");
         aceptarButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        aceptarButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                Config.mute = muteCheck.isSelected();
-                Config.volumen = volumenSlider.getValue();
-                ventana.dispose(); // cerrar la ventana de configuración
+        aceptarButton.addActionListener(e -> {
+            Config.mute = muteCheck.isSelected();
+            Config.volumen = volumenSlider.getValue();
+            Config.pantallaCompleta = chkPantallaCompleta.isSelected();
 
-                JFrame juegoFrame = new JFrame("Lemmings Z");
-                juegoFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            ventana.dispose(); // cerrar la ventana de configuración
+
+            JFrame juegoFrame = new JFrame("Lemmings Z");
+            juegoFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+            if (Config.pantallaCompleta) {
+                juegoFrame.dispose();
+                juegoFrame.setUndecorated(true);
+                juegoFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+            } else {
                 juegoFrame.setSize(800, 600);
                 juegoFrame.setResizable(false);
                 juegoFrame.setLocationRelativeTo(null);
-
-                PanelLemmings juego = new PanelLemmings(juegoFrame, selectorNivel.getSelectedIndex() + 1);
-                juegoFrame.setContentPane(juego);
-                juegoFrame.setVisible(true);
-
-                System.out.println(selectorNivel.getSelectedIndex());
             }
+
+            PanelLemmings juego = new PanelLemmings(juegoFrame, selectorNivel.getSelectedIndex() + 1);
+            juegoFrame.setContentPane(juego);
+            juegoFrame.setVisible(true);
         });
 
         // Agregar todo al panel principal
@@ -95,13 +101,15 @@ public class LanzadorLemming{
         panelPrincipal.add(mutePanel);
         panelPrincipal.add(Box.createRigidArea(new Dimension(0, 10)));
         panelPrincipal.add(volumenPanel);
+        panelPrincipal.add(Box.createRigidArea(new Dimension(0, 10)));
+        panelPrincipal.add(pantallaPanel);
         panelPrincipal.add(Box.createRigidArea(new Dimension(0, 20)));
         panelPrincipal.add(aceptarButton);
-
 
         ventana.add(panelPrincipal, BorderLayout.SOUTH);
         ventana.setVisible(true);
     }
+
 
     private static JPanel crearSlide(String rutaImagen) {
         JPanel panel = new JPanel();

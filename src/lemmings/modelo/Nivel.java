@@ -78,12 +78,15 @@ public class Nivel {
                         String[] partes = h.split(":");
                         String nombreHab = partes[0];
                         int cantidad = Integer.parseInt(partes[1]);
-                        stockHabilidades.añadirHabilidad(nombreHab, cantidad);
+                        stockHabilidades.anadirHabilidad(nombreHab, cantidad);
                     }
                 }
             }
             this.cantidadSpawns = this.cantidadLem;
-            mapa.limpiarArea(salida.getX(), salida.getY(), salida.getAncho(), salida.getAlto(), COLOR_FONDO);
+            int anchoLimpieza = Math.min(mapa.getAncho() - salida.getX(), salida.getAncho());
+            int altoLimpieza = Math.min(mapa.getAlto() - salida.getY(), salida.getAlto());
+            mapa.limpiarArea(salida.getX(), salida.getY(), anchoLimpieza, altoLimpieza, COLOR_FONDO);
+
             mapa.activarColisiones(false);
         } catch (IOException e) {
             e.printStackTrace();
@@ -241,9 +244,9 @@ public class Nivel {
             try {
                 BufferedImage goku;
                 if (nivelAprobado) {
-                    goku = ImageIO.read(new File("src/lemmings/recursos/gokuFeliz.png"));
+                    goku = ImageIO.read(getClass().getResourceAsStream("/lemmings/recursos/gokuFeliz.png"));
                 } else {
-                    goku = ImageIO.read(new File("src/lemmings/recursos/gokuTriste.png"));
+                    goku = ImageIO.read(getClass().getResourceAsStream("/lemmings/recursos/gokuTriste.png"));
                 }
 
                 int nuevoAncho = 100;

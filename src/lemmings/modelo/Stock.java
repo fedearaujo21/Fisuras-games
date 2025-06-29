@@ -10,7 +10,7 @@ public class Stock {
         this.habilidadesDisponibles = new HashMap<>();
     }
 
-    public void añadirHabilidad(String nombreHabilidad, int cantidad) {
+    public void anadirHabilidad(String nombreHabilidad, int cantidad) {
         habilidadesDisponibles.put(nombreHabilidad, cantidad);
     }
 

@@ -7,8 +7,9 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import javax.imageio.ImageIO;
-
 import java.awt.*;
+
+import lemmings.control.Escalador;
 
 public class Lemming {
     // Hago listas para cada frame
@@ -25,8 +26,6 @@ public class Lemming {
     private int frameKameActual = 0;
     private int frameTickKame = 0;
     private final int frameDelayKame = 6;
-
-
 
     private int frameActual = 0;
     private int frameTick = 0;
@@ -115,8 +114,6 @@ public class Lemming {
             e.printStackTrace();
         }
     }
-
-
     private void cargarFramesConstructor() {
         framesConstructor = new ArrayList<>();
         try {
@@ -169,29 +166,6 @@ public class Lemming {
             e.printStackTrace();
         }
     }
-
-    private BufferedImage hacerTransparente(BufferedImage original, int[] coloresTransparente) {
-        BufferedImage nueva = new BufferedImage(original.getWidth(), original.getHeight(), BufferedImage.TYPE_INT_ARGB);
-        for (int y = 0; y < original.getHeight(); y++) {
-            for (int x = 0; x < original.getWidth(); x++) {
-                int color = original.getRGB(x, y);
-                boolean esTransparente = false;
-                for (int ct : coloresTransparente) {
-                    if (color == ct) {
-                        esTransparente = true;
-                        break;
-                    }
-                }
-                nueva.setRGB(x, y, esTransparente ? 0x00000000 : color);
-            }
-        }
-        return nueva;
-    }
-
-    public void incrementarY() {
-        y += 1;
-    }
-
     private void cargarFramesBloqueador() {
         framesBloqueador = new ArrayList<>();
         try {
@@ -224,7 +198,6 @@ public class Lemming {
             e.printStackTrace();
         }
     }
-
     private void cargarFramesParacaidas() {
         framesParacaidas = new ArrayList<>();
         try {
@@ -257,7 +230,6 @@ public class Lemming {
             e.printStackTrace();
         }
     }
-
     private void cargarFramesExcavar() {
         framesExcavar = new ArrayList<>();
         try {
@@ -289,7 +261,6 @@ public class Lemming {
             e.printStackTrace();
         }
     }
-
     private void cargarFramesCaida() {
         framesCaida = new ArrayList<>();
         try {
@@ -322,7 +293,6 @@ public class Lemming {
             e.printStackTrace();
         }
     }
-
     private void cargarFramesCaminata() {
         framesCaminar = new ArrayList<>();
         try {
@@ -357,13 +327,11 @@ public class Lemming {
             e.printStackTrace();
         }
     }
-
     public void setFrameParacaidas() {
         if (framesParacaidas != null && !framesParacaidas.isEmpty()) {
             frameActual = (frameActual + 1) % framesParacaidas.size();
         }
     }
-
     public void caminar(List<Lemming> todosLosLemmings) {
 
         if (estado == EstadoLemming.AUTOBOMBA) {
@@ -579,8 +547,6 @@ public class Lemming {
             }
         }
     }
-
-
     private void actualizarFrameKame() {
         frameTickKame++;
         if (frameTickKame >= frameDelayKame) {
@@ -588,6 +554,27 @@ public class Lemming {
             frameTickKame = 0;
         }
     }
+    private BufferedImage hacerTransparente(BufferedImage original, int[] coloresTransparente) {
+        BufferedImage nueva = new BufferedImage(original.getWidth(), original.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        for (int y = 0; y < original.getHeight(); y++) {
+            for (int x = 0; x < original.getWidth(); x++) {
+                int color = original.getRGB(x, y);
+                boolean esTransparente = false;
+                for (int ct : coloresTransparente) {
+                    if (color == ct) {
+                        esTransparente = true;
+                        break;
+                    }
+                }
+                nueva.setRGB(x, y, esTransparente ? 0x00000000 : color);
+            }
+        }
+        return nueva;
+    }
+    public void incrementarY() {
+        y += 1;
+    }
+
     public void dibujar(Graphics g) {
         BufferedImage frame;
         switch (estado) {
@@ -609,78 +596,63 @@ public class Lemming {
         }
 
         int offsetX = 0;
+        int offsetY = frame.getHeight() - lemmingHeight;
+
+        if (estado == EstadoLemming.EXCAVANDO || estado == EstadoLemming.BLOQUEANDO) {
+            offsetX = (frame.getWidth() - lemmingWidth) / 2;
+        }
+
+        Graphics2D g2d = (Graphics2D) g;
 
         if (estado == EstadoLemming.CAYENDO && habilidadActiva instanceof HabilidadParacaidas) {
-            // Asegurarse de no acceder a un frame fuera de rango
             if (frameActual >= framesParacaidas.size()) {
                 frameActual = 0;
             }
-
             frame = framesParacaidas.get(frameActual);
 
-            if (direccion == 1) { // Si va a la derecha, espejar
-                Graphics2D g2d = (Graphics2D) g;
-                g2d.drawImage(frame, x + frame.getWidth(), y, -frame.getWidth(), frame.getHeight(), null);
+            if (direccion == 1) {
+                g2d.drawImage(frame, x + frame.getWidth(), y - offsetY, -frame.getWidth(), frame.getHeight(), null);
             } else {
-                g.drawImage(frame, x, y, null);
+                g2d.drawImage(frame, x, y - offsetY, frame.getWidth(), frame.getHeight(), null);
             }
-
             return;
         }
 
-
-// Si está excavando y el frame es más ancho, lo ajustamos
-        if (estado == EstadoLemming.EXCAVANDO) {
-            offsetX = (frame.getWidth() - lemmingWidth) / 2;
-        }
-
         if (direccion == 1) {
-            Graphics2D g2d = (Graphics2D) g;
-            g2d.drawImage(frame, x + frame.getWidth() - offsetX, y, -frame.getWidth(), frame.getHeight(), null);
+            g2d.drawImage(frame, x + frame.getWidth() - offsetX, y - offsetY, -frame.getWidth(), frame.getHeight(), null);
         } else {
-            g.drawImage(frame, x - offsetX, y, null);
+            g2d.drawImage(frame, x - offsetX, y - offsetY, frame.getWidth(), frame.getHeight(), null);
         }
 
-        // Ajuste para el bloqueador (si su sprite es diferente de las dimensiones del lemming)
-        if (estado == EstadoLemming.BLOQUEANDO) {
-            offsetX = (frame.getWidth() - lemmingWidth) / 2;
-        }
-
+        // Si está disparando el KameHameHa
         if (habilidadActiva instanceof HabilidadKameHameHa kameHameHa) {
-            System.out.println();
             int ticks = kameHameHa.getTicksActivo();
             int duracionCarga = kameHameHa.getDuracionCargaTicks();
             int duracionViaje = kameHameHa.getDuracionViajeTicks();
 
             if (ticks > duracionCarga) {
-                // El rayo está viajando o ha impactado
-                int origenX = x + lemmingWidth - 4 ;
+                int origenX = x + lemmingWidth - 4;
                 int origenY = y + lemmingHeight - 4;
-
                 int puntoImpactoX = kameHameHa.getPuntoImpactoX();
                 int puntoImpactoY = kameHameHa.getPuntoImpactoY();
 
+                float progreso = (float) (ticks - duracionCarga) / duracionViaje;
+                progreso = Math.min(1.0f, progreso);
 
-                // Calcular la posición actual del "frente" del rayo
-                float progresoViaje = (float)(ticks - duracionCarga) / duracionViaje;
-                progresoViaje = Math.min(1.0f, progresoViaje); // Asegurarse de que no exceda 1.0
+                int rayoX = origenX + (int) ((puntoImpactoX - origenX) * progreso);
+                int rayoY = origenY + (int) ((puntoImpactoY - origenY) * progreso);
 
-                int rayoActualX = origenX + (int)((puntoImpactoX - origenX) * progresoViaje);
-                int rayoActualY = origenY + (int)((puntoImpactoY - origenY) * progresoViaje);
-
-                // Dibujar el rayo
-                g.setColor(new Color(0, 255, 255, 180)); // Un azul brillante para el rayo
-                Graphics2D g2d = (Graphics2D) g;
-
-                // Dibujar la línea del rayo
-                g2d.setStroke(new BasicStroke(10)); // Grosor del rayo
-                g2d.drawLine(origenX, origenY, rayoActualX, rayoActualY);
-
-                // Dibujar una pequeña "bola" en el frente del rayo
-                g2d.fillOval(rayoActualX - 5, rayoActualY - 5, 20, 20);
+                g2d.setColor(new Color(0, 255, 255, 180));
+                g2d.setStroke(new BasicStroke(10));
+                g2d.drawLine(origenX, origenY, rayoX, rayoY);
+                g2d.fillOval(rayoX - 5, rayoY - 5, 20, 20);
             }
         }
     }
+
+
+
+
     public int getTicksEnAire() {
         return ticksEnAire;
     }

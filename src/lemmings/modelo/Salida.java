@@ -23,7 +23,7 @@ public class Salida {
     public Salida(int x, int y, int ancho, int alto) {
         this.x = x;
         this.y = y;
-        this.ancho = 30; // podés ajustar si querés que coincida con el frame
+        this.ancho = 30;
         this.alto = 30;
         cargarFrames();
     }
@@ -35,10 +35,9 @@ public class Salida {
             int espacio = 8;
 
             for (int i = 0; i < 2; i++) {
-                int xFrame = i * (86 + espacio); // 86 de ancho + espacio
+                int xFrame = i * (86 + espacio);
                 BufferedImage frame = spriteSheet.getSubimage(xFrame, 0, 86, 80);
 
-                // Eliminar fondo fucsia y verde
                 BufferedImage limpio = new BufferedImage(86, 80, BufferedImage.TYPE_INT_ARGB);
                 for (int yy = 0; yy < 80; yy++) {
                     for (int xx = 0; xx < 86; xx++) {
