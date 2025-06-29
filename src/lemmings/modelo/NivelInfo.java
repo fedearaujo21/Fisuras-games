@@ -5,14 +5,14 @@ public class NivelInfo {
     private String nombre;
     private String rutaImagen;
     private String rutaMusica;
-    private String rutaVistaPrevia;
+    private String rutaVista;
 
-    public NivelInfo(int numero, String nombre, String rutaImagen, String rutaMusica, String rutaVistaPrevia) {
+    public NivelInfo(int numero, String nombre, String rutaImagen, String rutaMusica, String rutaVista) {
         this.numero = numero;
         this.nombre = nombre;
         this.rutaImagen = rutaImagen;
         this.rutaMusica = rutaMusica;
-        this.rutaVistaPrevia = rutaVistaPrevia;
+        this.rutaVista = rutaVista;
     }
 
     public int getNumero() {
@@ -31,7 +31,8 @@ public class NivelInfo {
         return rutaMusica;
     }
 
-    public String getRutaVistaPrevia() {
-        return rutaVistaPrevia;
+    public String getRutaVista() {
+        return rutaVista;
     }
+
 }

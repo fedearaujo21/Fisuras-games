@@ -16,32 +16,34 @@ public class LanzadorLemming {
     private static CardLayout cardLayout;
 
     public static void iniciar(JFrame ventana) {
-        ventana.getContentPane().removeAll(); // Limpiar contenido previo
+
+        ventana.getContentPane().removeAll(); // Quita todos los componentes
         ventana.repaint();
         ventana.revalidate();
         ventana.setLayout(new BorderLayout());
 
         ventana.setTitle("Configuración del Juego - Lemmings Z");
         ventana.setSize(800, 600);
-        ventana.setLocationRelativeTo(null); // Centrar ventana
+        ventana.setLocationRelativeTo(null); // Centra la ventana
 
         // Panel principal con layout vertical
         JPanel panelPrincipal = new JPanel();
         panelPrincipal.setLayout(new BoxLayout(panelPrincipal, BoxLayout.Y_AXIS));
         panelPrincipal.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); // padding
 
-        // Obtener niveles disponibles
-        List<NivelInfo> niveles = GestorNiveles.getTodosLosNiveles();
+        // Obtener lista de niveles desde GestorNiveles
+        List<NivelInfo> nivelesDisponibles = GestorNiveles.getTodosLosNiveles();
 
-        // Crear ComboBox dinámico
-        String[] nombresNiveles = niveles.stream().map(NivelInfo::getNombre).toArray(String[]::new);
+        // Selector de nivel
+        String[] nombresNiveles = nivelesDisponibles.stream().map(NivelInfo::getNombre).toArray(String[]::new);
         JComboBox<String> selectorNivel = new JComboBox<>(nombresNiveles);
 
-        // Crear el CardLayout con slides
+        // Card Layout para mostrar las vistas previas de los niveles
         cardLayout = new CardLayout();
         cardPanel = new JPanel(cardLayout);
-        for (NivelInfo nivel : niveles) {
-            cardPanel.add(crearSlide(nivel.getRutaVistaPrevia()), nivel.getNombre());
+
+        for (NivelInfo info : nivelesDisponibles) {
+            cardPanel.add(crearSlide(info.getRutaVista()), info.getNombre());
         }
 
         ventana.add(cardPanel, BorderLayout.CENTER);
@@ -78,7 +80,7 @@ public class LanzadorLemming {
             Config.volumen = volumenSlider.getValue();
             Config.pantallaCompleta = chkPantallaCompleta.isSelected();
 
-            ventana.dispose(); // cerrar configuración
+            ventana.dispose(); // cerrar la ventana de configuración
 
             JFrame juegoFrame = new JFrame("Lemmings Z");
             juegoFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -93,14 +95,13 @@ public class LanzadorLemming {
                 juegoFrame.setLocationRelativeTo(null);
             }
 
-            // Obtener el nivel seleccionado
-            int index = selectorNivel.getSelectedIndex();
-            PanelLemmings juego = new PanelLemmings(niveles.get(index).getNumero());
+            int nivelSeleccionado = selectorNivel.getSelectedIndex() + 1;
+            PanelLemmings juego = new PanelLemmings(nivelSeleccionado);
             juegoFrame.setContentPane(juego);
             juegoFrame.setVisible(true);
         });
 
-        // Agregar al panel principal
+        // Agregar todo al panel principal
         panelPrincipal.add(selectorNivel);
         panelPrincipal.add(Box.createRigidArea(new Dimension(0, 10)));
         panelPrincipal.add(mutePanel);
@@ -119,10 +120,23 @@ public class LanzadorLemming {
         JPanel panel = new JPanel();
         JLabel label = new JLabel();
 
-        ImageIcon icono = new ImageIcon(rutaImagen);
+        if (rutaImagen == null) {
+            System.err.println("Ruta de imagen nula en crearSlide");
+            return panel;
+        }
+
+        java.net.URL recurso = LanzadorLemming.class.getResource(rutaImagen);
+        if (recurso == null) {
+            System.err.println("No se encontró la imagen: " + rutaImagen);
+            return panel;
+        }
+
+        ImageIcon icono = new ImageIcon(recurso);
         label.setIcon(icono);
         panel.add(label);
 
         return panel;
     }
+
+
 }

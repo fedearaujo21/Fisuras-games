@@ -13,7 +13,7 @@ public class GestorNiveles {
                 "Nivel 1",
                 "/lemmings/recursos/Nivel1.png",
                 "/lemmings/recursos/MusicaNivel1.wav",
-                "src/lemmings/recursos/Nivel1View.png"
+                "/lemmings/recursos/Nivel1View.png"  // ← así
         ));
 
         niveles.add(new NivelInfo(
@@ -21,15 +21,16 @@ public class GestorNiveles {
                 "Nivel 2",
                 "/lemmings/recursos/Nivel2.png",
                 "/lemmings/recursos/MusicaNivel2.wav",
-                "src/lemmings/recursos/Nivel2View.png"
+                "/lemmings/recursos/Nivel2View.png"
         ));
+
 
         niveles.add(new NivelInfo(
                 3,
                 "Nivel 3",
                 "/lemmings/recursos/Nivel3.png",
                 "/lemmings/recursos/MusicaNivel3.wav",
-                "src/lemmings/recursos/Nivel3View.png"
+                "/lemmings/recursos/Nivel3View.png"
         ));
 
         niveles.add(new NivelInfo(
@@ -37,11 +38,10 @@ public class GestorNiveles {
                 "Nivel 4",
                 "/lemmings/recursos/Nivel4.png",
                 "/lemmings/recursos/MusicaNivel4.wav",
-                "src/lemmings/recursos/Nivel4View.png"
+                "/lemmings/recursos/Nivel4View.png"
         ));
 
-        // Si algún día agregás más niveles, solo sumás acá otro:
-        // niveles.add(new NivelInfo(...));
+
 
         return niveles;
     }
