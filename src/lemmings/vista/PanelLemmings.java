@@ -29,7 +29,7 @@ import java.io.File;
 public class PanelLemmings extends JPanel implements Runnable{
     private Nivel nivel;
     private Thread hilo;
-    private AudioPlayer musicaFondo;
+    private static AudioPlayer musicaFondo;
     private int nivelNum = 1;
     private List<BotonHabilidad> botonesHabilidad = new ArrayList<>();
     private BotonHabilidad botonSeleccionado = null;
@@ -42,6 +42,7 @@ public class PanelLemmings extends JPanel implements Runnable{
     private BufferedImage iconoHome, iconoConfig, iconoReiniciar;
     private double escalaX;
     private double escalaY;
+    private boolean juegoActivo = false;
 
     // NUEVO ENUM para el estado del juego
     private enum EstadoJuego { JUGANDO, ESPERANDO_CLICK, PAUSA }
@@ -170,6 +171,12 @@ public class PanelLemmings extends JPanel implements Runnable{
         requestFocusInWindow();
 
     }
+    public static void detenerMusica() {
+        if (musicaFondo != null) {
+            musicaFondo.close();
+            musicaFondo = null;
+        }
+    }
 
     private void volverAConfiguracion() {
         if (musicaFondo != null) {
@@ -193,11 +200,16 @@ public class PanelLemmings extends JPanel implements Runnable{
         if (musicaFondo != null) {
             musicaFondo.close(); // Detener la música si está sonando
         }
+        PanelLemmings.detenerMusica();
+
+        if (hilo != null && hilo.isAlive()) {
+            hilo.interrupt(); // Detener el hilo del juego
+        }
 
         JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
-        topFrame.dispose(); // Cerrar la ventana actual del juego
+        topFrame.dispose(); // Cerrar la ventana actual
+        juegoActivo = false;  // Esto va justo antes o después del dispose()
 
-        // Crear una nueva ventana con el menú principal, bien configurada
         SwingUtilities.invokeLater(() -> {
             JFrame nuevaVentana = new JFrame("Fisuras");
             nuevaVentana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -212,16 +224,19 @@ public class PanelLemmings extends JPanel implements Runnable{
 
 
 
+
     private void reiniciarNivel() {
         cargarNivel(nivelNum);
     }
 
 
-    public void cargarNivel(int numero){
+    public void cargarNivel(int numero) {
         try {
-            if (musicaFondo != null) {
-                musicaFondo.close();
-            }
+            // Detener música anterior si la había
+//            if (musicaFondo != null) {
+//                musicaFondo.close();
+//            }
+            detenerMusica();
 
             switch (numero) {
                 case 1:
@@ -236,25 +251,24 @@ public class PanelLemmings extends JPanel implements Runnable{
                     break;
                 case 3:
                     nivelNum = 3;
-                    nivel = new Nivel(3,"Nivel 3",ImageIO.read(getClass().getResourceAsStream("/lemmings/recursos/Nivel3.png")));
+                    nivel = new Nivel(3, "Nivel 3", ImageIO.read(getClass().getResourceAsStream("/lemmings/recursos/Nivel3.png")));
                     musicaFondo = new AudioPlayer("/lemmings/recursos/MusicaNivel3.wav");
                     break;
                 case 4:
                     nivelNum = 4;
-                    nivel = new Nivel(4,"Nivel 4",ImageIO.read(getClass().getResourceAsStream("/lemmings/recursos/Nivel4.png")));
+                    nivel = new Nivel(4, "Nivel 4", ImageIO.read(getClass().getResourceAsStream("/lemmings/recursos/Nivel4.png")));
                     musicaFondo = new AudioPlayer("/lemmings/recursos/MusicaNivel4.wav");
                     break;
                 default:
                     System.out.println("No hay más niveles.");
                     return;
             }
-
+            nivel.getLemmings().clear();
             inicializarBotonesHabilidad();
 
             if (musicaFondo != null && !Config.mute) {
                 musicaFondo.setVolume(Config.volumen);
-                System.out.println(Config.volumen);
-                musicaFondo.loop(); // Empieza a reproducir la música en bucle
+                musicaFondo.loop(); // Reproducir música en bucle
             }
 
             if (hilo == null || !hilo.isAlive()) {
@@ -266,6 +280,7 @@ public class PanelLemmings extends JPanel implements Runnable{
             e.printStackTrace();
         }
     }
+
 
     private void inicializarBotonesHabilidad() {
         botonesHabilidad.clear();
@@ -362,29 +377,25 @@ public class PanelLemmings extends JPanel implements Runnable{
 
     @Override
     public void run() {
-        while (true) {
+        juegoActivo = true;  // Asegurate de que esta variable exista como campo
+
+        while (juegoActivo) {
             if (estadoJuego == EstadoJuego.JUGANDO && !nivel.getNivelCompletado()) {
                 nivel.actualizar();
             }
 
             repaint();
 
-            // Cuando se completa el nivel por primera vez, cambiamos al modo espera de clic
             if (nivel.getNivelCompletado() && estadoJuego == EstadoJuego.JUGANDO) {
                 estadoJuego = EstadoJuego.ESPERANDO_CLICK;
-                // NO ponemos nivel.setNivelCompletado(false);
                 System.out.println("Nivel completado. Esperando clic para continuar...");
             }
-
-/*            if (this.botonSeleccionado != null && "acelerar".equals(this.botonSeleccionado.getNombre()))
-                interframe = 6;
-            else
-                interframe = 16;*/
 
             try {
                 Thread.sleep(Config.interframe);
             } catch (InterruptedException e) {
                 e.printStackTrace();
+                juegoActivo = false;
             }
 
             while (this.botonSeleccionado != null && estadoJuego == EstadoJuego.PAUSA) {
@@ -392,8 +403,14 @@ public class PanelLemmings extends JPanel implements Runnable{
                     Thread.sleep(Config.interframe);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
+                    juegoActivo = false;
                 }
             }
+        }
+
+        // Al salir del bucle detenemos la música
+        if (musicaFondo != null) {
+            musicaFondo.close();
         }
     }
 }
