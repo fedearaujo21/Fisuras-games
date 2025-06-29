@@ -96,7 +96,7 @@ public class LanzadorLemming{
 
             }
 
-            PanelLemmings juego = new PanelLemmings(juegoFrame, selectorNivel.getSelectedIndex() + 1);
+            PanelLemmings juego = new PanelLemmings(selectorNivel.getSelectedIndex() + 1);
             juegoFrame.setContentPane(juego);
             juegoFrame.setVisible(true);
         });
