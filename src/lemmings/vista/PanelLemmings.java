@@ -1,6 +1,7 @@
 package lemmings.vista;
 
 import lemmings.control.AudioPlayer;
+import lemmings.control.Escalador;
 import lemmings.modelo.Lemming;
 import lemmings.modelo.Nivel;
 import lemmings.modelo.BotonHabilidad;
@@ -39,6 +40,8 @@ public class PanelLemmings extends JPanel implements Runnable{
     private Rectangle botonConfig;
     private Rectangle botonReiniciar;
     private BufferedImage iconoHome, iconoConfig, iconoReiniciar;
+    private double escalaX;
+    private double escalaY;
 
     // NUEVO ENUM para el estado del juego
     private enum EstadoJuego { JUGANDO, ESPERANDO_CLICK, PAUSA }
@@ -49,7 +52,15 @@ public class PanelLemmings extends JPanel implements Runnable{
         setFocusable(true);
         setBackground(Color.black);
         this.nivelNum = setNivel;
-        //aca se cargan los niveles
+
+        Dimension tamañoReal;
+        if (Config.pantallaCompleta) {
+            tamañoReal = Toolkit.getDefaultToolkit().getScreenSize();
+        } else {
+            tamañoReal = new Dimension(800, 600);
+        }
+        Escalador.inicializarEscalas(tamañoReal.width, tamañoReal.height);
+
 
         cargarNivel(nivelNum);
 
@@ -57,8 +68,8 @@ public class PanelLemmings extends JPanel implements Runnable{
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                int mx = e.getX();
-                int my = e.getY();
+                int mx = Escalador.desescalarX(e.getX());
+                int my = Escalador.desescalarY(e.getY());
 
                 // <<< CAMBIO ACÁ >>>
                 if (estadoJuego == EstadoJuego.ESPERANDO_CLICK) {
@@ -157,7 +168,6 @@ public class PanelLemmings extends JPanel implements Runnable{
         });
         setFocusable(true);
         requestFocusInWindow();
-
 
     }
 
@@ -293,48 +303,62 @@ public class PanelLemmings extends JPanel implements Runnable{
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        if(nivel != null){
-            nivel.dibujar(g);
-        } else {
-            g.setColor(Color.RED);
-            g.drawString("Nivel no cargado", 350, 300);
-        }
-        // Fondo del panel de habilidades
-        g.setColor(Color.LIGHT_GRAY);
-        g.fillRect(0, 320, getWidth(), 80);  // ajustá la altura si querés
+        Graphics2D g2d = (Graphics2D) g.create(); // Copia segura para transformaciones
 
-        // Luego dibujás los botones (ya lo tenés):
+        // Aplicar escalado general definido en Escalador (ya lo seteaste en el constructor)
+        g2d.scale(Escalador.escalaX, Escalador.escalaY);
+
+        // Dibujo del nivel (mapa, lemmings, entrada, salida)
+        if (nivel != null) {
+            nivel.dibujar(g2d);
+        } else {
+            g2d.setColor(Color.RED);
+            g2d.drawString("Nivel no cargado", 350, 300);
+        }
+
+        // Dibujo del fondo gris del panel inferior
+        g2d.setColor(Color.LIGHT_GRAY);
+        g2d.fillRect(0, 320, 800, 80);
+
+        // Dibujo de botones de habilidad
         for (BotonHabilidad boton : botonesHabilidad) {
             boolean seleccionado = boton == botonSeleccionado ||
                     (boton == botonPresionadoMomentaneo && System.currentTimeMillis() - tiempoBotonPresionado < 150);
-            boton.dibujar(g, seleccionado);
+            boton.dibujar(g2d, seleccionado);
         }
-        if (iconoHome != null) g.drawImage(iconoHome, botonHome.x, botonHome.y, botonHome.width, botonHome.height, null);
-        if (iconoReiniciar != null) g.drawImage(iconoReiniciar, botonReiniciar.x, botonReiniciar.y, botonReiniciar.width, botonReiniciar.height, null);
-        if (iconoConfig != null) g.drawImage(iconoConfig, botonConfig.x, botonConfig.y, botonConfig.width, botonConfig.height, null);
 
+        // Iconos (home, reiniciar, config)
+        if (iconoHome != null)
+            g2d.drawImage(iconoHome, botonHome.x, botonHome.y, botonHome.width, botonHome.height, null);
+        if (iconoReiniciar != null)
+            g2d.drawImage(iconoReiniciar, botonReiniciar.x, botonReiniciar.y, botonReiniciar.width, botonReiniciar.height, null);
+        if (iconoConfig != null)
+            g2d.drawImage(iconoConfig, botonConfig.x, botonConfig.y, botonConfig.width, botonConfig.height, null);
+
+        // Limpiar selección momentánea si ya pasó el tiempo
         if (System.currentTimeMillis() - tiempoBotonPresionado >= 150) {
             botonPresionadoMomentaneo = null;
         }
-        // Fondo suavizado
-        Graphics2D g2d = (Graphics2D) g;
-        g2d.setColor(new Color(0, 0, 0, 120)); // negro semi-transparente
-        g2d.fillRoundRect(getWidth() - 220, 330, 210, 50, 15, 15); // fondo con bordes redondeados
+
+        // HUD
+        g2d.setColor(new Color(0, 0, 0, 120)); // fondo negro transparente
+        g2d.fillRoundRect(580, 330, 210, 50, 15, 15);
 
         g2d.setColor(Color.YELLOW);
         g2d.setStroke(new BasicStroke(2));
-        g2d.drawRoundRect(getWidth() - 220, 330, 210, 50, 15, 15);
+        g2d.drawRoundRect(580, 330, 210, 50, 15, 15);
 
         g2d.setColor(Color.WHITE);
         g2d.setFont(new Font("Arial", Font.BOLD, 14));
-        g2d.drawString("Salvar: " + nivel.getObjetivoLemmings() + "/" + nivel.getCantidadLem(), getWidth() - 210, 350);
+        g2d.drawString("Salvar: " + nivel.getObjetivoLemmings() + "/" + nivel.getCantidadLem(), 590, 350);
 
         long tiempoActual = nivel.getTiempo() / 60;
         long segundos = nivel.getTiempo() % 60;
         long tiempoMax = nivel.getTiempoLimite();
-        g2d.drawString(String.format("Tiempo: %02d:%02d / %d min", tiempoActual, segundos, tiempoMax), getWidth() - 210, 370);
-    }
+        g2d.drawString(String.format("Tiempo: %02d:%02d / %d min", tiempoActual, segundos, tiempoMax), 590, 370);
 
+        g2d.dispose(); // Liberar recursos
+    }
 
     @Override
     public void run() {

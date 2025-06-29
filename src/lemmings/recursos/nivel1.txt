@@ -6,4 +6,5 @@ objetivoLemmings=2
 entrada=270,60
 salida=575,222,40,40
 
+
 habilidades=Minero:5
