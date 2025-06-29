@@ -85,7 +85,7 @@ public class LanzadorLemming{
                 juegoFrame.setUndecorated(true);
                 juegoFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
             } else {
-                juegoFrame.setSize(800, 600);
+                juegoFrame.setSize(800, 500);
                 juegoFrame.setResizable(false);
                 juegoFrame.setLocationRelativeTo(null);
                 PanelLemmings juego = new PanelLemmings(selectorNivel.getSelectedIndex() + 1);
