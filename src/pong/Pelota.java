@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class Pelota {
     private int x, y;
-    private int tamaño = 12;
+    private int tamano = 12;
     private int velocidadX = 4, velocidadY = 4;
     private final int factor = 5; // margen de desvío
     private final Map<String, String> sonidoParedes = Map.of(
@@ -68,7 +68,7 @@ public class Pelota {
         Random entropia = new Random();
 
         // Rebote contra los bordes superior/inferior
-        if (y <= 0 || y + Config.frameSuperior + tamaño >= 600) {
+        if (y <= 0 || y + Config.frameSuperior + tamano >= 600) {
             velocidadY *= -1;
 
             if(Config.sonidoActivado) {
@@ -136,12 +136,12 @@ public class Pelota {
         if (Config.skin == "tropical")
             g.setColor(Color.PINK);
 
-        g.fillOval(x, y, tamaño, tamaño);
+        g.fillOval(x, y, tamano, tamano);
     }
 
     public void reiniciar() {
-        x = 400 - tamaño / 2;
-        y = 300 - tamaño / 2;
+        x = 400 - tamano / 2;
+        y = 300 - tamano / 2;
         direccionAleatoria();
     }
 
@@ -156,7 +156,7 @@ public class Pelota {
     }
 
     public Rectangle getRect() {
-        return new Rectangle(x, y, tamaño, tamaño);
+        return new Rectangle(x, y, tamano, tamano);
     }
 
     public int getY(){return this.y;}
