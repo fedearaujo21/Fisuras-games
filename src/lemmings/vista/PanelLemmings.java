@@ -33,18 +33,13 @@ public class PanelLemmings extends JPanel implements Runnable{
     private int nivelNum = 1;
     private List<BotonHabilidad> botonesHabilidad = new ArrayList<>();
     private BotonHabilidad botonSeleccionado = null;
-//    private boolean esperandoClick;
     private BotonHabilidad botonPresionadoMomentaneo = null;
     private long tiempoBotonPresionado = 0;
     private Rectangle botonHome;
     private Rectangle botonConfig;
     private Rectangle botonReiniciar;
     private BufferedImage iconoHome, iconoConfig, iconoReiniciar;
-    private double escalaX;
-    private double escalaY;
     private boolean juegoActivo = false;
-
-    // NUEVO ENUM para el estado del juego
     private enum EstadoJuego { JUGANDO, ESPERANDO_CLICK, PAUSA }
     private EstadoJuego estadoJuego = EstadoJuego.JUGANDO;
 
@@ -54,13 +49,13 @@ public class PanelLemmings extends JPanel implements Runnable{
         setBackground(Color.black);
         this.nivelNum = setNivel;
 
-        Dimension tamañoReal;
+        Dimension tamanoReal;
         if (Config.pantallaCompleta) {
-            tamañoReal = Toolkit.getDefaultToolkit().getScreenSize();
+            tamanoReal = Toolkit.getDefaultToolkit().getScreenSize();
         } else {
-            tamañoReal = new Dimension(800, 600);
+            tamanoReal = new Dimension(800, 600);
         }
-        Escalador.inicializarEscalas(tamañoReal.width, tamañoReal.height);
+        Escalador.inicializarEscalas(tamanoReal.width, tamanoReal.height);
 
 
         cargarNivel(nivelNum);
@@ -232,37 +227,19 @@ public class PanelLemmings extends JPanel implements Runnable{
 
     public void cargarNivel(int numero) {
         try {
-            // Detener música anterior si la había
-//            if (musicaFondo != null) {
-//                musicaFondo.close();
-//            }
-            detenerMusica();
+            detenerMusica();  // Detenemos la música anterior si la hubiera
 
-            switch (numero) {
-                case 1:
-                    nivelNum = 1;
-                    nivel = new Nivel(1, "Nivel 1", ImageIO.read(getClass().getResourceAsStream("/lemmings/recursos/Nivel1.png")));
-                    musicaFondo = new AudioPlayer("/lemmings/recursos/MusicaNivel1.wav");
-                    break;
-                case 2:
-                    nivelNum = 2;
-                    nivel = new Nivel(2, "Nivel 2", ImageIO.read(getClass().getResourceAsStream("/lemmings/recursos/Nivel2.png")));
-                    musicaFondo = new AudioPlayer("/lemmings/recursos/MusicaNivel2.wav");
-                    break;
-                case 3:
-                    nivelNum = 3;
-                    nivel = new Nivel(3, "Nivel 3", ImageIO.read(getClass().getResourceAsStream("/lemmings/recursos/Nivel3.png")));
-                    musicaFondo = new AudioPlayer("/lemmings/recursos/MusicaNivel3.wav");
-                    break;
-                case 4:
-                    nivelNum = 4;
-                    nivel = new Nivel(4, "Nivel 4", ImageIO.read(getClass().getResourceAsStream("/lemmings/recursos/Nivel4.png")));
-                    musicaFondo = new AudioPlayer("/lemmings/recursos/MusicaNivel4.wav");
-                    break;
-                default:
-                    System.out.println("No hay más niveles.");
-                    return;
+            NivelInfo info = GestorNiveles.getNivelInfoPorNumero(numero);
+            if (info == null) {
+                System.out.println("Nivel no encontrado: " + numero);
+                return;
             }
+
+            nivelNum = info.getNumero();
+            nivel = new Nivel(info.getNumero(), info.getNombre(),
+                    ImageIO.read(getClass().getResourceAsStream(info.getRutaImagen())));
+            musicaFondo = new AudioPlayer(info.getRutaMusica());
+
             nivel.getLemmings().clear();
             inicializarBotonesHabilidad();
 
@@ -280,6 +257,8 @@ public class PanelLemmings extends JPanel implements Runnable{
             e.printStackTrace();
         }
     }
+
+
 
 
     private void inicializarBotonesHabilidad() {

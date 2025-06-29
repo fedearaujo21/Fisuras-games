@@ -1,44 +1,48 @@
 package main;
 
 import lemmings.modelo.Config;
+import lemmings.modelo.GestorNiveles;
+import lemmings.modelo.NivelInfo;
 import lemmings.vista.PanelLemmings;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.List;
 
-public class LanzadorLemming{
+public class LanzadorLemming {
 
     private static JPanel cardPanel;
     private static CardLayout cardLayout;
 
-    public static void iniciar(JFrame ventana){
-
-        ventana.getContentPane().removeAll(); // Quita todos los componentes
+    public static void iniciar(JFrame ventana) {
+        ventana.getContentPane().removeAll(); // Limpiar contenido previo
         ventana.repaint();
         ventana.revalidate();
         ventana.setLayout(new BorderLayout());
 
         ventana.setTitle("Configuración del Juego - Lemmings Z");
         ventana.setSize(800, 600);
-        ventana.setLocationRelativeTo(null); // Centra la ventana
+        ventana.setLocationRelativeTo(null); // Centrar ventana
 
         // Panel principal con layout vertical
         JPanel panelPrincipal = new JPanel();
         panelPrincipal.setLayout(new BoxLayout(panelPrincipal, BoxLayout.Y_AXIS));
         panelPrincipal.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); // padding
 
-        // Selector de nivel
-        String[] niveles = {"Nivel 1", "Nivel 2", "Nivel 3", "Nivel 4"};
-        JComboBox<String> selectorNivel = new JComboBox<>(niveles);
+        // Obtener niveles disponibles
+        List<NivelInfo> niveles = GestorNiveles.getTodosLosNiveles();
 
-        //Card Layout para mostrar los niveles
+        // Crear ComboBox dinámico
+        String[] nombresNiveles = niveles.stream().map(NivelInfo::getNombre).toArray(String[]::new);
+        JComboBox<String> selectorNivel = new JComboBox<>(nombresNiveles);
+
+        // Crear el CardLayout con slides
         cardLayout = new CardLayout();
         cardPanel = new JPanel(cardLayout);
-
-        cardPanel.add(crearSlide("src/lemmings/recursos/Nivel1View.png"), "Nivel 1");
-        cardPanel.add(crearSlide("src/lemmings/recursos/Nivel2View.png"), "Nivel 2");
-        cardPanel.add(crearSlide("src/lemmings/recursos/Nivel3View.png"), "Nivel 3");
-        cardPanel.add(crearSlide("src/lemmings/recursos/Nivel4View.png"), "Nivel 4");
+        for (NivelInfo nivel : niveles) {
+            cardPanel.add(crearSlide(nivel.getRutaVistaPrevia()), nivel.getNombre());
+        }
 
         ventana.add(cardPanel, BorderLayout.CENTER);
 
@@ -50,7 +54,6 @@ public class LanzadorLemming{
         // Mute
         JPanel mutePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JCheckBox muteCheck = new JCheckBox("Mute");
-
         mutePanel.add(muteCheck);
 
         // Volumen
@@ -75,7 +78,7 @@ public class LanzadorLemming{
             Config.volumen = volumenSlider.getValue();
             Config.pantallaCompleta = chkPantallaCompleta.isSelected();
 
-            ventana.dispose(); // cerrar la ventana de configuración
+            ventana.dispose(); // cerrar configuración
 
             JFrame juegoFrame = new JFrame("Lemmings Z");
             juegoFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -88,20 +91,16 @@ public class LanzadorLemming{
                 juegoFrame.setSize(800, 500);
                 juegoFrame.setResizable(false);
                 juegoFrame.setLocationRelativeTo(null);
-                PanelLemmings juego = new PanelLemmings(selectorNivel.getSelectedIndex() + 1);
-                juegoFrame.setContentPane(juego);
-                juegoFrame.setVisible(true);
-
-                System.out.println(selectorNivel.getSelectedIndex());
-
             }
 
-            PanelLemmings juego = new PanelLemmings(selectorNivel.getSelectedIndex() + 1);
+            // Obtener el nivel seleccionado
+            int index = selectorNivel.getSelectedIndex();
+            PanelLemmings juego = new PanelLemmings(niveles.get(index).getNumero());
             juegoFrame.setContentPane(juego);
             juegoFrame.setVisible(true);
         });
 
-        // Agregar todo al panel principal
+        // Agregar al panel principal
         panelPrincipal.add(selectorNivel);
         panelPrincipal.add(Box.createRigidArea(new Dimension(0, 10)));
         panelPrincipal.add(mutePanel);
@@ -115,7 +114,6 @@ public class LanzadorLemming{
         ventana.add(panelPrincipal, BorderLayout.SOUTH);
         ventana.setVisible(true);
     }
-
 
     private static JPanel crearSlide(String rutaImagen) {
         JPanel panel = new JPanel();

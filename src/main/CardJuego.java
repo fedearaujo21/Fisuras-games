@@ -11,7 +11,6 @@ public class CardJuego extends JPanel {
         setBackground(Color.BLACK);
         setBorder(new LineBorder(Color.YELLOW, 2));
 
-        // Imagen del preview del juego
         JLabel preview = new JLabel();
         preview.setHorizontalAlignment(SwingConstants.CENTER);
         ImageIcon iconoOriginal = new ImageIcon(getClass().getResource(rutaPreview));
@@ -19,7 +18,6 @@ public class CardJuego extends JPanel {
         preview.setIcon(new ImageIcon(imagen));
         add(preview, BorderLayout.CENTER);
 
-        // Botón "Jugar"
         JButton btn = new JButton("Jugar " + nombre);
         btn.setFocusPainted(false);
         btn.setFont(new Font("Arial", Font.BOLD, 12));
