@@ -1,5 +1,7 @@
 package main;
 
+import lemmings.modelo.Config;
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
@@ -37,19 +39,18 @@ public class Juego extends JPanel implements Runnable {
 
     @Override
     public void run() {
-        final int FPS = 60;
-        final long NS_POR_FRAME = 1_000_000_000 / FPS;
-        long ultimaActualizacion = System.nanoTime();
-
         while (enEjecucion) {
-            long ahora = System.nanoTime();
-            if (ahora - ultimaActualizacion >= NS_POR_FRAME) {
-                actualizar();
-                repaint();
-                ultimaActualizacion = ahora;
+            actualizar();
+            repaint();
+
+            try {
+                Thread.sleep(Config.interframe); // Usa la variable dinámica
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
     }
+
 
     // Este método lo deben sobrescribir los juegos concretos
     public void actualizar() {}
