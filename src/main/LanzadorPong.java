@@ -2,7 +2,7 @@ package main;
 
 import pong.Config;
 //import pong.ConfigPantalla;
-import pong.Juego;
+import pong.JuegoPong;
 
 import javax.swing.*;
 import java.awt.*;
@@ -42,7 +42,7 @@ public class LanzadorPong extends Frame{
         setVisible(true);
         setLocationRelativeTo(null);
         onConfirm = (() -> {
-            Juego juego = new Juego(ventanaDelMenu);
+            JuegoPong juego = new JuegoPong(ventanaDelMenu);
             juego.iniciar();
         });
 
