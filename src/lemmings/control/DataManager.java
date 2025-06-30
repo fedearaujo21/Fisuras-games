@@ -65,7 +65,7 @@ public class DataManager {
             ResultSet rs = stmt.executeQuery("SELECT nombre, puntos FROM ranking" + nombreTabla + " ORDER BY puntos DESC");
 
             while (rs.next()){
-                 salida.add(rs.getString("nombre") + " " + rs.getInt("puntos"));
+                 salida.add(rs.getString("nombre") + "      " + Integer.toString(rs.getInt("puntos")));
             }
 
             rs.close();
