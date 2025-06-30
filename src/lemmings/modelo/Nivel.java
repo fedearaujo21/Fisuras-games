@@ -30,11 +30,12 @@ public class Nivel {
     private AudioPlayer sonidoExplosion = new AudioPlayer("/lemmings/recursos/SonidoExplosion.wav");
     private boolean nivelCompletado = false;
     private long tiempoInicio;
-    private boolean lemmingsSpawneados = false;
+    //private boolean lemmingsSpawneados = false;
     private int lemmingsSalvados = 0;
     private int lemmingsMuertos = 0;
     private static int frecuenciaSpawn;
     private long ultimoSpawnTime = 0;
+    private int puntos = 0;
 
     public Nivel(NivelInfo info, BufferedImage mapaImagen) {
         this.nivelNum = info.getNumero();
@@ -163,6 +164,10 @@ public class Nivel {
             if (titulo.equals("¡Felicitaciones!")) {
                 nivelAprobado = true;
                 subtitulo = "Nivel completado";
+                //calculo de los puntos en el instante en que gana
+                if (puntos == 0)
+                    puntos = lemmingsSalvados * 1000 - (int)((System.currentTimeMillis() - tiempoInicio) / 10);
+                //System.out.println("Puntos obtenidos = Lemmings * 1000  " + lemmingsSalvados + " - perdida por tiempo " + ((System.currentTimeMillis() - tiempoInicio) / 10) + "   " + puntos);
             } else {
                 nivelAprobado = false;
                 if (tiempo < (System.currentTimeMillis() - tiempoInicio))

@@ -28,7 +28,7 @@ public class Juego extends JPanel implements Runnable, KeyListener {
 
         setLayout(null);
         cancha = new Cancha();
-        cancha.setBounds(0, 0, 800, 600);
+        cancha.setBounds(0, -30, 800, 600);
         add(cancha);
 
         ventana.setContentPane(this);
