@@ -2,6 +2,7 @@ package lemmings.vista;
 
 import lemmings.control.AudioPlayer;
 import lemmings.control.Escalador;
+import lemmings.control.NivelDAO;
 import lemmings.modelo.Lemming;
 import lemmings.modelo.Nivel;
 import lemmings.modelo.BotonHabilidad;
@@ -232,37 +233,21 @@ public class PanelLemmings extends JPanel implements Runnable{
 
     public void cargarNivel(int numero) {
         try {
-            // Detener música anterior si la había
-//            if (musicaFondo != null) {
-//                musicaFondo.close();
-//            }
             detenerMusica();
 
-            switch (numero) {
-                case 1:
-                    nivelNum = 1;
-                    nivel = new Nivel(1, "Nivel 1", ImageIO.read(getClass().getResourceAsStream("/lemmings/recursos/Nivel1.png")));
-                    musicaFondo = new AudioPlayer("/lemmings/recursos/MusicaNivel1.wav");
-                    break;
-                case 2:
-                    nivelNum = 2;
-                    nivel = new Nivel(2, "Nivel 2", ImageIO.read(getClass().getResourceAsStream("/lemmings/recursos/Nivel2.png")));
-                    musicaFondo = new AudioPlayer("/lemmings/recursos/MusicaNivel2.wav");
-                    break;
-                case 3:
-                    nivelNum = 3;
-                    nivel = new Nivel(3, "Nivel 3", ImageIO.read(getClass().getResourceAsStream("/lemmings/recursos/Nivel3.png")));
-                    musicaFondo = new AudioPlayer("/lemmings/recursos/MusicaNivel3.wav");
-                    break;
-                case 4:
-                    nivelNum = 4;
-                    nivel = new Nivel(4, "Nivel 4", ImageIO.read(getClass().getResourceAsStream("/lemmings/recursos/Nivel4.png")));
-                    musicaFondo = new AudioPlayer("/lemmings/recursos/MusicaNivel4.wav");
-                    break;
-                default:
-                    System.out.println("No hay más niveles.");
-                    return;
+            NivelInfo info = NivelDAO.obtenerNivelPorNumero(numero);
+            if (info == null) {
+                System.out.println("Nivel no encontrado en la base de datos.");
+                return;
             }
+
+            nivelNum = info.getNumero();
+
+            BufferedImage imagen = ImageIO.read(getClass().getResourceAsStream(info.getRutaImagen()));
+            nivel = new Nivel(info, imagen);
+
+            musicaFondo = new AudioPlayer(info.getRutaMusica());
+
             nivel.getLemmings().clear();
             inicializarBotonesHabilidad();
 
@@ -280,6 +265,7 @@ public class PanelLemmings extends JPanel implements Runnable{
             e.printStackTrace();
         }
     }
+
 
 
     private void inicializarBotonesHabilidad() {
