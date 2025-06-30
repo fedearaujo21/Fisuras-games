@@ -58,13 +58,13 @@ public class PanelLemmings extends Juego{
         setBackground(Color.black);
         this.nivelNum = setNivel;
 
-        Dimension tamañoReal;
+        Dimension tamanoReal;
         if (Config.pantallaCompleta) {
-            tamañoReal = Toolkit.getDefaultToolkit().getScreenSize();
+            tamanoReal = Toolkit.getDefaultToolkit().getScreenSize();
         } else {
-            tamañoReal = new Dimension(800, 600);
+            tamanoReal = new Dimension(800, 600);
         }
-        Escalador.inicializarEscalas(tamañoReal.width, tamañoReal.height);
+        Escalador.inicializarEscalas(tamanoReal.width, tamanoReal.height);
 
 
         cargarNivel(nivelNum);
@@ -115,11 +115,17 @@ public class PanelLemmings extends Juego{
                             return;
                         }
 
-                        if (nombre.equals("acelerar")){
-                            Config.interframe = 6;
-                            System.out.println("acelerandodoodoodod");
+                        if (nombre.equals("acelerar")) {
+                            if (Config.interframe == 16) {
+                                Config.interframe = 6;
+                                System.out.println("Velocidad x2 activada");
+                            } else {
+                                Config.interframe = 16;
+                                System.out.println("Velocidad normal");
+                            }
                             return;
                         }
+
 
                         if (nombre.equals("Play")) {
                             Config.interframe = 16;
