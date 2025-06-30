@@ -1,0 +1,10 @@
+nombre=Nivel 1
+tiempo=60000
+frecuenciaSpawn=50
+cantidadLem=5
+objetivoLemmings=2
+entrada=270,60
+salida=575,222,40,40
+
+
+habilidades=Minero:5
