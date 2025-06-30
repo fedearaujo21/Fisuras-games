@@ -1,9 +1,11 @@
 package pong;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import lemmings.control.DataManager;
 
-public class Cancha extends Panel {
+public class Cancha extends JPanel {
     private Pelota pelota;
     private Paleta jugador1;
     private Paleta jugador2;
@@ -14,44 +16,116 @@ public class Cancha extends Panel {
     private boolean juegoTerminado = false;
     private String mensajeGanador = "";
 
-    private Button botonReiniciar;
-
-    private Image buffer;
-    private Graphics bufferGraphics;
+    private JButton botonReiniciar;
+    private JTextField campoNombre;
+    private int puntos;
+    private int contador = 0;
+    private JLabel[] posicion = new JLabel[10];
 
     public Cancha() {
         setBackground(Color.BLACK);
+        setLayout(null); // seguimos usando null layout como querías
 
-        // Crear objetos
+        // Crear objetos (esto depende de tus clases)
         jugador1 = new Paleta(30, 250, Config.teclaArribaJugador1, Config.teclaAbajoJugador1, 1, false);
         jugador2 = new Paleta(750, 250, Config.teclaArribaJugador2, Config.teclaAbajoJugador2, Config.multiplicadorDificultad, true);
         pelota = new Pelota(390, 290);
 
-        // Botón reiniciar (invisible al principio)
-        botonReiniciar = new Button("Reiniciar");
-        botonReiniciar.setBounds(getWidth() / 2 - 60, getHeight() / 2 + 40, 120, 30);
+        // Botón
+        if (Config.singleMode)
+            botonReiniciar = new JButton("Ranking");
+        else
+            botonReiniciar = new JButton("Reiniciar");
+
+        botonReiniciar.setBounds(350, 350, 120, 30);
         botonReiniciar.setVisible(false);
-        botonReiniciar.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                // Reset
+        add(botonReiniciar);
+
+        // Campo de texto
+        campoNombre = new JTextField(4);
+        campoNombre.setBounds(350, 280, 100, 25);
+        campoNombre.setVisible(false);
+        add(campoNombre);
+
+        botonReiniciar.addActionListener(e -> {
+            if (botonReiniciar.getText().equals("Ranking")) {
+                botonReiniciar.setText("Reiniciar");
+                campoNombre.setVisible(true);
+                campoNombre.requestFocus();
+
+                campoNombre.addActionListener(ev -> {
+                    String nombre = campoNombre.getText();
+                    puntos = (puntajeJ1 - puntajeJ2) * 1000 * Config.multiplicadorDificultad;
+                    DataManager.insert("Pong", nombre, puntos);
+                    campoNombre.setVisible(false);
+
+                    // Mostrar ranking
+                    mensajeGanador = "";
+                    for (String i : DataManager.getRanking("Pong")) {
+                        posicion[contador] = new JLabel((contador + 1) + " " + i);
+                        posicion[contador].setForeground(Color.WHITE);
+                        posicion[contador].setFont(new Font("Arial", Font.BOLD, 16));
+                        posicion[contador].setBounds(300, 50 + contador * 30, 200, 25);
+                        add(posicion[contador]);
+                        posicion[contador].setVisible(true);
+                        contador++;
+                    }
+
+                    repaint();
+                });
+            } else {
+                // Reiniciar juego
+                if (Config.singleMode)
+                    botonReiniciar.setText("Ranking");
+                else
+                    botonReiniciar.setText("Reiniciar");
+
+                for (JLabel label : posicion) {
+                    if (label != null) label.setVisible(false);
+                }
                 puntajeJ1 = 0;
                 puntajeJ2 = 0;
                 juegoTerminado = false;
-                mensajeGanador = "";
                 pelota.reiniciar();
                 botonReiniciar.setVisible(false);
+                contador = 0;
                 repaint();
             }
         });
-        add(botonReiniciar);
-
     }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+
+        // Línea del medio
+        g.setColor(Color.WHITE);
+        g.drawLine(getWidth() / 2, 0, getWidth() / 2, getHeight());
+
+        // Puntajes
+        g.setFont(new Font("Arial", Font.BOLD, 36));
+        g.drawString(String.valueOf(puntajeJ1), getWidth() / 2 - 60, 50);
+        g.drawString(String.valueOf(puntajeJ2), getWidth() / 2 + 30, 50);
+
+        // Mensaje de fin
+        if (juegoTerminado) {
+            g.setColor(Color.RED);
+            g.drawString(mensajeGanador, getWidth() / 2 - 150, getHeight() / 2);
+        }
+
+        // Dibujar tus elementos
+        jugador1.dibujar(g);
+        jugador2.dibujar(g);
+        pelota.dibujar(g);
+    }
+
 
     public void actualizar() {
         if (juegoTerminado) return;
 
         jugador1.actualizar();
-        //cpu
+
+//cpu
         if(Config.singleMode){
             if(pelota.getY() < jugador2.getY())
                 jugador2.setCpuSubiendo(true);
@@ -90,48 +164,8 @@ public class Cancha extends Panel {
             botonReiniciar.setVisible(true);
         }
 
+        repaint();
     }
-
-
-    @Override
-    public void paint(Graphics g) {
-        if (buffer == null) {
-            buffer = createImage(getWidth(), getHeight());
-            bufferGraphics = buffer.getGraphics();
-        }
-
-        // Limpiar fondo
-        bufferGraphics.setColor(Color.BLACK);
-        bufferGraphics.fillRect(0, 0, getWidth(), getHeight());
-
-        // Línea del medio
-        bufferGraphics.setColor(Color.WHITE);
-        bufferGraphics.drawLine(getWidth() / 2, 0, getWidth() / 2, getHeight());
-
-        // Dibujar elementos
-        jugador1.dibujar(bufferGraphics);
-        jugador2.dibujar(bufferGraphics);
-        pelota.dibujar(bufferGraphics);
-
-        // Dibujar puntaje
-        bufferGraphics.setFont(new Font("Arial", Font.BOLD, 36));
-        bufferGraphics.drawString(String.valueOf(puntajeJ1), getWidth() / 2 - 60, 50);
-        bufferGraphics.drawString(String.valueOf(puntajeJ2), getWidth() / 2 + 30, 50);
-
-        // Mensaje de fin
-        if (juegoTerminado) {
-            bufferGraphics.setColor(Color.RED);
-            bufferGraphics.drawString(mensajeGanador, getWidth() / 2 - 150, getHeight() / 2);
-        }
-
-        // Dibujar el buffer en pantalla
-        g.drawImage(buffer, 0, Config.frameSuperior, this);
-    }
-    @Override
-    public void update(Graphics g) {
-        paint(g); // evitar parpadeo por el borrado automático de AWT
-    }
-
 
     public void teclaPresionada(KeyEvent e) {
         jugador1.teclaPresionada(e);
