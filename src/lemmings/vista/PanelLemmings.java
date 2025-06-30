@@ -7,6 +7,7 @@ import lemmings.modelo.Lemming;
 import lemmings.modelo.Nivel;
 import lemmings.modelo.BotonHabilidad;
 import lemmings.modelo.*;
+import main.Juego;
 import main.LanzadorLemming;
 import main.MenuPrincipal;
 
@@ -27,9 +28,9 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 
 
-public class PanelLemmings extends JPanel implements Runnable{
+public class PanelLemmings extends Juego{
     private Nivel nivel;
-    private Thread hilo;
+    //private Thread hilo;
     private static AudioPlayer musicaFondo;
     private int nivelNum = 1;
     private List<BotonHabilidad> botonesHabilidad = new ArrayList<>();
@@ -41,15 +42,17 @@ public class PanelLemmings extends JPanel implements Runnable{
     private Rectangle botonConfig;
     private Rectangle botonReiniciar;
     private BufferedImage iconoHome, iconoConfig, iconoReiniciar;
-    private double escalaX;
-    private double escalaY;
-    private boolean juegoActivo = false;
+    //private double escalaX;
+    //private double escalaY;
+    //private boolean juegoActivo = false;
 
     // NUEVO ENUM para el estado del juego
     private enum EstadoJuego { JUGANDO, ESPERANDO_CLICK, PAUSA }
     private EstadoJuego estadoJuego = EstadoJuego.JUGANDO;
 
-    public PanelLemmings(/*JFrame ventana,*/ int setNivel){
+    public PanelLemmings(int setNivel){
+        super("Lemmings");
+
         setPreferredSize(new Dimension(800,600));
         setFocusable(true);
         setBackground(Color.black);
@@ -203,13 +206,9 @@ public class PanelLemmings extends JPanel implements Runnable{
         }
         PanelLemmings.detenerMusica();
 
-        if (hilo != null && hilo.isAlive()) {
-            hilo.interrupt(); // Detener el hilo del juego
-        }
-
         JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
         topFrame.dispose(); // Cerrar la ventana actual
-        juegoActivo = false;  // Esto va justo antes o después del dispose()
+        detener();  // Esto va justo antes o después del dispose()
 
         SwingUtilities.invokeLater(() -> {
             JFrame nuevaVentana = new JFrame("Fisuras");
@@ -256,10 +255,7 @@ public class PanelLemmings extends JPanel implements Runnable{
                 musicaFondo.loop(); // Reproducir música en bucle
             }
 
-            if (hilo == null || !hilo.isAlive()) {
-                hilo = new Thread(this);
-                hilo.start();
-            }
+            iniciar();
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -299,6 +295,29 @@ public class PanelLemmings extends JPanel implements Runnable{
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void actualizar() {
+            if (estadoJuego == EstadoJuego.JUGANDO && !nivel.getNivelCompletado()) {
+                nivel.actualizar();
+            }
+
+            repaint();
+
+            if (nivel.getNivelCompletado() && estadoJuego == EstadoJuego.JUGANDO) {
+                estadoJuego = EstadoJuego.ESPERANDO_CLICK;
+                System.out.println("Nivel completado. Esperando clic para continuar...");
+            }
+
+            while (this.botonSeleccionado != null && estadoJuego == EstadoJuego.PAUSA) {
+                try {
+                    Thread.sleep(Config.interframe);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                    detener();
+                }
+            }
     }
 
     @Override
@@ -361,42 +380,5 @@ public class PanelLemmings extends JPanel implements Runnable{
         g2d.dispose(); // Liberar recursos
     }
 
-    @Override
-    public void run() {
-        juegoActivo = true;  // Asegurate de que esta variable exista como campo
-
-        while (juegoActivo) {
-            if (estadoJuego == EstadoJuego.JUGANDO && !nivel.getNivelCompletado()) {
-                nivel.actualizar();
-            }
-
-            repaint();
-
-            if (nivel.getNivelCompletado() && estadoJuego == EstadoJuego.JUGANDO) {
-                estadoJuego = EstadoJuego.ESPERANDO_CLICK;
-                System.out.println("Nivel completado. Esperando clic para continuar...");
-            }
-
-            try {
-                Thread.sleep(Config.interframe);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-                juegoActivo = false;
-            }
-
-            while (this.botonSeleccionado != null && estadoJuego == EstadoJuego.PAUSA) {
-                try {
-                    Thread.sleep(Config.interframe);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                    juegoActivo = false;
-                }
-            }
-        }
-
-        // Al salir del bucle detenemos la música
-        if (musicaFondo != null) {
-            musicaFondo.close();
-        }
-    }
 }
+
