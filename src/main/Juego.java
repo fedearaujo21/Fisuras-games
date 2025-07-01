@@ -13,6 +13,7 @@ public class Juego extends JPanel implements Runnable {
     //protected List<Jugador> jugadores;
     //protected Ranking ranking;
     protected String nombre;
+    protected JFrame ventana; // NUEVO
 
     public Juego(String nombre) {
         this.nombre = nombre;
@@ -27,7 +28,9 @@ public class Juego extends JPanel implements Runnable {
         hiloJuego = new Thread(this);
         hiloJuego.start();
     }
-
+    public void setVentana(JFrame ventana) {
+        this.ventana = ventana;
+    }
     public void detener() {
         enEjecucion = false;
         try {
@@ -70,4 +73,20 @@ public class Juego extends JPanel implements Runnable {
     public String getNombre() {
         return nombre;
     }
+    public void volverAlMenu() {
+        if (ventana != null) {
+            ventana.dispose();
+        }
+
+        SwingUtilities.invokeLater(() -> {
+            JFrame nuevaVentana = new JFrame("Fisuras Games");
+            nuevaVentana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            nuevaVentana.setSize(800, 800);
+            nuevaVentana.setResizable(false);
+            nuevaVentana.setLocationRelativeTo(null);
+            nuevaVentana.setContentPane(new MenuPrincipal(nuevaVentana));
+            nuevaVentana.setVisible(true);
+        });
+    }
+
 }
