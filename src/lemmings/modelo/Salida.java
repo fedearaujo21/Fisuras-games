@@ -31,7 +31,7 @@ public class Salida {
     private void cargarFrames() {
         framesSalida = new ArrayList<>();
         try {
-            BufferedImage spriteSheet = ImageIO.read(new File("src/lemmings/recursos/frameSalida.png"));
+            BufferedImage spriteSheet = ImageIO.read(getClass().getResourceAsStream("/lemmings/recursos/frameSalida.png"));
             int espacio = 8;
 
             for (int i = 0; i < 2; i++) {

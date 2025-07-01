@@ -2,6 +2,7 @@ package pong;
 
 import java.awt.*;
 import java.io.IOException;
+import java.util.Objects;
 import java.util.Random;
 import javax.sound.sampled.*;
 import java.io.File;
@@ -36,30 +37,40 @@ public class Pelota {
 
         //cargo sonido de las paredes
         try {
-            File archivoSonido = new File(sonidoParedes.get(Config.pistaMusical));
-            //System.out.println("¿Existe archivo? " + archivoSonido.exists()+ Config.pistaMusical);
-            //File archivoSonido = new File("../Sonidos/Boing1.wav");
-            AudioInputStream audioStream = AudioSystem.getAudioInputStream(archivoSonido);
-
+            AudioInputStream audioStream = AudioSystem.getAudioInputStream(
+                    Objects.requireNonNull(getClass().getResourceAsStream("/pong/recursos/" + nombreSonido(Config.pistaMusical, "pared")))
+            );
             pared = AudioSystem.getClip();
             pared.open(audioStream);
-        } catch(UnsupportedAudioFileException | LineUnavailableException |IOException e){
+        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
             e.printStackTrace();
         }
 
-        // cargo sonido para las paletas
         try {
-            File archivoSonido = new File(sonidoPaletas.get(Config.pistaMusical));
-            //System.out.println("¿Existe archivo? " + archivoSonido.exists() + Config.pistaMusical);
-            //File archivoSonido = new File("../Sonidos/Boing1.wav");
-            AudioInputStream audioStream = AudioSystem.getAudioInputStream(archivoSonido);
-
+            AudioInputStream audioStream = AudioSystem.getAudioInputStream(
+                    Objects.requireNonNull(getClass().getResourceAsStream("/pong/recursos/" + nombreSonido(Config.pistaMusical, "paleta")))
+            );
             paleta = AudioSystem.getClip();
             paleta.open(audioStream);
-        } catch(UnsupportedAudioFileException | LineUnavailableException |IOException e){
+        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
             e.printStackTrace();
         }
-        //pared.start();
+
+    }
+    private String nombreSonido(String estilo, String tipo) {
+        if (tipo.equals("pared")) {
+            return switch (estilo) {
+                case "techno" -> "Boing2.wav";
+                case "8bit" -> "Boing3.wav";
+                default -> "Boing1.wav";
+            };
+        } else {
+            return switch (estilo) {
+                case "techno" -> "Pared2.wav";
+                case "8bit" -> "Pared3.wav";
+                default -> "Pared1.wav";
+            };
+        }
     }
 
     public void actualizar(Paleta j1, Paleta j2) {

@@ -1,10 +1,7 @@
 package main;
 
 import lemmings.control.DataManager;
-
 import javax.swing.*;
-import javax.xml.crypto.Data;
-import java.sql.*;
 
 public class Main {
     public static void main(String[] args) {

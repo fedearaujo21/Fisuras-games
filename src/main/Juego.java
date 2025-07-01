@@ -39,7 +39,6 @@ public class Juego extends JPanel implements Runnable {
             e.printStackTrace();
         }
     }
-
     @Override
     public void run() {
         while (enEjecucion) {
@@ -54,8 +53,7 @@ public class Juego extends JPanel implements Runnable {
         }
     }
 
-
-    // Este método lo deben sobrescribir los juegos concretos
+    // cada juego tiene que sobreescribir este metodo
     public void actualizar() {}
 
 //    public Ranking getRanking() {
@@ -77,7 +75,6 @@ public class Juego extends JPanel implements Runnable {
         if (ventana != null) {
             ventana.dispose();
         }
-
         SwingUtilities.invokeLater(() -> {
             JFrame nuevaVentana = new JFrame("Fisuras Games");
             nuevaVentana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

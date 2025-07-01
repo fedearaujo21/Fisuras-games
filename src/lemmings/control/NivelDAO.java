@@ -8,7 +8,6 @@ public class NivelDAO {
 
     public static NivelInfo obtenerNivelPorNumero(int numero) {
         try (Connection conn = DriverManager.getConnection("jdbc:sqlite:data/lemmings.db")) {
-
             String query = "SELECT * FROM niveles WHERE numero = ?";
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setInt(1, numero);
