@@ -45,21 +45,39 @@ public class MenuPrincipal extends Panel {
         panelCentro.add(panelBuscador, BorderLayout.NORTH);
 
         // Cards de juegos
+//        contenedorJuegos = new JPanel();
+//        contenedorJuegos.setBackground(Color.BLACK);
+//        contenedorJuegos.setLayout(new FlowLayout(FlowLayout.CENTER, 40, 20));
         contenedorJuegos = new JPanel();
         contenedorJuegos.setBackground(Color.BLACK);
-        contenedorJuegos.setLayout(new FlowLayout(FlowLayout.CENTER, 40, 20));
+        contenedorJuegos.setLayout(new BoxLayout(contenedorJuegos, BoxLayout.X_AXIS));
+
+// Panel contenedor con scroll horizontal
+        JScrollPane scrollPane = new JScrollPane(contenedorJuegos, JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        scrollPane.setPreferredSize(new Dimension(600, 300)); // 280 en lugar de 250
+        scrollPane.setBorder(null);
+        scrollPane.getHorizontalScrollBar().setUnitIncrement(16); // velocidad de scroll
 
         cards = new ArrayList<>();
 
         cards.add(new CardJuego("Lemmings", "/lemmings/recursos/previewLemmings.png", () -> LanzadorLemming.iniciar(ventana)));
         cards.add(new CardJuego("Pong", "/lemmings/recursos/previewPong.png", () -> new LanzadorPong(ventana)));
         cards.add(new CardJuego("POO Game", "/lemmings/recursos/previewPOO.png", () -> LanzadorPoo.iniciar(ventana)));
+        cards.add(new CardJuego("POO Game", "/lemmings/recursos/previewPOO.png", () -> LanzadorPoo.iniciar(ventana)));
+        cards.add(new CardJuego("POO Game", "/lemmings/recursos/previewPOO.png", () -> LanzadorPoo.iniciar(ventana)));
+        cards.add(new CardJuego("POO Game", "/lemmings/recursos/previewPOO.png", () -> LanzadorPoo.iniciar(ventana)));
 
         for (CardJuego card : cards) {
-            contenedorJuegos.add(card);
+            JPanel wrapper = new JPanel(new BorderLayout());
+            wrapper.setOpaque(false); // fondo negro visible
+            wrapper.setBorder(new EmptyBorder(10, 10, 20, 10)); // márgenes: arriba, izq, abajo, der
+            wrapper.add(card, BorderLayout.CENTER);
+            contenedorJuegos.add(wrapper);
         }
 
-        panelCentro.add(contenedorJuegos, BorderLayout.CENTER);
+
+        panelCentro.add(scrollPane, BorderLayout.CENTER);
+//        panelCentro.add(contenedorJuegos, BorderLayout.CENTER);
         add(panelCentro, BorderLayout.CENTER);
 
         // Footer
