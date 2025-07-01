@@ -9,6 +9,8 @@ public class DataManager {
 
     public static void insert(String nombreTabla, String nombreUsuario, int puntaje){
         try {
+            nombreUsuario = nombreUsuario.length() > 5 ? nombreUsuario.substring(0, 5) : nombreUsuario;
+
             Connection conn = DriverManager.getConnection("jdbc:sqlite:data/lemmings.db");
             System.out.println("Conectado a SQLite");
 
@@ -65,7 +67,9 @@ public class DataManager {
             ResultSet rs = stmt.executeQuery("SELECT nombre, puntos FROM ranking" + nombreTabla + " ORDER BY puntos DESC");
 
             while (rs.next()){
-                 salida.add(rs.getString("nombre") + "            " + Integer.toString(rs.getInt("puntos")));
+                String nombre = rs.getString("nombre");
+                int puntos = rs.getInt("puntos");
+                salida.add(String.format("%-12s %5d", nombre, puntos));
             }
 
             rs.close();
