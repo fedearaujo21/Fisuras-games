@@ -69,7 +69,6 @@ public class PanelLemmings extends Juego{
 
         cargarNivel(nivelNum);
 
-        nivel.inicializarRankingUI(this);
 
         addMouseListener(new MouseAdapter() {
             @Override
@@ -234,6 +233,7 @@ public class PanelLemmings extends Juego{
 
             BufferedImage imagen = ImageIO.read(getClass().getResourceAsStream(info.getRutaImagen()));
             nivel = new Nivel(info, imagen);
+            nivel.inicializarRankingUI(this);
 
             musicaFondo = new AudioPlayer(info.getRutaMusica());
 
