@@ -21,6 +21,7 @@ public class Cancha extends JPanel {
     private int puntos;
     private int contador = 0;
     private JLabel[] posicion = new JLabel[10];
+    private boolean rankingMostrado = false;
 
     public Cancha() {
         setBackground(Color.BLACK);
@@ -50,30 +51,32 @@ public class Cancha extends JPanel {
         botonReiniciar.addActionListener(e -> {
             if (botonReiniciar.getText().equals("Ranking")) {
                 botonReiniciar.setText("Reiniciar");
-                campoNombre.setVisible(true);
-                campoNombre.requestFocus();
+                //campoNombre.setVisible(true);
 
-                campoNombre.addActionListener(ev -> {
-                    String nombre = campoNombre.getText();
-                    puntos = (puntajeJ1 - puntajeJ2) * 1000 * Config.multiplicadorDificultad;
-                    DataManager.insert("Pong", nombre, puntos);
-                    campoNombre.setVisible(false);
 
-                    // Mostrar ranking
-                    mensajeGanador = "";
-                    for (String i : DataManager.getRanking("Pong")) {
-                        posicion[contador] = new JLabel((contador + 1) + " " + i);
-                        posicion[contador].setForeground(Color.WHITE);
-                        posicion[contador].setFont(new Font("Arial", Font.BOLD, 16));
-                        posicion[contador].setBounds(300, 50 + contador * 30, 200, 25);
-                        add(posicion[contador]);
-                        posicion[contador].setVisible(true);
-                        contador++;
-                    }
+                System.out.println("entrando al if");
 
-                    repaint();
-                });
+                String nombre = campoNombre.getText();
+                puntos = (puntajeJ1 - puntajeJ2) * 1000 * Config.multiplicadorDificultad;
+                DataManager.insert("Pong", nombre, puntos);
+                System.out.println("puntos cargados, mostrando");
+
+                campoNombre.setVisible(false);
+                // Mostrar ranking
+                mensajeGanador = "";
+                for (String i : DataManager.getRanking("Pong")) {
+                    posicion[contador] = new JLabel((contador + 1) + "    " + i);
+                    posicion[contador].setForeground(Color.WHITE);
+                    posicion[contador].setFont(new Font("Arial", Font.BOLD, 16));
+                    posicion[contador].setBounds(300, 50 + contador * 30, 300, 25);
+                    add(posicion[contador]);
+                    posicion[contador].setVisible(true);
+                    contador++;
+                }
+                revalidate();
+                repaint();
             } else {
+                campoNombre.setVisible(false);
                 // Reiniciar juego
                 if (Config.singleMode)
                     botonReiniciar.setText("Ranking");
@@ -89,6 +92,8 @@ public class Cancha extends JPanel {
                 pelota.reiniciar();
                 botonReiniciar.setVisible(false);
                 contador = 0;
+
+                rankingMostrado = false;
                 repaint();
             }
         });
@@ -155,13 +160,23 @@ public class Cancha extends JPanel {
         if (puntajeJ1 == 10) {
             juegoTerminado = true;
             mensajeGanador = "¡Jugador 1 ganó!";
-            botonReiniciar.setVisible(true);
+            if (!rankingMostrado){
+                botonReiniciar.setVisible(true);
+                campoNombre.setVisible(true);
+                campoNombre.requestFocus();
+                rankingMostrado = true;
+            }
         }
 
         if (puntajeJ2 == 10) {
             juegoTerminado = true;
             mensajeGanador = "¡Jugador 2 ganó!";
-            botonReiniciar.setVisible(true);
+            if (!rankingMostrado){
+                botonReiniciar.setVisible(true);
+                campoNombre.setVisible(true);
+                campoNombre.requestFocus();
+                rankingMostrado = true;
+            }
         }
 
         repaint();

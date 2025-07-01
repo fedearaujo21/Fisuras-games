@@ -65,7 +65,7 @@ public class DataManager {
             ResultSet rs = stmt.executeQuery("SELECT nombre, puntos FROM ranking" + nombreTabla + " ORDER BY puntos DESC");
 
             while (rs.next()){
-                 salida.add(rs.getString("nombre") + "      " + Integer.toString(rs.getInt("puntos")));
+                 salida.add(rs.getString("nombre") + "            " + Integer.toString(rs.getInt("puntos")));
             }
 
             rs.close();
@@ -75,4 +75,22 @@ public class DataManager {
         }
         return salida;
     }
+
+    public static void eliminarTabla(String nombreTabla) {
+        try {
+            Connection conn = DriverManager.getConnection("jdbc:sqlite:data/lemmings.db");
+            System.out.println("Conectado a SQLite");
+
+            Statement stmt = conn.createStatement();
+            stmt.executeUpdate("DROP TABLE IF EXISTS ranking" + nombreTabla);
+
+            System.out.println("Tabla ranking" + nombreTabla + " eliminada (si existía)");
+
+            stmt.close();
+            conn.close();
+        } catch (SQLException e) {
+            System.out.println("Error al eliminar tabla: " + e.getMessage());
+        }
+    }
+
 }
