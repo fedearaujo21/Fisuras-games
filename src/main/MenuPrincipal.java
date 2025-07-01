@@ -64,7 +64,7 @@ public class MenuPrincipal extends Panel {
         footer.setBorder(new EmptyBorder(10, 10, 10, 10));
         add(footer, BorderLayout.SOUTH);
 
-        // Crear cards
+        // Crear card
         cards = new ArrayList<>();
         cards.add(new CardJuego("Lemmings Z", "/lemmings/recursos/previewLemmings.png", () -> LanzadorLemming.iniciar(ventana)));
         cards.add(new CardJuego("Pong", "/lemmings/recursos/previewPong.png", () -> new LanzadorPong(ventana)));
