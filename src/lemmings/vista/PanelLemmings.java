@@ -48,8 +48,9 @@ public class PanelLemmings extends Juego{
     private enum EstadoJuego { JUGANDO, ESPERANDO_CLICK, PAUSA, MOSTRANDO_RANKING }
     private EstadoJuego estadoJuego = EstadoJuego.JUGANDO;
 
-    public PanelLemmings(int setNivel){
+    public PanelLemmings(int setNivel, JFrame ventana){
         super("Lemmings");
+        setVentana(ventana);
 
         setPreferredSize(new Dimension(800,600));
         setFocusable(true);
@@ -88,7 +89,8 @@ public class PanelLemmings extends Juego{
                 }
 
                 if (botonHome.contains(mx, my)) {
-                    volverAlMenuPrincipal();
+                    volverAlMenu();
+                    detener();
                     return;
                 }
                 if (botonReiniciar.contains(mx, my)) {
@@ -168,7 +170,8 @@ public class PanelLemmings extends Juego{
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-                    volverAlMenuPrincipal();
+                    volverAlMenu();
+                    detener();
                 } else if (e.getKeyCode() == KeyEvent.VK_R) {
                     reiniciarNivel();
                 } else if (e.getKeyCode() == KeyEvent.VK_C) {
@@ -205,26 +208,7 @@ public class PanelLemmings extends Juego{
         });
     }
 
-    private void volverAlMenuPrincipal() {
-        if (musicaFondo != null) {
-            musicaFondo.close(); // Detener la música si está sonando
-        }
-        PanelLemmings.detenerMusica();
 
-        JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
-        topFrame.dispose(); // Cerrar la ventana actual
-        detener();  // Esto va justo antes o después del dispose()
-
-        SwingUtilities.invokeLater(() -> {
-            JFrame nuevaVentana = new JFrame("Fisuras");
-            nuevaVentana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            nuevaVentana.setContentPane(new MenuPrincipal(nuevaVentana));
-            nuevaVentana.setSize(500, 700);
-            nuevaVentana.setResizable(false);
-            nuevaVentana.setLocationRelativeTo(null);
-            nuevaVentana.setVisible(true);
-        });
-    }
 
 
 

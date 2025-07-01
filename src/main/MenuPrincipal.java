@@ -9,6 +9,9 @@ import java.util.List;
 public class MenuPrincipal extends Panel {
 
     private final JFrame ventana;
+    private JTextField buscador;
+    private List<CardJuego> cards;
+    private JPanel contenedorJuegos;
 
     public MenuPrincipal(JFrame ventana) {
         this.ventana = ventana;
@@ -24,21 +27,40 @@ public class MenuPrincipal extends Panel {
         logo.setBorder(new EmptyBorder(20, 0, 10, 0));
         add(logo, BorderLayout.NORTH);
 
+        // Panel central (buscador + cards)
+        JPanel panelCentro = new JPanel();
+        panelCentro.setLayout(new BorderLayout());
+        panelCentro.setBackground(Color.BLACK);
+
+        // Buscador
+        buscador = new JTextField();
+        buscador.setPreferredSize(new Dimension(300, 30));
+        buscador.setMaximumSize(new Dimension(300, 30));
+        buscador.setFont(new Font("Arial", Font.PLAIN, 14));
+        buscador.setHorizontalAlignment(SwingConstants.LEFT);
+
+        JPanel panelBuscador = new JPanel();
+        panelBuscador.setBackground(Color.BLACK);
+        panelBuscador.add(buscador);
+        panelCentro.add(panelBuscador, BorderLayout.NORTH);
+
         // Cards de juegos
-        JPanel contenedorJuegos = new JPanel();
+        contenedorJuegos = new JPanel();
         contenedorJuegos.setBackground(Color.BLACK);
         contenedorJuegos.setLayout(new FlowLayout(FlowLayout.CENTER, 40, 20));
 
-        List<CardJuego> cards = new ArrayList<>();
+        cards = new ArrayList<>();
 
         cards.add(new CardJuego("Lemmings", "/lemmings/recursos/previewLemmings.png", () -> LanzadorLemming.iniciar(ventana)));
         cards.add(new CardJuego("Pong", "/lemmings/recursos/previewPong.png", () -> new LanzadorPong(ventana)));
+        cards.add(new CardJuego("POO Game", "/lemmings/recursos/previewPOO.png", () -> LanzadorPoo.iniciar(ventana)));
 
         for (CardJuego card : cards) {
             contenedorJuegos.add(card);
         }
 
-        add(contenedorJuegos, BorderLayout.CENTER);
+        panelCentro.add(contenedorJuegos, BorderLayout.CENTER);
+        add(panelCentro, BorderLayout.CENTER);
 
         // Footer
         JLabel footer = new JLabel("Desarrollado por Fisuras Team", SwingConstants.CENTER);
@@ -47,6 +69,23 @@ public class MenuPrincipal extends Panel {
         footer.setBorder(new EmptyBorder(10, 10, 10, 10));
         add(footer, BorderLayout.SOUTH);
 
+        // Acción de búsqueda
+        buscador.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+            public void insertUpdate(javax.swing.event.DocumentEvent e) {
+                filtrar();
+            }
+
+            public void removeUpdate(javax.swing.event.DocumentEvent e) {
+                filtrar();
+            }
+
+            public void changedUpdate(javax.swing.event.DocumentEvent e) {
+                filtrar();
+            }
+        });
+
+
+        // Ventana
         ventana.setTitle("Fisuras Games");
         ventana.setResizable(false);
         ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -54,5 +93,17 @@ public class MenuPrincipal extends Panel {
         ventana.pack();
         ventana.setLocationRelativeTo(null);
         ventana.setVisible(true);
+    }
+
+    private void filtrar() {
+        String texto = buscador.getText().trim().toLowerCase();
+        contenedorJuegos.removeAll();
+        for (CardJuego card : cards) {
+            if (card.getNombre().toLowerCase().contains(texto)) {
+                contenedorJuegos.add(card);
+            }
+        }
+        contenedorJuegos.revalidate();
+        contenedorJuegos.repaint();
     }
 }
