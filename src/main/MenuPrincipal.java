@@ -12,13 +12,14 @@ public class MenuPrincipal extends Panel {
     private JTextField buscador;
     private List<CardJuego> cards;
     private JPanel contenedorJuegos;
+    private JScrollPane scrollPane;
 
     public MenuPrincipal(JFrame ventana) {
         this.ventana = ventana;
         setLayout(new BorderLayout());
         setBackground(Color.BLACK);
 
-        // Logo superior
+        // Logo
         JLabel logo = new JLabel();
         logo.setHorizontalAlignment(SwingConstants.CENTER);
         ImageIcon iconoOriginal = new ImageIcon(getClass().getResource("/lemmings/recursos/logoFisuras.png"));
@@ -28,8 +29,7 @@ public class MenuPrincipal extends Panel {
         add(logo, BorderLayout.NORTH);
 
         // Panel central (buscador + cards)
-        JPanel panelCentro = new JPanel();
-        panelCentro.setLayout(new BorderLayout());
+        JPanel panelCentro = new JPanel(new BorderLayout());
         panelCentro.setBackground(Color.BLACK);
 
         // Buscador
@@ -37,47 +37,24 @@ public class MenuPrincipal extends Panel {
         buscador.setPreferredSize(new Dimension(300, 30));
         buscador.setMaximumSize(new Dimension(300, 30));
         buscador.setFont(new Font("Arial", Font.PLAIN, 14));
-        buscador.setHorizontalAlignment(SwingConstants.LEFT);
 
-        JPanel panelBuscador = new JPanel();
+        JPanel panelBuscador = new JPanel(new FlowLayout());
         panelBuscador.setBackground(Color.BLACK);
         panelBuscador.add(buscador);
         panelCentro.add(panelBuscador, BorderLayout.NORTH);
 
-        // Cards de juegos
-//        contenedorJuegos = new JPanel();
-//        contenedorJuegos.setBackground(Color.BLACK);
-//        contenedorJuegos.setLayout(new FlowLayout(FlowLayout.CENTER, 40, 20));
+        // Contenedor de cards
         contenedorJuegos = new JPanel();
         contenedorJuegos.setBackground(Color.BLACK);
         contenedorJuegos.setLayout(new BoxLayout(contenedorJuegos, BoxLayout.X_AXIS));
 
-// Panel contenedor con scroll horizontal
-        JScrollPane scrollPane = new JScrollPane(contenedorJuegos, JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-        scrollPane.setPreferredSize(new Dimension(600, 300)); // 280 en lugar de 250
+        // ScrollPane horizontal
+        scrollPane = new JScrollPane(contenedorJuegos, JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setPreferredSize(new Dimension(600, 300));
         scrollPane.setBorder(null);
-        scrollPane.getHorizontalScrollBar().setUnitIncrement(16); // velocidad de scroll
-
-        cards = new ArrayList<>();
-
-        cards.add(new CardJuego("Lemmings", "/lemmings/recursos/previewLemmings.png", () -> LanzadorLemming.iniciar(ventana)));
-        cards.add(new CardJuego("Pong", "/lemmings/recursos/previewPong.png", () -> new LanzadorPong(ventana)));
-        cards.add(new CardJuego("POO Game", "/lemmings/recursos/previewPOO.png", () -> LanzadorPoo.iniciar(ventana)));
-        cards.add(new CardJuego("POO Game", "/lemmings/recursos/previewPOO.png", () -> LanzadorPoo.iniciar(ventana)));
-        cards.add(new CardJuego("POO Game", "/lemmings/recursos/previewPOO.png", () -> LanzadorPoo.iniciar(ventana)));
-        cards.add(new CardJuego("POO Game", "/lemmings/recursos/previewPOO.png", () -> LanzadorPoo.iniciar(ventana)));
-
-        for (CardJuego card : cards) {
-            JPanel wrapper = new JPanel(new BorderLayout());
-            wrapper.setOpaque(false); // fondo negro visible
-            wrapper.setBorder(new EmptyBorder(10, 10, 20, 10)); // márgenes: arriba, izq, abajo, der
-            wrapper.add(card, BorderLayout.CENTER);
-            contenedorJuegos.add(wrapper);
-        }
-
+        scrollPane.getHorizontalScrollBar().setUnitIncrement(16);
 
         panelCentro.add(scrollPane, BorderLayout.CENTER);
-//        panelCentro.add(contenedorJuegos, BorderLayout.CENTER);
         add(panelCentro, BorderLayout.CENTER);
 
         // Footer
@@ -87,23 +64,26 @@ public class MenuPrincipal extends Panel {
         footer.setBorder(new EmptyBorder(10, 10, 10, 10));
         add(footer, BorderLayout.SOUTH);
 
-        // Acción de búsqueda
+        // Crear cards
+        cards = new ArrayList<>();
+        cards.add(new CardJuego("Lemmings Z", "/lemmings/recursos/previewLemmings.png", () -> LanzadorLemming.iniciar(ventana)));
+        cards.add(new CardJuego("Pong", "/lemmings/recursos/previewPong.png", () -> new LanzadorPong(ventana)));
+        cards.add(new CardJuego("POO Game", "/lemmings/recursos/previewPOO.png", () -> LanzadorPoo.iniciar(ventana)));
+//        cards.add(new CardJuego("POO Game", "/lemmings/recursos/previewPOO.png", () -> LanzadorPoo.iniciar(ventana)));
+//        cards.add(new CardJuego("POO Game", "/lemmings/recursos/previewPOO.png", () -> LanzadorPoo.iniciar(ventana)));
+//        cards.add(new CardJuego("POO Game", "/lemmings/recursos/previewPOO.png", () -> LanzadorPoo.iniciar(ventana)));
+
+
+        mostrarCards(cards);
+
+        // Buscador en vivo
         buscador.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
-            public void insertUpdate(javax.swing.event.DocumentEvent e) {
-                filtrar();
-            }
-
-            public void removeUpdate(javax.swing.event.DocumentEvent e) {
-                filtrar();
-            }
-
-            public void changedUpdate(javax.swing.event.DocumentEvent e) {
-                filtrar();
-            }
+            public void insertUpdate(javax.swing.event.DocumentEvent e) { filtrar(); }
+            public void removeUpdate(javax.swing.event.DocumentEvent e) { filtrar(); }
+            public void changedUpdate(javax.swing.event.DocumentEvent e) { filtrar(); }
         });
 
-
-        // Ventana
+        // Ventana final
         ventana.setTitle("Fisuras Games");
         ventana.setResizable(false);
         ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -115,13 +95,39 @@ public class MenuPrincipal extends Panel {
 
     private void filtrar() {
         String texto = buscador.getText().trim().toLowerCase();
-        contenedorJuegos.removeAll();
+        List<CardJuego> filtradas = new ArrayList<>();
+
         for (CardJuego card : cards) {
             if (card.getNombre().toLowerCase().contains(texto)) {
-                contenedorJuegos.add(card);
+                filtradas.add(card);
             }
         }
+
+        mostrarCards(filtradas);
+    }
+
+    private void mostrarCards(List<CardJuego> lista) {
+        contenedorJuegos.removeAll();
+
+        for (CardJuego card : lista) {
+            contenedorJuegos.add(wrapCard(card));
+        }
+
         contenedorJuegos.revalidate();
         contenedorJuegos.repaint();
+
+        // Ocultar scroll si entran en pantalla
+        SwingUtilities.invokeLater(() -> {
+            scrollPane.getHorizontalScrollBar().setVisible(lista.size() > 3);
+        });
+    }
+
+    private Component wrapCard(CardJuego card) {
+        JPanel wrapper = new JPanel(new BorderLayout());
+        wrapper.setBackground(Color.BLACK);
+        wrapper.setBorder(new EmptyBorder(10, 10, 20, 10));
+        wrapper.add(card, BorderLayout.CENTER);
+        wrapper.setPreferredSize(new Dimension(200, 270));
+        return wrapper;
     }
 }
