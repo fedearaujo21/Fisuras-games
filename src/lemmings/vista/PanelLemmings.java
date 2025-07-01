@@ -20,8 +20,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 //Para detectar coordenadas
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -47,7 +45,7 @@ public class PanelLemmings extends Juego{
     //private boolean juegoActivo = false;
 
     // NUEVO ENUM para el estado del juego
-    private enum EstadoJuego { JUGANDO, ESPERANDO_CLICK, PAUSA }
+    private enum EstadoJuego { JUGANDO, ESPERANDO_CLICK, PAUSA, MOSTRANDO_RANKING }
     private EstadoJuego estadoJuego = EstadoJuego.JUGANDO;
 
     public PanelLemmings(int setNivel){
@@ -56,6 +54,7 @@ public class PanelLemmings extends Juego{
         setPreferredSize(new Dimension(800,600));
         setFocusable(true);
         setBackground(Color.black);
+        this.setLayout(null);
         this.nivelNum = setNivel;
 
         Dimension tamanoReal;
@@ -69,6 +68,7 @@ public class PanelLemmings extends Juego{
 
         cargarNivel(nivelNum);
 
+        nivel.inicializarRankingUI(this);
 
         addMouseListener(new MouseAdapter() {
             @Override
@@ -76,7 +76,6 @@ public class PanelLemmings extends Juego{
                 int mx = Escalador.desescalarX(e.getX());
                 int my = Escalador.desescalarY(e.getY());
 
-                // <<< CAMBIO ACÁ >>>
                 if (estadoJuego == EstadoJuego.ESPERANDO_CLICK) {
                     if (nivel.getNivelAprobado()) {
                         cargarNivel(nivelNum + 1);
@@ -237,6 +236,7 @@ public class PanelLemmings extends Juego{
 
 
     public void cargarNivel(int numero) {
+        Nivel.reiniciarRankingMostrado();
         try {
             detenerMusica();
 
@@ -312,8 +312,10 @@ public class PanelLemmings extends Juego{
             repaint();
 
             if (nivel.getNivelCompletado() && estadoJuego == EstadoJuego.JUGANDO) {
-                estadoJuego = EstadoJuego.ESPERANDO_CLICK;
-                System.out.println("Nivel completado. Esperando clic para continuar...");
+                if(nivel.getObjetivoLemmings() <= nivel.getLemmingsSalvados())
+                    estadoJuego = EstadoJuego.MOSTRANDO_RANKING;
+                else
+                    estadoJuego = EstadoJuego.ESPERANDO_CLICK;
             }
 
             while (this.botonSeleccionado != null && estadoJuego == EstadoJuego.PAUSA) {
@@ -384,6 +386,10 @@ public class PanelLemmings extends Juego{
         g2d.drawString(String.format("Tiempo: %02d:%02d / %d min", tiempoActual, segundos, tiempoMax), 590, 370);
 
         g2d.dispose(); // Liberar recursos
+    }
+
+    public void setEstadoEsperando_Click(){
+        this.estadoJuego = EstadoJuego.ESPERANDO_CLICK;
     }
 
 }
