@@ -8,9 +8,11 @@ import java.util.Iterator;
 import java.util.List;
 
 import lemmings.control.AudioPlayer;
-import lemmings.modelo.GestorNiveles;
+import lemmings.control.DataManager;
+import lemmings.vista.PanelLemmings;
 
 import javax.imageio.ImageIO;
+import javax.swing.*;
 
 public class Nivel {
     private int nivelNum;
@@ -37,6 +39,13 @@ public class Nivel {
     private long ultimoSpawnTime = 0;
     private int puntos = 0;
 
+    private JTextField campoNombre;
+    private JButton botonGuardarRanking;
+    private JButton botonContinuar;
+    private List<JLabel> labelsRanking = new ArrayList<>();
+    private static boolean rankingMostrado = false;
+
+
     public Nivel(NivelInfo info, BufferedImage mapaImagen) {
         this.nivelNum = info.getNumero();
         this.nombre = info.getNombre();
@@ -58,6 +67,33 @@ public class Nivel {
         mapa.limpiarArea(salida.getX(), salida.getY(), anchoLimpieza, altoLimpieza, COLOR_FONDO);
         mapa.activarColisiones(false);
     }
+
+    public void inicializarRankingUI(PanelLemmings panelJuego) {
+        campoNombre = new JTextField(10);
+        campoNombre.setBounds(300, 400, 150, 25);
+        campoNombre.setVisible(false);
+        panelJuego.add(campoNombre);
+
+        botonGuardarRanking = new JButton("Guardar");
+        botonGuardarRanking.setBounds(460, 400, 100, 25);
+        botonGuardarRanking.setVisible(false);
+        panelJuego.add(botonGuardarRanking);
+
+        botonGuardarRanking.addActionListener(e -> {
+            String nombre = campoNombre.getText().trim();
+            if (!nombre.isEmpty()) {
+                DataManager.insert("Lemmings" + Integer.toString(nivelNum), nombre, puntos);
+                campoNombre.setVisible(false);
+                botonGuardarRanking.setVisible(false);
+                rankingMostrado = true;
+                panelJuego.revalidate();
+                panelJuego.repaint();
+
+                mostrarRanking(panelJuego);
+            }
+        });
+    }
+
 
 
     public void actualizar() {
@@ -164,10 +200,17 @@ public class Nivel {
             if (titulo.equals("¡Felicitaciones!")) {
                 nivelAprobado = true;
                 subtitulo = "Nivel completado";
-                //calculo de los puntos en el instante en que gana
+
                 if (puntos == 0)
                     puntos = lemmingsSalvados * 1000 - (int)((System.currentTimeMillis() - tiempoInicio) / 10);
-                //System.out.println("Puntos obtenidos = Lemmings * 1000  " + lemmingsSalvados + " - perdida por tiempo " + ((System.currentTimeMillis() - tiempoInicio) / 10) + "   " + puntos);
+
+                if (!rankingMostrado) {
+                    campoNombre.setVisible(true);
+                    botonGuardarRanking.setVisible(true);
+                    campoNombre.requestFocus();
+                    rankingMostrado = true;
+                }
+
             } else {
                 nivelAprobado = false;
                 if (tiempo < (System.currentTimeMillis() - tiempoInicio))
@@ -175,6 +218,7 @@ public class Nivel {
                 else
                     subtitulo = "Necesitás salvar al menos: " + this.objetivoLemmings;
             }
+
 
             g2d.setFont(new Font("Arial", Font.BOLD, 32));
             FontMetrics fm = g2d.getFontMetrics();
@@ -234,6 +278,54 @@ public class Nivel {
         return false;
     }
 
+    private void mostrarRanking(PanelLemmings panelJuego) {
+        // Fondo semitransparente
+        JLabel fondoRanking = new JLabel();
+        fondoRanking.setOpaque(true);
+        fondoRanking.setBackground(new Color(0, 0, 0, 180));  // Negro con alfa 150
+        fondoRanking.setBounds(280, 10, 350, 350);  // Ajustá el tamaño según lo que necesites
+        panelJuego.add(fondoRanking);
+        fondoRanking.setVisible(true);
+
+        // Traer el fondo al frente antes de los labels
+        //panelJuego.setComponentZOrder(fondoRanking, panelJuego.getComponentCount() - 1);
+
+        List<String> ranking = DataManager.getRanking("Lemmings" + nivelNum);
+        int y = 20;
+        for (String entry : ranking) {
+            JLabel label = new JLabel(entry);
+            label.setForeground(Color.WHITE);
+            label.setFont(new Font("Verdana", Font.BOLD | Font.ITALIC, 25));
+            label.setBounds(300, y, 300, 50);
+            panelJuego.add(label);
+            labelsRanking.add(label);
+            label.setVisible(true);
+            y += 30;
+        }
+
+        panelJuego.add(fondoRanking);
+        botonContinuar = new JButton("Continuar");
+        botonContinuar.setBounds(460, 400, 100, 25);
+        botonContinuar.setVisible(true);
+        panelJuego.add(botonContinuar);
+
+        botonContinuar.addActionListener(e -> {
+            botonContinuar.setVisible(false);
+            fondoRanking.setVisible(false);
+            for (JLabel i : labelsRanking) {
+                i.setVisible(false);
+            }
+            rankingMostrado = true;
+            panelJuego.setEstadoEsperando_Click();
+            panelJuego.repaint();
+            panelJuego.revalidate();
+        });
+
+        panelJuego.repaint();
+        panelJuego.revalidate();
+    }
+
+    public static void reiniciarRankingMostrado() {rankingMostrado = false;}
     public void aumentarFrecuenciaSpawn() { if (frecuenciaSpawn < 99) frecuenciaSpawn++; }
     public void disminuirFrecuenciaSpawn() { if (frecuenciaSpawn > 50) frecuenciaSpawn--; }
 
