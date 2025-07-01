@@ -4,37 +4,35 @@ import lemmings.modelo.Config;
 import lemmings.vista.PanelLemmings;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
 
-public class LanzadorLemming{
+public class LanzadorLemming {
 
     private static JPanel cardPanel;
     private static CardLayout cardLayout;
 
-    public static void iniciar(JFrame ventana){
+    public static void iniciar(JFrame ventana) {
 
-        ventana.getContentPane().removeAll(); // Quita todos los componentes
+        ventana.getContentPane().removeAll();
         ventana.repaint();
         ventana.revalidate();
         ventana.setLayout(new BorderLayout());
 
         ventana.setTitle("Configuración del Juego - Lemmings Z");
         ventana.setSize(800, 600);
-        ventana.setLocationRelativeTo(null); // Centra la ventana
+        ventana.setLocationRelativeTo(null);
 
-        // Panel principal con layout vertical
+        // Panel principal
         JPanel panelPrincipal = new JPanel();
         panelPrincipal.setLayout(new BoxLayout(panelPrincipal, BoxLayout.Y_AXIS));
-        panelPrincipal.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); // padding
+        panelPrincipal.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         // Selector de nivel
         String[] niveles = {"Nivel 1", "Nivel 2", "Nivel 3", "Nivel 4"};
         JComboBox<String> selectorNivel = new JComboBox<>(niveles);
 
-        //Card Layout para mostrar los niveles
+        // Slide
         cardLayout = new CardLayout();
         cardPanel = new JPanel(cardLayout);
-
         cardPanel.add(crearSlide("src/lemmings/recursos/Nivel1View.png"), "Nivel 1");
         cardPanel.add(crearSlide("src/lemmings/recursos/Nivel2View.png"), "Nivel 2");
         cardPanel.add(crearSlide("src/lemmings/recursos/Nivel3View.png"), "Nivel 3");
@@ -50,7 +48,6 @@ public class LanzadorLemming{
         // Mute
         JPanel mutePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JCheckBox muteCheck = new JCheckBox("Mute");
-
         mutePanel.add(muteCheck);
 
         // Volumen
@@ -67,7 +64,7 @@ public class LanzadorLemming{
         JCheckBox chkPantallaCompleta = new JCheckBox("Pantalla completa");
         pantallaPanel.add(chkPantallaCompleta);
 
-        // Botón Aceptar
+        // Botón aceptar
         JButton aceptarButton = new JButton("Aceptar");
         aceptarButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         aceptarButton.addActionListener(e -> {
@@ -85,23 +82,16 @@ public class LanzadorLemming{
                 juegoFrame.setUndecorated(true);
                 juegoFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
             } else {
-                juegoFrame.setSize(800, 500);
+                juegoFrame.setSize(800, 600);
                 juegoFrame.setResizable(false);
                 juegoFrame.setLocationRelativeTo(null);
-                PanelLemmings juego = new PanelLemmings(selectorNivel.getSelectedIndex() + 1);
-                juegoFrame.setContentPane(juego);
-                juegoFrame.setVisible(true);
-
-                System.out.println(selectorNivel.getSelectedIndex());
-
             }
 
-            PanelLemmings juego = new PanelLemmings(selectorNivel.getSelectedIndex() + 1);
+            PanelLemmings juego = new PanelLemmings(selectorNivel.getSelectedIndex() + 1, juegoFrame);
             juegoFrame.setContentPane(juego);
             juegoFrame.setVisible(true);
         });
 
-        // Agregar todo al panel principal
         panelPrincipal.add(selectorNivel);
         panelPrincipal.add(Box.createRigidArea(new Dimension(0, 10)));
         panelPrincipal.add(mutePanel);
@@ -116,15 +106,13 @@ public class LanzadorLemming{
         ventana.setVisible(true);
     }
 
-
     private static JPanel crearSlide(String rutaImagen) {
         JPanel panel = new JPanel();
         JLabel label = new JLabel();
-
         ImageIcon icono = new ImageIcon(rutaImagen);
         label.setIcon(icono);
         panel.add(label);
-
         return panel;
     }
 }
+
