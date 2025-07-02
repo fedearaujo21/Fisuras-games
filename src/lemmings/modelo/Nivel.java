@@ -28,8 +28,8 @@ public class Nivel {
     private Stock stockHabilidades;
     private int objetivoLemmings;
     private boolean nivelAprobado;
-    private AudioPlayer sonidoSalida = new AudioPlayer("/lemmings/recursos/SonidoSalida.wav");
-    private AudioPlayer sonidoExplosion = new AudioPlayer("/lemmings/recursos/SonidoExplosion.wav");
+    private AudioPlayer sonidoSalida = new AudioPlayer("recursos/SonidoSalida.wav");
+    private AudioPlayer sonidoExplosion = new AudioPlayer("recursos/SonidoExplosion.wav");
     private boolean nivelCompletado = false;
     private long tiempoInicio;
     //private boolean lemmingsSpawneados = false;
@@ -235,7 +235,7 @@ public class Nivel {
 
             try {
                 BufferedImage goku = ImageIO.read(getClass().getResourceAsStream(
-                        nivelAprobado ? "/lemmings/recursos/gokuFeliz.png" : "/lemmings/recursos/gokuTriste.png"
+                        nivelAprobado ? "recursos/gokuFeliz.png" : "recursos/gokuTriste.png"
                 ));
                 Image gokuEscalado = goku.getScaledInstance(100, 100, Image.SCALE_SMOOTH);
                 int imgX = panelX + (panelAncho - 100) / 2;

@@ -36,7 +36,7 @@ public class HabilidadMinero extends Habilidad {
             System.out.println("El Lemming no tiene terreno debajo para minar.");
             return false;
         }
-        musicaMinero = new AudioPlayer("/lemmings/recursos/SonidoMinero.wav");
+        musicaMinero = new AudioPlayer("recursos/SonidoMinero.wav");
         musicaMinero.play();
         lemming.setHabilidadActiva(this);
         System.out.println("Habilidad Minero activada en el Lemming (excava hacia abajo).");

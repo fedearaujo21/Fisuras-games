@@ -15,7 +15,7 @@ public class HabilidadBloqueador extends Habilidad{
             System.out.println("El lemming debe estar caminando");
             return false;
         }
-        musicaBloqueador = new AudioPlayer("/lemmings/recursos/SonidoBloqueador.wav");
+        musicaBloqueador = new AudioPlayer("recursos/SonidoBloqueador.wav");
         musicaBloqueador.play();
         lemming.setHabilidadActiva(this);
         System.out.println("Habilidad 'Bloqueador' activada en Lemming.");

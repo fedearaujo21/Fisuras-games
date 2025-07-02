@@ -33,10 +33,10 @@ public class LanzadorLemming {
         // Slide
         cardLayout = new CardLayout();
         cardPanel = new JPanel(cardLayout);
-        cardPanel.add(crearSlide("src/lemmings/recursos/Nivel1View.png"), "Nivel 1");
-        cardPanel.add(crearSlide("src/lemmings/recursos/Nivel2View.png"), "Nivel 2");
-        cardPanel.add(crearSlide("src/lemmings/recursos/Nivel3View.png"), "Nivel 3");
-        cardPanel.add(crearSlide("src/lemmings/recursos/Nivel4View.png"), "Nivel 4");
+        cardPanel.add(crearSlide("recursos/Nivel2View.png"), "Nivel 2");
+        cardPanel.add(crearSlide("recursos/Nivel1View.png"), "Nivel 1");
+        cardPanel.add(crearSlide("recursos/Nivel3View.png"), "Nivel 3");
+        cardPanel.add(crearSlide("recursos/Nivel4View.png"), "Nivel 4");
 
         ventana.add(cardPanel, BorderLayout.CENTER);
 

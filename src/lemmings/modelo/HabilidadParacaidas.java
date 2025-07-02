@@ -16,7 +16,7 @@ public class HabilidadParacaidas extends Habilidad {
         if (lemming.getEstado() == Lemming.EstadoLemming.CAYENDO) {
             aplicarSiCayendo(lemming, lemming.getTicksEnAire());
         }
-        AudioPlayer musicaParacidas = new AudioPlayer("/lemmings/recursos/SonidoParacaidas.wav");
+        AudioPlayer musicaParacidas = new AudioPlayer("recursos/SonidoParacaidas.wav");
         musicaParacidas.play();
         return true;
     }

@@ -4,7 +4,7 @@ import lemmings.control.AudioPlayer;
 
 public class HabilidadAutoBomba extends Habilidad {
     private Mapa mapa;
-    private AudioPlayer musicaAutoBomba = new AudioPlayer("/lemmings/recursos/SonidoAutoBomba.wav");
+    private AudioPlayer musicaAutoBomba = new AudioPlayer("recursos/SonidoAutoBomba.wav");
     public HabilidadAutoBomba(Mapa mapa) {
         super("AutoBomba", 1, -1); // Nombre corregido
         this.mapa = mapa;

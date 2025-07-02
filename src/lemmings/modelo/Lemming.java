@@ -84,7 +84,7 @@ public class Lemming {
         framesAutoBomba = new ArrayList<>();
 
         try {
-            BufferedImage spriteSheet = ImageIO.read(new File("src/lemmings/recursos/gokuAutoBomba.png"));
+            BufferedImage spriteSheet = ImageIO.read(new File("recursos/gokuAutoBomba.png"));
             int ancho = 32;
             int alto = 32;
             int espacio = 8;
@@ -117,7 +117,7 @@ public class Lemming {
     private void cargarFramesConstructor() {
         framesConstructor = new ArrayList<>();
         try {
-            BufferedImage spriteSheet = ImageIO.read(new File("src/lemmings/recursos/gokuConstructor.png"));
+            BufferedImage spriteSheet = ImageIO.read(new File("recursos/gokuConstructor.png"));
             int anchoFrame = 32;
             int altoFrame = 32;
             int espacio = 8;
@@ -137,8 +137,8 @@ public class Lemming {
         framesKameDisparo = new ArrayList<>();
 
         try {
-            BufferedImage carga = ImageIO.read(new File("src/lemmings/recursos/gokuCargando.png"));
-            BufferedImage disparo = ImageIO.read(new File("src/lemmings/recursos/gokuDisparando.png"));
+            BufferedImage carga = ImageIO.read(new File("recursos/gokuCargando.png"));
+            BufferedImage disparo = ImageIO.read(new File("recursos/gokuDisparando.png"));
 
             // Carga: 16x32 + 8 espacio
             int anchoCarga = 16;
@@ -169,7 +169,7 @@ public class Lemming {
     private void cargarFramesBloqueador() {
         framesBloqueador = new ArrayList<>();
         try {
-            BufferedImage spriteSheet = ImageIO.read(new File("src/lemmings/recursos/gokuBloqueador.png"));
+            BufferedImage spriteSheet = ImageIO.read(new File("recursos/gokuBloqueador.png"));
 
             int anchoFrame = 32;
             int altoFrame = 32;
@@ -201,7 +201,7 @@ public class Lemming {
     private void cargarFramesParacaidas() {
         framesParacaidas = new ArrayList<>();
         try {
-            BufferedImage spriteSheet = ImageIO.read(new File("src/lemmings/recursos/gokuParacaidas.png"));
+            BufferedImage spriteSheet = ImageIO.read(new File("recursos/gokuParacaidas.png"));
 
             int anchoFrame = 16;
             int altoFrame = 25;
@@ -233,7 +233,7 @@ public class Lemming {
     private void cargarFramesExcavar() {
         framesExcavar = new ArrayList<>();
         try {
-            BufferedImage spriteSheet = ImageIO.read(new File("src/lemmings/recursos/gokuCavando.png"));
+            BufferedImage spriteSheet = ImageIO.read(new File("recursos/gokuCavando.png"));
 
             int anchoFrame = 32;
             int altoFrame = 64;
@@ -264,7 +264,7 @@ public class Lemming {
     private void cargarFramesCaida() {
         framesCaida = new ArrayList<>();
         try {
-            BufferedImage spriteSheet = ImageIO.read(new File("src/lemmings/recursos/gokuVolador.png"));
+            BufferedImage spriteSheet = ImageIO.read(new File("recursos/gokuVolador.png"));
 
             int anchoFrame = 16;
             int altoFrame = 32;
@@ -296,7 +296,7 @@ public class Lemming {
     private void cargarFramesCaminata() {
         framesCaminar = new ArrayList<>();
         try {
-            BufferedImage spriteSheet = ImageIO.read(new File("src/lemmings/recursos/gokuWalker.png"));
+            BufferedImage spriteSheet = ImageIO.read(new File("recursos/gokuWalker.png"));
 
             int anchoFrame = 16;
             int altoFrame = 32;

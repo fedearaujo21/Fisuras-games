@@ -28,7 +28,7 @@ public class BotonHabilidad {
         this.stock = stock;
 
         try {
-            this.icono = ImageIO.read(getClass().getResourceAsStream("/lemmings/recursos/icono" + nombre + ".png"));
+            this.icono = ImageIO.read(getClass().getResourceAsStream("recursos/icono" + nombre + ".png"));
         } catch (IOException e) {
             System.err.println("No se encontró el icono para: " + nombre);
         }

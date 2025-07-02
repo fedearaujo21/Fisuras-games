@@ -11,7 +11,7 @@ public class HabilidadKameHameHa extends Habilidad {
     private static final int DURACION_VIAJE_TICKS = 100; // Tiempo que tarda el rayo en "viajar"
     private static final int DURACION_TOTAL_KAMEHAMEHA_TICKS = DURACION_CARGA_TICKS + DURACION_VIAJE_TICKS;
     private AudioPlayer musicaKameHameHa;
-    private AudioPlayer sonidoImpacto = new AudioPlayer("/lemmings/recursos/SonidoExplosion.wav");
+    private AudioPlayer sonidoImpacto = new AudioPlayer("recursos/SonidoExplosion.wav");
 
     private int ticksActivo = 0;
     private int puntoImpactoX; // Donde impactará el rayo
@@ -31,7 +31,7 @@ public class HabilidadKameHameHa extends Habilidad {
         }
         lemming.setHabilidadActiva(this);
         lemming.setEstado(Lemming.EstadoLemming.KAMEHAMEHA_CARGANDO);
-        musicaKameHameHa = new AudioPlayer("/lemmings/recursos/SonidoKameHameHa.wav");
+        musicaKameHameHa = new AudioPlayer("recursos/SonidoKameHameHa.wav");
         musicaKameHameHa.play();
         this.ticksActivo = 0; // Reiniciar el contador de ticks al activar
         this.impactoSucedido = false;

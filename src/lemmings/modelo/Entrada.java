@@ -28,7 +28,7 @@ public class Entrada {
     private void cargarFrames() {
         framesEntrada = new ArrayList<>();
         try {
-            BufferedImage spriteSheet = ImageIO.read(new File("src/lemmings/recursos/frameEntrada.png"));
+            BufferedImage spriteSheet = ImageIO.read(new File("recursos/frameEntrada.png"));
             int espacio = 8;
 
             for (int i = 0; i < 2; i++) {
