@@ -9,7 +9,7 @@ public class NivelInfo {
     private String rutaImagen;
     private String rutaMusica;
     private String rutaVista;
-
+    private String thumbnail;
     private Entrada entrada;
     private Salida salida;
     private Stock stockHabilidades;
@@ -18,7 +18,7 @@ public class NivelInfo {
     private int cantidadLem;
     private int objetivoLemmings;
 
-    public NivelInfo(int numero, String nombre, String rutaImagen, String rutaMusica, String rutaVista,
+    public NivelInfo(int numero, String nombre, String rutaImagen, String rutaMusica, String rutaVista, String thumbnail,
                      Entrada entrada, Salida salida, Stock stockHabilidades,
                      long tiempo, int frecuenciaSpawn, int cantidadLem, int objetivoLemmings) {
         this.numero = numero;
@@ -26,6 +26,7 @@ public class NivelInfo {
         this.rutaImagen = rutaImagen;
         this.rutaMusica = rutaMusica;
         this.rutaVista = rutaVista;
+        this.thumbnail = thumbnail;
         this.entrada = entrada;
         this.salida = salida;
         this.stockHabilidades = stockHabilidades;
@@ -54,7 +55,9 @@ public class NivelInfo {
     public String getRutaVista() {
         return rutaVista;
     }
-
+    public String getThumbnail() {
+        return thumbnail;
+    }
     public Entrada getEntrada() {
         return entrada;
     }

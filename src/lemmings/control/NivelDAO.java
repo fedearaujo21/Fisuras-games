@@ -46,6 +46,7 @@ public class NivelDAO {
                         rs.getString("rutaImagen"),
                         rs.getString("rutaMusica"),
                         rs.getString("rutaVista"),
+                        rs.getString("thumbnail"),
                         entrada,
                         salida,
                         stock,
