@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="Fisuras-games:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/Fisuras_games_jar</output-path>
+    <root id="archive" name="Fisuras-games.jar">
+      <element id="module-output" name="Fisuras-games" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/data/sqlite-jdbc-3.50.1.0.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>
