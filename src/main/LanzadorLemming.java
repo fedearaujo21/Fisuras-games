@@ -33,10 +33,10 @@ public class LanzadorLemming {
         // Slide
         cardLayout = new CardLayout();
         cardPanel = new JPanel(cardLayout);
-        cardPanel.add(crearSlide("src/lemmings/recursos/Nivel1View.png"), "Nivel 1");
-        cardPanel.add(crearSlide("src/lemmings/recursos/Nivel2View.png"), "Nivel 2");
-        cardPanel.add(crearSlide("src/lemmings/recursos/Nivel3View.png"), "Nivel 3");
-        cardPanel.add(crearSlide("src/lemmings/recursos/Nivel4View.png"), "Nivel 4");
+        cardPanel.add(crearSlide("/lemmings/recursos/Nivel1View.png"), "Nivel 1");
+        cardPanel.add(crearSlide("/lemmings/recursos/Nivel2View.png"), "Nivel 2");
+        cardPanel.add(crearSlide("/lemmings/recursos/Nivel3View.png"), "Nivel 3");
+        cardPanel.add(crearSlide("/lemmings/recursos/Nivel4View.png"), "Nivel 4");
 
         ventana.add(cardPanel, BorderLayout.CENTER);
 
@@ -109,8 +109,16 @@ public class LanzadorLemming {
     private static JPanel crearSlide(String rutaImagen) {
         JPanel panel = new JPanel();
         JLabel label = new JLabel();
-        ImageIcon icono = new ImageIcon(rutaImagen);
-        label.setIcon(icono);
+
+        java.net.URL imgUrl = LanzadorLemming.class.getResource(rutaImagen);
+        if (imgUrl != null) {
+            ImageIcon icono = new ImageIcon(imgUrl);
+            label.setIcon(icono);
+        } else {
+            label.setText("Imagen no encontrada: " + rutaImagen);
+            System.err.println("No se encontro la imagen: " + rutaImagen);
+        }
+
         panel.add(label);
         return panel;
     }

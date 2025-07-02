@@ -1,15 +1,11 @@
 package lemmings.modelo;
 
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.EnumMap;
 import java.util.List;
 import javax.imageio.ImageIO;
 import java.awt.*;
-
-import lemmings.control.Escalador;
 
 public class Lemming {
     // Hago listas para cada frame

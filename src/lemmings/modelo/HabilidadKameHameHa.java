@@ -2,8 +2,6 @@ package lemmings.modelo;
 
 import lemmings.control.AudioPlayer;
 
-import java.awt.Rectangle;
-
 public class HabilidadKameHameHa extends Habilidad {
     private Mapa mapa;
     private static final int RADIO_EXPLOSION = 30; // Radio del área a destruir

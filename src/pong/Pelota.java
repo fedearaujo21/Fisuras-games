@@ -1,74 +1,65 @@
 package pong;
 
 import java.awt.*;
+import java.net.URL;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.Random;
 import javax.sound.sampled.*;
-import java.io.File;
-import java.util.Map;
 
 public class Pelota {
     private int x, y;
-    private int tamano = 12;
+    private final int tamano = 12;
     private int velocidadX = 4, velocidadY = 4;
     private final int factor = 5; // margen de desvío
-    private final Map<String, String> sonidoParedes = Map.of(
-            "original","src/pong/recursos/Boing1.wav",
-            "techno","src/pong/recursos/Boing2.wav",
-            "8bit","src/pong/recursos/Boing3.wav"
-    );
-    // Map es como un HasMap pero inmutable, pero como lo uso para guardar nombres no voy a necesitar mutabilidad
-    private final Map<String, String> sonidoPaletas = Map.of(
-            "original","src/pong/recursos/Pared1.wav",
-            "techno","src/pong/recursos/Pared2.wav",
-            "8bit","src/pong/recursos/Pared3.wav"
-    );
+
     private Clip pared;
     private Clip paleta;
-    private Choque choque = new Choque();
 
+    private final Choque choque = new Choque();
 
     public Pelota(int x, int y) {
         this.x = x;
         this.y = y;
         direccionAleatoria();
 
+        // === Cargar sonido de pared ===
+        pared = cargarClip("/pong/recursos/" + nombreSonido(Config.pistaMusical, "pared"));
 
-        //cargo sonido de las paredes
-        try {
-            AudioInputStream audioStream = AudioSystem.getAudioInputStream(
-                    Objects.requireNonNull(getClass().getResourceAsStream("/pong/recursos/" + nombreSonido(Config.pistaMusical, "pared")))
-            );
-            pared = AudioSystem.getClip();
-            pared.open(audioStream);
-        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            AudioInputStream audioStream = AudioSystem.getAudioInputStream(
-                    Objects.requireNonNull(getClass().getResourceAsStream("/pong/recursos/" + nombreSonido(Config.pistaMusical, "paleta")))
-            );
-            paleta = AudioSystem.getClip();
-            paleta.open(audioStream);
-        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
-            e.printStackTrace();
-        }
-
+        // === Cargar sonido de paleta ===
+        paleta = cargarClip("/pong/recursos/" + nombreSonido(Config.pistaMusical, "paleta"));
     }
+
+    /** Devuelve un Clip listo para reproducir, o null si el recurso no existe */
+    private Clip cargarClip(String rutaRecurso) {
+        try {
+            URL url = Pelota.class.getResource(rutaRecurso);
+            if (url == null) {
+                // Ayuda a detectar rutas mal escritas dentro del jar
+                throw new IllegalStateException("Recurso no encontrado: " + rutaRecurso);
+            }
+            AudioInputStream ais = AudioSystem.getAudioInputStream(url);
+            Clip clip = AudioSystem.getClip();
+            clip.open(ais);
+            return clip;
+        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     private String nombreSonido(String estilo, String tipo) {
-        if (tipo.equals("pared")) {
+        if ("pared".equals(tipo)) {
             return switch (estilo) {
                 case "techno" -> "Boing2.wav";
-                case "8bit" -> "Boing3.wav";
-                default -> "Boing1.wav";
+                case "8bit"   -> "Boing3.wav";
+                default       -> "Boing1.wav";
             };
-        } else {
+        } else { // paleta
             return switch (estilo) {
                 case "techno" -> "Pared2.wav";
-                case "8bit" -> "Pared3.wav";
-                default -> "Pared1.wav";
+                case "8bit"   -> "Pared3.wav";
+                default       -> "Pared1.wav";
             };
         }
     }
@@ -78,73 +69,54 @@ public class Pelota {
         y += velocidadY;
         Random entropia = new Random();
 
-        // Rebote contra los bordes superior/inferior
+        // --- Rebote contra bordes superior / inferior ---
         if (y <= 0 || y + Config.frameSuperior + tamano >= 600) {
             velocidadY *= -1;
-
-            if(Config.sonidoActivado) {
-                if (pared.isRunning())
-                    pared.stop();
-                pared.setFramePosition(0); // reinicia el audio al comienzo
-                pared.start();
-            }
+            reproducirClip(pared);
         }
 
-        // Rebote con las paletas
-        if (getRect().intersects(j1.getRect()) && choque.tangible){
+        // --- Rebote con paleta izquierda ---
+        if (getRect().intersects(j1.getRect()) && choque.tangible) {
             velocidadX *= -1;
+            reproducirClip(paleta);
 
-            if(Config.sonidoActivado) {
-                if (paleta.isRunning())
-                    paleta.stop();
-                paleta.setFramePosition(0); // reinicia el audio al comienzo
-                paleta.start();
-            }
-
-            if (j1.getBajando() && velocidadY > -25){
+            if (j1.getBajando() && velocidadY > -25)
                 velocidadY += entropia.nextInt(factor) + 1;
-            }
-            if (j1.getSubiendo() && velocidadY < 25){
+            if (j1.getSubiendo() && velocidadY < 25)
                 velocidadY -= entropia.nextInt(factor) + 1;
-            } // si se quiere subir la dificultad se puede aumentar el factor
 
             velocidadY += entropia.nextInt(factor - 1) - 2;
-            // esta linea evita que la pelota se mantenga horizontal;
-
-            // choque en el borde
-            Thread rebote = new Thread(choque);
-            rebote.start();
+            new Thread(choque).start();
         }
-        if (getRect().intersects(j2.getRect()) && choque.tangible){
+
+        // --- Rebote con paleta derecha ---
+        if (getRect().intersects(j2.getRect()) && choque.tangible) {
             velocidadX *= -1;
+            reproducirClip(paleta);
 
-            if(Config.sonidoActivado) {
-                paleta.setFramePosition(0); // reinicia el audio al comienzo
-                paleta.start();
-            }
-
-            if (j2.getBajando() && velocidadY > -25){
+            if (j2.getBajando() && velocidadY > -25)
                 velocidadY += entropia.nextInt(factor) + 1;
-            }
-            if (j2.getSubiendo() && velocidadY < 25){
+            if (j2.getSubiendo() && velocidadY < 25)
                 velocidadY -= entropia.nextInt(factor) + 1;
-            }
 
             velocidadY += entropia.nextInt(factor - 1) - 2;
-            // esta linea evita que la pelota se mantenga horizontal;
-
-            // choque en el borde
-            Thread rebote = new Thread(choque);
-            rebote.start();
+            new Thread(choque).start();
         }
     }
 
+    private void reproducirClip(Clip clip) {
+        if (clip == null || !Config.sonidoActivado) return;
+        if (clip.isRunning()) clip.stop();
+        clip.setFramePosition(0);
+        clip.start();
+    }
+
     public void dibujar(Graphics g) {
-        if (Config.skin == "original")
+        if ("original".equals(Config.skin))
             g.setColor(Color.WHITE);
-        if (Config.skin == "techno")
+        else if ("techno".equals(Config.skin))
             g.setColor(Color.RED);
-        if (Config.skin == "tropical")
+        else if ("tropical".equals(Config.skin))
             g.setColor(Color.PINK);
 
         g.fillOval(x, y, tamano, tamano);
@@ -162,25 +134,23 @@ public class Pelota {
         velocidadY = r.nextBoolean() ? 4 : -4;
     }
 
-    public int getX() {
-        return x;
-    }
+    public int getX() { return x; }
 
-    public Rectangle getRect() {
-        return new Rectangle(x, y, tamano, tamano);
-    }
+    public int getY() { return y; }
 
-    public int getY(){return this.y;}
+    public Rectangle getRect() { return new Rectangle(x, y, tamano, tamano); }
 }
 
-class Choque implements Runnable{
+
+/* --- Clase auxiliar para evitar rebotes múltiples demasiado rápidos --- */
+class Choque implements Runnable {
     public static boolean tangible = true;
 
     @Override
     public void run() {
         tangible = false;
         try {
-            Thread.sleep(500); // Pausa de 2 segundos
+            Thread.sleep(500); // 0,5 s
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

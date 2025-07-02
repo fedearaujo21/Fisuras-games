@@ -9,7 +9,6 @@ import lemmings.modelo.BotonHabilidad;
 import lemmings.modelo.*;
 import main.Juego;
 import main.LanzadorLemming;
-import main.MenuPrincipal;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -89,6 +88,7 @@ public class PanelLemmings extends Juego{
 
                 if (botonHome.contains(mx, my)) {
                     volverAlMenu();
+                    detenerMusica();
                     detener();
                     return;
                 }
@@ -170,6 +170,7 @@ public class PanelLemmings extends Juego{
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
                     volverAlMenu();
+                    detenerMusica();
                     detener();
                 } else if (e.getKeyCode() == KeyEvent.VK_R) {
                     reiniciarNivel();
@@ -275,9 +276,9 @@ public class PanelLemmings extends Juego{
             botonesHabilidad.add(new BotonHabilidad(xInicial + 8 * espacio, yBoton, ancho, alto, ImageIO.read(getClass().getResourceAsStream("/lemmings/recursos/iconoAcelerar.png")), "acelerar", nivel.getStockHabilidades()));
             botonesHabilidad.add(new BotonHabilidad(xInicial + 9 * espacio, yBoton, ancho, alto, ImageIO.read(getClass().getResourceAsStream("/lemmings/recursos/iconoPausa.png")), "Pausa", nivel.getStockHabilidades()));
             botonesHabilidad.add(new BotonHabilidad(xInicial + 10 * espacio, yBoton, ancho, alto, ImageIO.read(getClass().getResourceAsStream("/lemmings/recursos/iconoPlay.png")), "Play", nivel.getStockHabilidades()));
-            iconoHome = ImageIO.read(new File("src/lemmings/recursos/iconoHome.png"));
-            iconoReiniciar = ImageIO.read(new File("src/lemmings/recursos/iconoReiniciar.png"));
-            iconoConfig = ImageIO.read(new File("src/lemmings/recursos/iconoConfigurar.png"));
+            iconoHome = ImageIO.read(getClass().getResourceAsStream("/lemmings/recursos/iconoHome.png"));
+            iconoReiniciar = ImageIO.read(getClass().getResourceAsStream("/lemmings/recursos/iconoReiniciar.png"));
+            iconoConfig = ImageIO.read(getClass().getResourceAsStream("/lemmings/recursos/iconoConfigurar.png"));
 
             botonHome = new Rectangle(10, 10, 32, 32);
             botonConfig = new Rectangle(50, 10, 32, 32);

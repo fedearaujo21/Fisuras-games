@@ -75,6 +75,7 @@ public class Juego extends JPanel implements Runnable {
         if (ventana != null) {
             ventana.dispose();
         }
+
         SwingUtilities.invokeLater(() -> {
             JFrame nuevaVentana = new JFrame("Fisuras Games");
             nuevaVentana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
