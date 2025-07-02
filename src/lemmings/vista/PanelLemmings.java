@@ -188,8 +188,8 @@ public class PanelLemmings extends Juego{
             musicaFondo = null;
         }
     }
-
-    private void volverAConfiguracion() {
+    @Override
+    public void volverAConfiguracion() {
         if (musicaFondo != null) {
             musicaFondo.close(); // Detiene la música actual
         }

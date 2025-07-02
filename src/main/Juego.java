@@ -86,4 +86,6 @@ public class Juego extends JPanel implements Runnable {
         });
     }
 
+    public void volverAConfiguracion(){}
+
 }

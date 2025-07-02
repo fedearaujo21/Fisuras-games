@@ -49,7 +49,7 @@ public class JuegoPong extends Juego implements KeyListener {
             volverAlMenu();
             detener();
         } else if (volverAConfiguracion) {
-            volverAConfig();
+            volverAConfiguracion();
             detener();
         }
     }
@@ -87,7 +87,8 @@ public class JuegoPong extends Juego implements KeyListener {
         new JuegoPong(nuevaVentana);
     }
 
-    private void volverAConfig() {
+    @Override
+    public void volverAConfiguracion() {
         JFrame ventanaActual = (JFrame) SwingUtilities.getWindowAncestor(this);
         ventanaActual.dispose();
 
