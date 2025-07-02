@@ -15,11 +15,11 @@ public class Assets {
     public static void init() {
         try {
             //el Objects.requireNonNull hace magia xd
-            bananaDerecha = ImageIO.read(Objects.requireNonNull(Assets.class.getResource("/pong/recursos/BananaDerecha.png")));
-            bananaIzquierda = ImageIO.read(Objects.requireNonNull(Assets.class.getResource("/pong/recursos/BananaIzquierda.png")));
-            bladeDerecha = ImageIO.read(Objects.requireNonNull(Assets.class.getResource("/pong/recursos/bladeDerecha.jpg")));
-            bladeIzquierda = ImageIO.read(Objects.requireNonNull(Assets.class.getResource("/pong/recursos/bladeIzquierda.jpg")));
-            //salida = ImageIO.read(Objects.requireNonNull(Assets.class.getResource("/pong/recursos/naveSaiyajinw.png")));
+            bananaDerecha = ImageIO.read(Objects.requireNonNull(Assets.class.getResource("recursos/BananaDerecha.png")));
+            bananaIzquierda = ImageIO.read(Objects.requireNonNull(Assets.class.getResource("recursos/BananaIzquierda.png")));
+            bladeDerecha = ImageIO.read(Objects.requireNonNull(Assets.class.getResource("recursos/bladeDerecha.jpg")));
+            bladeIzquierda = ImageIO.read(Objects.requireNonNull(Assets.class.getResource("recursos/bladeIzquierda.jpg")));
+            //salida = ImageIO.read(Objects.requireNonNull(Assets.class.getResource("recursos/naveSaiyajinw.png")));
 
         } catch (IOException e) {
             e.printStackTrace();

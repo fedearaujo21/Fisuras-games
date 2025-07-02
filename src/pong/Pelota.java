@@ -13,15 +13,15 @@ public class Pelota {
     private int velocidadX = 4, velocidadY = 4;
     private final int factor = 5; // margen de desvío
     private final Map<String, String> sonidoParedes = Map.of(
-            "original","src/pong/recursos/Boing1.wav",
-            "techno","src/pong/recursos/Boing2.wav",
-            "8bit","src/pong/recursos/Boing3.wav"
+            "original","recursos/Boing1.wav",
+            "techno","recursos/Boing2.wav",
+            "8bit","recursos/Boing3.wav"
     );
     // Map es como un HasMap pero inmutable, pero como lo uso para guardar nombres no voy a necesitar mutabilidad
     private final Map<String, String> sonidoPaletas = Map.of(
-            "original","src/pong/recursos/Pared1.wav",
-            "techno","src/pong/recursos/Pared2.wav",
-            "8bit","src/pong/recursos/Pared3.wav"
+            "original","recursos/Pared1.wav",
+            "techno","recursos/Pared2.wav",
+            "8bit","recursos/Pared3.wav"
     );
     private Clip pared;
     private Clip paleta;
