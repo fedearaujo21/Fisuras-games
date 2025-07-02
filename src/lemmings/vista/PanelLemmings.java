@@ -275,9 +275,9 @@ public class PanelLemmings extends Juego{
             botonesHabilidad.add(new BotonHabilidad(xInicial + 8 * espacio, yBoton, ancho, alto, ImageIO.read(getClass().getResourceAsStream("/lemmings/recursos/iconoAcelerar.png")), "acelerar", nivel.getStockHabilidades()));
             botonesHabilidad.add(new BotonHabilidad(xInicial + 9 * espacio, yBoton, ancho, alto, ImageIO.read(getClass().getResourceAsStream("/lemmings/recursos/iconoPausa.png")), "Pausa", nivel.getStockHabilidades()));
             botonesHabilidad.add(new BotonHabilidad(xInicial + 10 * espacio, yBoton, ancho, alto, ImageIO.read(getClass().getResourceAsStream("/lemmings/recursos/iconoPlay.png")), "Play", nivel.getStockHabilidades()));
-            iconoHome = ImageIO.read(new File("src/lemmings/recursos/iconoHome.png"));
-            iconoReiniciar = ImageIO.read(new File("src/lemmings/recursos/iconoReiniciar.png"));
-            iconoConfig = ImageIO.read(new File("src/lemmings/recursos/iconoConfigurar.png"));
+            iconoHome = ImageIO.read(new File("recursos/iconoHome.png"));
+            iconoReiniciar = ImageIO.read(new File("recursos/iconoReiniciar.png"));
+            iconoConfig = ImageIO.read(new File("recursos/iconoConfigurar.png"));
 
             botonHome = new Rectangle(10, 10, 32, 32);
             botonConfig = new Rectangle(50, 10, 32, 32);
